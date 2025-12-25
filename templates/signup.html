@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Auralis Insights</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+ /* ==================================================
+   🌿 InsightLeaf — Leaf Glass Signup UI (Web)
+   ================================================== */
+
+:root {
+  --primary: #7C946B;
+  --primary-light: #A8BE9E;
+  --primary-dark: #5F7E57;
+
+  --paper-bg: #f5ead7ff;
+  --mint-soft: #E6EFE6;
+  --warm-beige: #EFE8DC;
+
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --border-light: rgba(255,255,255,0.6);
+
+  --text-dark: #2F2F2F;
+  --text-medium: #6F6F6F;
+
+  --success: #5F7E57;
+  --error: #D32F2F;
+
+  --shadow-soft: 0 18px 40px rgba(0,0,0,0.12);
+  --shadow-deep: 0 28px 60px rgba(0,0,0,0.14);
+
+  --focus-ring: 0 0 0 3px rgba(124,148,107,0.35);
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* PAGE BACKGROUND */
+body {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background:
+    url("https://www.transparenttextures.com/patterns/paper-fibers.png"),
+    radial-gradient(circle at top left, rgba(124,148,107,0.20), transparent 60%),
+    radial-gradient(circle at bottom right, rgba(239,232,220,0.45), transparent 70%),
+    linear-gradient(180deg, var(--paper-bg), var(--warm-beige));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  position: relative;
+}
+
+/* 🍃 LEAF ARTWORK */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+
+body::before {
+  background-image: url("https://i.imgur.com/6Qx8LwF.png");
+  background-position: left bottom;
+  background-size: 420px;
+  opacity: 0.35;
+}
+
+body::after {
+  background-image: url("https://i.imgur.com/xZ6kF9R.png");
+  background-position: right top;
+  background-size: 380px;
+  opacity: 0.28;
+}
+
+/* LAYOUT */
+.auth-wrapper {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 72px;
+  max-width: 1200px;
+  width: 100%;
+  align-items: center;
+}
+
+/* LEFT CONTENT */
+.welcome h1 {
+  font-size: 46px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+}
+
+.welcome p {
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text-medium);
+  max-width: 520px;
+}
+
+/* CARD */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border-light);
+  border-radius: 26px;
+  padding: 46px;
+  box-shadow: var(--shadow-soft);
+  animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* LOGO */
+.logo {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.logo h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.logo span {
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+
+/* FORM */
+.form-group {
+  margin-bottom: 22px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-medium);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* INPUT */
+.input-wrapper {
+  position: relative;
+}
+
+input {
+  width: 100%;
+  padding: 15px 54px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.06);
+  font-size: 15px;
+  background: #fff;
+  transition: all 250ms ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* ICONS */
+.input-icon,
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--text-medium);
+}
+
+.input-icon { left: 20px; }
+.toggle-password { right: 20px; cursor: pointer; }
+
+/* HINTS */
+.hint {
+  font-size: 12px;
+  margin-top: 6px;
+  display: none;
+  font-weight: 500;
+}
+
+.hint.show { display: block; }
+.hint.valid { color: var(--success); }
+.hint.error { color: var(--error); }
+
+/* BUTTON */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(180deg, var(--primary-light), var(--primary));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 280ms ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: var(--shadow-deep);
+}
+
+/* REDIRECT */
+.login-redirect {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-medium);
+}
+
+.login-redirect a {
+  color: var(--primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .auth-wrapper {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .welcome h1 {
+    font-size: 36px;
+  }
+}
+
+
+  </style>
+</head>
+
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LEFT -->
+  <div class="welcome">
+    <h1><i>Welcome to Auralis</i></h1>
+    <p><i><justify>
+      Auralis is built to simplify data exploration through clean, interactive visualizations. Its calming design and structured dashboards allow users to analyze information comfortably, reducing cognitive load while improving insight discovery. The platform enables users to focus on patterns, trends, and key metrics without distraction, making data-driven decisions more intuitive.
+    </justify><i></p>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="card">
+
+    <div class="logo">
+      <h2>Auralis Insights</h2>
+      <span>Calm Intelligence · Clear Decisions</span>
+    </div>
+
+    <!-- 🔒 FORM — FUNCTIONALITY UNCHANGED -->
+  <form method="POST" action="{% url 'signup' %}" id="signupForm" novalidate>
+  {% csrf_token %}
+
+  <!-- 🔹 Hidden field for backend compatibility -->
+  <input type="hidden" name="name" id="backendName">
+
+
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <i class="fas fa-user input-icon" id="usernameIcon"></i>
+          <input type="text" id="username" name="username" placeholder="e.g., Data Explorer">
+        </div>
+        <div class="hint" id="usernameHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope input-icon" id="emailIcon"></i>
+          <input type="email" id="email" name="email" placeholder="you@domain.com">
+        </div>
+        <div class="hint" id="emailHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock input-icon" id="passwordIcon"></i>
+          <input type="password" id="password" name="password" placeholder="••••••••">
+          <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+        </div>
+        <div class="hint" id="passwordHint"></div>
+      </div>
+
+
+      <button type="submit" class="btn-primary">Sign Up</button>
+
+      <div class="login-redirect">
+       <a href="{% url 'login' %}">Already have an account? Login</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+  <script>
+    // ✅ Validation logic unchanged — fully preserved
+    function updateIconColor(fieldId, state) {
+      const icon = document.getElementById(`${fieldId}Icon`);
+      if (!icon) return;
+      if (state === 'valid') icon.style.color = '#8BAF8B'; // success-soft
+      else if (state === 'invalid') icon.style.color = '#E7CFCF';
+      else icon.style.color = '#7A756F';
+    }
+
+    function showHint(id, text, type) {
+      const hint = document.getElementById(`${id}Hint`);
+      if (hint) {
+        hint.textContent = text;
+        hint.className = `hint ${type}`;
+        hint.classList.add('show');
+      }
+    }
+
+    function hideHint(id) {
+      const hint = document.getElementById(`${id}Hint`);
+      if (hint) hint.classList.remove('show');
+    }
+
+    // ... (rest of JS unchanged — username, email, password, toggle, blur, submit)
+    document.getElementById('username').addEventListener('input', function() {
+      const val = this.value;
+      if (!val) { updateIconColor('username', 'neutral'); hideHint('username'); return; }
+      const trimmed = val.trim();
+      const valid = trimmed.length >= 3 && trimmed.length <= 30 && /^[a-zA-Z0-9_ ]+$/.test(val) && !/\s{2}/.test(val);
+      if (valid) { updateIconColor('username', 'valid'); showHint('username', 'Username is valid', 'valid'); }
+      else {
+        updateIconColor('username', 'invalid');
+        if (trimmed.length < 3) showHint('username', 'Username must be at least 3 characters', 'error');
+        else if (trimmed.length > 30) showHint('username', 'Username cannot exceed 30 characters', 'error');
+        else if (!/^[a-zA-Z0-9_ ]+$/.test(val)) showHint('username', 'Only letters, numbers, underscores, and spaces allowed', 'error');
+        else if (/\s{2}/.test(val)) showHint('username', 'Avoid consecutive spaces', 'error');
+        else showHint('username', 'Avoid leading or trailing spaces', 'error');
+      }
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+      const val = this.value.trim();
+      if (!val) { updateIconColor('email', 'neutral'); hideHint('email'); return; }
+      if (/[A-Z]/.test(val)) { updateIconColor('email', 'invalid'); showHint('email', 'Email must be in lowercase', 'error'); return; }
+      const valid = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(val);
+      if (valid) { updateIconColor('email', 'valid'); showHint('email', 'Email format is valid', 'valid'); }
+      else { updateIconColor('email', 'invalid'); showHint('email', 'Please enter a valid email address', 'error'); }
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      if (!val) { updateIconColor('password', 'neutral'); hideHint('password'); return; }
+      const checks = { len: val.length >= 8, lower: /[a-z]/.test(val), upper: /[A-Z]/.test(val), digit: /\d/.test(val), special: /[^A-Za-z0-9]/.test(val) };
+      const passed = Object.values(checks).filter(Boolean).length;
+      if (passed >= 4) { updateIconColor('password', 'valid'); showHint('password', 'Strong password', 'valid'); }
+      else if (passed >= 3) { updateIconColor('password', 'valid'); showHint('password', 'Good password', 'valid'); }
+      else {
+        updateIconColor('password', 'invalid');
+        const missing = [];
+        if (!checks.len) missing.push('at least 8 characters');
+        if (!checks.lower) missing.push('a lowercase letter');
+        if (!checks.upper) missing.push('an uppercase letter');
+        if (!checks.digit) missing.push('a number');
+        if (!checks.special) missing.push('a symbol');
+        showHint('password', 'Password must include: ' + missing.join(', '), 'error');
+      }
+    });
+
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const pwd = document.getElementById('password');
+      const type = pwd.type === 'password' ? 'text' : 'password';
+      pwd.type = type;
+      this.className = `fas fa-eye${type === 'password' ? '' : '-slash'} toggle-password`;
+    });
+
+    ['username', 'email', 'password'].forEach(id => {
+      document.getElementById(id).addEventListener('blur', () => {
+        const hint = document.getElementById(`${id}Hint`);
+        if (hint && hint.textContent && !hint.classList.contains('valid')) {
+          hint.classList.add('show');
+        }
+      });
+    });
+
+  document.getElementById('signupForm').addEventListener('submit', function () {
+    document.getElementById('backendName').value =
+      document.getElementById('username').value.trim();
+  });
+   
+
+  </script>
+</body>
+</html>

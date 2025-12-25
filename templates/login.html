@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Auralis Insights</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+   :root {
+ --primary: #7b9768ff;
+  --primary-light: #A8BE9E;
+  --primary-dark: #5F7E57;
+
+  --mint-soft: #EDF6F1;
+  --warm-beige: #F4EFE7;        /* softer beige */
+  --background-base: #f5ead7ff;   /* lighter base */
+
+  --card-surface: rgba(255,255,255,0.78); /* brighter card */
+  --border-light: rgba(0,0,0,0.05);
+
+  --text-dark: #2F2F2F;
+  --text-medium: #6F6F6F;
+
+  --success-soft: #7FAF9A;
+  --error-soft: #E7CFCF;
+
+  --shadow-card: 0px 10px 28px rgba(0,0,0,0.08);
+  --focus-ring: 0 0 0 3px rgba(139,175,159,0.28);
+}
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, var(--background-base), var(--warm-beige));
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: var(--shadow-card);
+      border-radius: 18px;
+      padding: 40px;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeInUp 400ms ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--primary);
+      font-style: italic;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-medium);
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      font-size: 15px;
+      background: var(--card-surface);
+      transition: all 250ms ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--text-medium);
+      transition: color 200ms ease;
+      pointer-events: none;
+    }
+
+    .hint {
+      font-size: 12px;
+      margin-top: 6px;
+      padding-left: 16px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .hint.show { display: block; }
+    .hint.valid { color: var(--success-soft); }
+    .hint.error { color: #D32F2F; }
+
+    .forgot-password {
+      display: block;
+      text-align: right;
+      font-size: 13px;
+      color: var(--text-medium);
+      margin-top: 6px;
+      text-decoration: none;
+    }
+
+    .forgot-password:hover { color: var(--primary); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 999px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: scale(1.03) translateY(-1px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 26px 0;
+      font-size: 13px;
+      color: var(--text-medium);
+      position: relative;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .google-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+      background: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .google-btn:hover {
+      background: var(--mint-soft);
+      box-shadow: var(--shadow-card);
+      transform: scale(1.02);
+    }
+
+    .signup-link {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-medium);
+    }
+
+    .signup-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="logo">
+    <h1>Auralis Insights</h1>
+  </div>
+
+ <form id="loginForm" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="email">Email</label>
+      <div class="input-wrapper">
+        <i class="fas fa-envelope input-icon" id="emailIcon"></i>
+        <input type="email" id="email" name="email" placeholder="you@domain.com" required>
+      </div>
+      <div class="hint" id="emailHint"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="input-wrapper">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
+      </div>
+      <a href="{% url 'forgot_password' %}" class="forgot-password">
+  Forgot Password?
+</a>
+    </div>
+
+
+    <button type="submit" class="btn-primary">Log In</button>
+
+    <div class="divider">or</div>
+
+    <div class="signup-link">
+      <a href="{% url 'signup' %}">Don't have an account? Sign up</a>
+
+    </div>
+  </form>
+</div>
+
+<script>
+/* ✅ Email validation feedback — NON-BLOCKING */
+document.getElementById('email').addEventListener('input', function () {
+  const val = this.value.trim();
+  const icon = document.getElementById('emailIcon');
+  const hint = document.getElementById('emailHint');
+
+  if (!val) {
+    icon.style.color = '#7A756F';
+    hint.className = 'hint';
+    return;
+  }
+
+  const valid = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(val);
+
+  if (valid) {
+    icon.style.color = '#8BAF9F';
+    hint.textContent = 'Email format looks good';
+    hint.className = 'hint valid show';
+  } else {
+    icon.style.color = '#E7CFCF';
+    hint.textContent = 'Please enter a valid email address';
+    hint.className = 'hint error show';
+  }
+});
+</script>
+
+</body>
+</html>
