@@ -133,3 +133,6 @@ EMAIL_HOST_USER = 'aaminashareef2003@gmail.com'      # 👈 ADD YOUR EMAIL HERE
 EMAIL_HOST_PASSWORD = 'xtfo veqb chbi ujkp'    # 👈 GMAIL APP PASSWORD
 
 DEFAULT_FROM_EMAIL = "aaminashareef2003@gmail.com"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

@@ -72,7 +72,7 @@
       position: absolute;
       top: 56px;
       right: 0;
-      background: #fff;
+      background: #77927aff;
       border-radius: 16px;
       width: 220px;
       box-shadow: var(--shadow);
@@ -344,11 +344,12 @@
         <p>Explore trends and analytics.</p>
       </div>
 
-      <div class="nav-card">
-        <i class="fas fa-upload"></i>
-        <h4>Upload Data</h4>
-        <p>Add datasets for analysis.</p>
-      </div>
+     <div class="nav-card" onclick="location.href='{% url 'upload_data' %}'">
+  <i class="fas fa-upload"></i>
+  <h4>Upload Data</h4>
+  <p>Add datasets securely for analysis</p>
+</div>
+
 
       <div class="nav-card">
         <i class="fas fa-file-alt"></i>
@@ -356,11 +357,12 @@
         <p>Generate and view reports.</p>
       </div>
 
-      <div class="nav-card">
-        <i class="fas fa-user-cog"></i>
-        <h4>Profile</h4>
-        <p>Manage your account.</p>
-      </div>
+      <div class="nav-card" onclick="location.href='{% url 'profile' %}'">
+  <i class="fas fa-user-cog"></i>
+  <h4>Profile</h4>
+  <p>Manage your account.</p>
+</div>
+
     </div>
   </div>
 
