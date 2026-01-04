@@ -180,6 +180,48 @@ button:hover {
     padding: 40px 24px;
   }
 }
+/* HEADER LAYOUT */
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+/* TOP RIGHT BUTTON */
+.header-btn {
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--primary);
+  background: transparent;
+  border: 2px solid var(--primary);
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  margin-top: 8px;
+}
+
+.header-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-btn {
+    margin-top: 16px;
+  }
+}
+
+
 </style>
 </head>
 
@@ -187,8 +229,8 @@ button:hover {
 
 <div class="page-wrapper">
 
-  <!-- PAGE HEADER -->
-  <div class="page-header">
+  <div class="page-header header-flex">
+  <div>
     <h1>Upload Your Dataset</h1>
     <p>
       Uploading data is the foundation of your analytical workflow in Auralis Insights.
@@ -196,6 +238,11 @@ button:hover {
       later be explored through dashboards, reports, and visual analytics.
     </p>
   </div>
+
+  <a href="{% url 'home' %}" class="header-btn">Back to Home</a>
+</div>
+
+
 
   <!-- CONTENT -->
   <div class="content-grid">
@@ -270,6 +317,8 @@ button:hover {
         </div>
 
         <button type="submit">Upload Dataset</button>
+        
+
       </form>
     </div>
 

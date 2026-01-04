@@ -16,20 +16,30 @@ from .models import CustomUser, Report, Dataset
 # 🌿 SIGN UP WITH OTP VERIFICATION
 # ==================================================
 
+
 def signup(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
 
+        # 🔴 Backend validation (NO HttpResponse)
         if not name or not email or not password:
-            return HttpResponse("All fields are required")
+            messages.error(request, "All fields are required.")
+            return render(request, "signup.html")
 
         if CustomUser.objects.filter(email=email).exists():
-            return HttpResponse("Email already exists")
+            messages.error(request, "An account with this email already exists.")
+            return render(request, "signup.html")
 
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, "signup.html")
+
+        # ✅ Generate OTP
         otp = random.randint(100000, 999999)
 
+        # ✅ Store data securely in session
         request.session["signup_data"] = {
             "name": name,
             "email": email,
@@ -37,13 +47,15 @@ def signup(request):
             "otp": str(otp),
         }
 
+        # ✅ Send OTP email
         EmailMessage(
             subject="Your OTP for Auralis Insights",
-            body=f"Your OTP is {otp}. Do not share it.",
+            body=f"Your OTP is {otp}. Do not share it with anyone.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email],
         ).send()
 
+        
         return redirect("otp_verify")
 
     return render(request, "signup.html")
@@ -384,10 +396,24 @@ def datasets_view(request):
     return render(request, "datasets.html", {"datasets": datasets})
 
 
-def dataset_detail(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+import pandas as pd
 
-    df = pd.read_csv(dataset.file.path) if dataset.file.name.endswith(".csv") else pd.read_excel(dataset.file.path)
+def dataset_detail(request, dataset_id):
+    if "user_id" not in request.session:
+        return redirect("login")
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+        user_id=request.session["user_id"]
+    )
+
+    if dataset.file.name.endswith(".csv"):
+        df = pd.read_csv(dataset.file.path)
+    else:
+        df = pd.read_excel(dataset.file.path)
 
     context = {
         "dataset": dataset,
@@ -396,17 +422,32 @@ def dataset_detail(request, dataset_id):
     }
 
     return render(request, "dataset_detail.html", context)
-
-
 def analysis_dashboard(request, dataset_id):
     dataset = get_object_or_404(Dataset, id=dataset_id)
     return render(request, "analysis_dashboard.html", {"dataset": dataset})
 
 
+from django.shortcuts import get_object_or_404, redirect
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+
+from django.views.decorators.http import require_POST
+
+@require_POST
 def delete_dataset(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    if "user_id" not in request.session:
+        return redirect("login")
+
+    dataset = get_object_or_404(
+        Dataset,
+        id=dataset_id,
+        user_id=request.session["user_id"]
+    )
+
     dataset.delete()
-    return redirect("datasets")
+    messages.success(request, "Dataset deleted successfully.")
+    return redirect("profile")
+
 
 def profile_view(request):
     if "user_id" not in request.session:

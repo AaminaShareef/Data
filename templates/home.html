@@ -69,30 +69,42 @@
     }
 
     .dropdown {
-      position: absolute;
-      top: 56px;
-      right: 0;
-      background: #77927aff;
-      border-radius: 16px;
-      width: 220px;
-      box-shadow: var(--shadow);
-      display: none;
-      flex-direction: column;
-      padding: 16px;
-      z-index: 10;
-    }
+  position: absolute;
+  top: 56px;
+  right: 0;
+  background: #F2EFEA; /* beige */
+  border-radius: 16px;
+  width: 220px;
+  box-shadow: var(--shadow);
+  display: none;
+  flex-direction: column;
+  padding: 14px;
+  z-index: 10;
+}
 
-    .dropdown.show { display: flex; }
+.dropdown.show {
+  display: flex;
+}
 
-    .dropdown a {
-      text-decoration: none;
-      font-size: 14px;
-      color: var(--text-dark);
-      padding: 10px;
-      border-radius: 10px;
-    }
+.dropdown a {
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--text-dark);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
 
-    .dropdown a:hover { background: #f4f4f4; }
+.dropdown a:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* LOGOUT SLIGHTLY EMPHASIZED (but calm) */
+.dropdown .logout {
+  color: #8b2f2f;
+}
+
 
     /* ===== MAIN ===== */
     main {
@@ -263,9 +275,10 @@
     </div>
 
     <div class="dropdown" id="userDropdown">
+  <a href="{% url 'profile' %}">Profile</a>
+  <a href="{% url 'logout' %}" class="logout">Logout</a>
+</div>
 
-      <a href="{% url 'logout' %}">Logout</a>
-    </div>
   </div>
 </header>
 

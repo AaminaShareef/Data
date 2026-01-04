@@ -2,34 +2,125 @@
 <html>
 <head>
 <title>Dataset Details</title>
+
 <style>
+:root {
+  --primary: #3c583c;
+  --background: #F2EFEA;
+  --card-bg: #ffffff;
+  --text-dark: #2B2B2B;
+  --text-muted: #6A6A6A;
+  --shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
 body {
   font-family: "Segoe UI", sans-serif;
-  background: #F2EFEA;
+  background: var(--background);
   padding: 60px;
+  color: var(--text-dark);
 }
 
+/* CARD */
 .card {
-  background: white;
+  background: var(--card-bg);
   padding: 40px;
   border-radius: 18px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
+  max-width: 1100px;
+  margin: auto;
 }
 
+/* HEADINGS */
 h2 {
   font-family: "Times New Roman", serif;
-  color: #3c583c;
+  color: var(--primary);
+  margin-bottom: 10px;
 }
 
+h3 {
+  margin-top: 30px;
+  color: var(--primary);
+}
+
+/* META INFO */
+.meta {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+/* TABLE WRAPPER (IMPORTANT FIX) */
+.table-wrapper {
+  margin-top: 20px;
+  max-height: 320px;          /* 👈 prevents overflow */
+  overflow-y: auto;           /* 👈 vertical scroll */
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 30px;
+  min-width: 600px;           /* 👈 horizontal safety */
 }
 
 th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+th {
+  background: #f7f7f7;
+  position: sticky;           /* 👈 keeps header visible */
+  top: 0;
+  z-index: 1;
+}
+
+/* ACTION BUTTONS */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 35px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-outline {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  body {
+    padding: 30px;
+  }
+
+  .table-wrapper {
+    max-height: 260px;
+  }
 }
 </style>
 </head>
@@ -37,33 +128,44 @@ th, td {
 <body>
 
 <div class="card">
+
   <h2>{{ dataset.file_name }}</h2>
 
-  <p><strong>Uploaded:</strong> {{ dataset.uploaded_at }}</p>
-  <p><strong>Status:</strong>
+  <p class="meta"><strong>Uploaded:</strong> {{ dataset.uploaded_at }}</p>
+  <p class="meta">
+    <strong>Status:</strong>
     {% if dataset.is_processed %}Processed{% else %}Pending{% endif %}
   </p>
 
   <h3>Preview (First 10 rows)</h3>
 
-  <table>
-    <tr>
-      {% for col in columns %}
-      <th>{{ col }}</th>
-      {% endfor %}
-    </tr>
+  <!-- ✅ FIXED SCROLLABLE TABLE -->
+  <div class="table-wrapper">
+    <table>
+      <tr>
+        {% for col in columns %}
+        <th>{{ col }}</th>
+        {% endfor %}
+      </tr>
 
-    {% for row in rows %}
-    <tr>
-      {% for cell in row %}
-      <td>{{ cell }}</td>
+      {% for row in rows %}
+      <tr>
+        {% for cell in row %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+      </tr>
       {% endfor %}
-    </tr>
-    {% endfor %}
-  </table>
+    </table>
+  </div>
 
-  <br>
-  <a href="{% url 'analysis_dashboard' dataset.id %}">Proceed to Analysis</a>
+  <!-- ACTIONS -->
+  <div class="actions">
+    <a href="{% url 'profile' %}" class="btn btn-outline">← Go Back</a>
+    <a href="{% url 'analysis_dashboard' dataset.id %}" class="btn btn-primary">
+      Proceed to Analysis
+    </a>
+  </div>
+
 </div>
 
 </body>
