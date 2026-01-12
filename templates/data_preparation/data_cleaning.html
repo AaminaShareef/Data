@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Automatic Data Cleaning</title>
+</head>
+
+<body>
+
+<style>
+body {
+  background: linear-gradient(180deg, #FAFAF8, #F6EFE7);
+  font-family: "Segoe UI", sans-serif;
+  color: #3A3A3A;
+}
+
+/* Layout */
+.page-container {
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+/* Card */
+.card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.07);
+}
+
+h2, h3 {
+  color: #3A3A3A;
+}
+
+.subtitle {
+  color: #7A756F;
+  margin-bottom: 18px;
+}
+
+/* Summary */
+.summary-list li {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+/* TABLE SCROLL FIX */
+.table-wrapper {
+  max-height: 320px;          /* prevents overflow */
+  overflow-y: auto;
+  border: 1px solid #E5E4E2;
+  border-radius: 10px;
+  margin-top: 14px;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;           /* horizontal safety */
+}
+
+.preview-table th,
+.preview-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #E5E4E2;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.preview-table th {
+  background: #f7f7f7;
+  position: sticky;
+  top: 0;
+}
+
+/* Button */
+.btn-primary {
+  margin-top: 22px;
+  background: #8BAF9F;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background: #AFC8A9;
+  transform: scale(1.03);
+}
+</style>
+
+<div class="page-container">
+
+  <!-- SUMMARY -->
+  <div class="card">
+    <h2>🧹 Automatic Data Cleaning</h2>
+
+    <p class="subtitle">
+      The dataset has been automatically cleaned using standard
+      data preparation techniques.
+    </p>
+
+    <ul class="summary-list">
+      <li>✔ {{ duplicate_count }} duplicate rows removed</li>
+      <li>✔ {{ missing_count }} missing values handled</li>
+      <li>✔ Column names standardized</li>
+      <li>✔ Text inconsistencies normalized</li>
+      <li>✔ Data types corrected automatically</li>
+    </ul>
+
+    <p>
+      <strong>Rows before cleaning:</strong> {{ initial_rows }} <br>
+      <strong>Rows after cleaning:</strong> {{ final_rows }}
+    </p>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="card">
+    <h3>👀 Preview of Cleaned Data (First 10 rows)</h3>
+
+    <div class="table-wrapper">
+      {{ preview|safe }}
+    </div>
+
+    <a href="{% url 'analysis_dashboard' dataset.id %}" class="btn-primary">
+      Proceed to Analysis →
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>

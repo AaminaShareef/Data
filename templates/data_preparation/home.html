@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home — Auralis Insights</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #3d5a3dff;
+      --primary-light: #4e7050;
+      --background-main: #F2EFEA;
+      --background-soft: #ECE7E0;
+      --card-bg: #ffffff;
+      --text-dark: #2B2B2B;
+      --text-muted: #6A6A6A;
+      --shadow: 0 22px 50px rgba(0,0,0,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, var(--background-soft), var(--background-main));
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      padding: 28px 90px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .brand h1 {
+      
+      font-size: 38px;
+      color: var(--primary);
+    }
+
+    .brand span {
+      display: block;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* USER MENU */
+    .user-menu { position: relative; }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dropdown {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  background: #F2EFEA; /* beige */
+  border-radius: 16px;
+  width: 220px;
+  box-shadow: var(--shadow);
+  display: none;
+  flex-direction: column;
+  padding: 14px;
+  z-index: 10;
+}
+
+.dropdown.show {
+  display: flex;
+}
+
+.dropdown a {
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--text-dark);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.dropdown a:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* LOGOUT SLIGHTLY EMPHASIZED (but calm) */
+.dropdown .logout {
+  color: #8b2f2f;
+}
+
+
+    /* ===== MAIN ===== */
+    main {
+      padding: 90px;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px;
+      margin-bottom: 90px;
+    }
+
+    .hero h2 {
+      font-size: 42px;
+      margin-bottom: 18px;
+      color: var(--primary);
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.9;
+      color: var(--text-muted);
+    }
+
+    /* INFO GRID */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 90px;
+    }
+
+    .info-card {
+      background: var(--card-bg);
+      border-radius: 26px;
+      padding: 44px;
+      box-shadow: var(--shadow);
+    }
+
+    .info-card h3 {
+      font-size: 24px;
+      margin-bottom: 14px;
+      color: var(--primary);
+    }
+
+    .info-card p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+
+    /* SUMMARY */
+    .summary-section {
+      margin-bottom: 100px;
+    }
+
+    .summary-title {
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .summary-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 900px;
+      margin-bottom: 36px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .summary-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card i {
+      font-size: 30px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .summary-card h3 {
+      font-size: 36px;
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+
+    .summary-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* NAVIGATION */
+    .nav-section h3 {
+      font-size: 30px;
+      margin-bottom: 14px;
+      color: var(--primary);
+    }
+
+    .nav-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 900px;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+    }
+
+    .nav-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s ease;
+    }
+
+    .nav-card:hover { transform: translateY(-6px); }
+
+    .nav-card i {
+      font-size: 32px;
+      color: var(--primary-light);
+      margin-bottom: 16px;
+    }
+
+    .nav-card h4 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .nav-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1000px) {
+      header, main { padding: 40px 30px; }
+      .info-grid, .summary-grid, .nav-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Auralis Insights</h1>
+    <span>Calm Intelligence · Clear Decisions</span>
+  </div>
+
+  <div class="user-menu">
+    <div class="avatar" id="avatarBtn">
+      {{ request.session.user_name|slice:":1"|upper }}
+    </div>
+
+    <div class="dropdown" id="userDropdown">
+  <a href="{% url 'profile' %}">Profile</a>
+  <a href="{% url 'logout' %}" class="logout">Logout</a>
+</div>
+
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Welcome back, {{ request.session.user_name }}</h2>
+    <p>
+      This is your personal analytics workspace within Auralis Insights.
+      Designed for clarity and focus, the platform helps you transform raw data
+      into meaningful insights through calm, structured, and intuitive workflows.
+      Auralis Insights is your personal data analysis workspace designed to help you transform raw data into meaningful understanding. The platform provides a calm, structured environment where you can explore datasets, discover patterns, and make confident, data-driven decisions without feeling overwhelmed.
+    </p>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>What You Can Do</h3>
+      <p>
+        Upload datasets, explore visual dashboards, and generate structured
+        analytical reports. Each module is carefully designed to guide you
+        through the complete data analysis lifecycle.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>How Auralis Helps</h3>
+      <p>
+        By minimizing clutter and emphasizing clarity, Auralis reduces cognitive
+        load and enables you to focus on insights rather than interface complexity.
+      </p>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-section">
+    <h3 class="summary-title">Your Activity Overview</h3>
+    <p class="summary-desc">
+      This section provides a snapshot of your recent activity within Auralis Insights. It helps you quickly understand your current progress, including reports created, datasets awaiting updates, and recent analytical trends. The overview updates automatically as you work, allowing you to stay informed and focused without navigating through multiple sections of the platform.
+    </p>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <i class="fas fa-file-alt"></i>
+        <h3>{{ total_reports|default:0 }}</h3>
+        <p>Total reports generated.</p>
+      </div>
+
+      <div class="summary-card">
+        <i class="fas fa-database"></i>
+        <h3>{{ pending_updates|default:0 }}</h3>
+        <p>Datasets awaiting processing.</p>
+      </div>
+
+      <div class="summary-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>{{ latest_trends|default:0 }}</h3>
+        <p>Insights identified from your data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="nav-section">
+    <h3>Continue Your Work</h3>
+    <p class="nav-desc">
+      Use the options below to navigate through the platform and continue your analysis. Whether you want to visualize data, upload new datasets, review reports, or manage your profile, each section is carefully designed to provide a smooth and efficient experience.
+    </p>
+
+    <div class="nav-grid">
+      <div class="nav-card">
+        <i class="fas fa-chart-pie"></i>
+        <h4>Dashboard</h4>
+        <p>Explore trends and analytics.</p>
+      </div>
+
+     <div class="nav-card" onclick="location.href='{% url 'upload_data' %}'">
+  <i class="fas fa-upload"></i>
+  <h4>Upload Data</h4>
+  <p>Add datasets securely for analysis</p>
+</div>
+
+
+      <div class="nav-card">
+        <i class="fas fa-file-alt"></i>
+        <h4>Reports</h4>
+        <p>Generate and view reports.</p>
+      </div>
+
+      <div class="nav-card" onclick="location.href='{% url 'profile' %}'">
+  <i class="fas fa-user-cog"></i>
+  <h4>Profile</h4>
+  <p>Manage your account.</p>
+</div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const avatarBtn = document.getElementById("avatarBtn");
+  const dropdown = document.getElementById("userDropdown");
+
+  avatarBtn.addEventListener("click", () => {
+    dropdown.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".user-menu")) {
+      dropdown.classList.remove("show");
+    }
+  });
+</script>
+
+<footer>
+    © 2025 Auralis Insights · Calm Intelligence · Clear Decisions
+  </footer>
+
+
+</body>
+</html>

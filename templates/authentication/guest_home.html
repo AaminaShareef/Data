@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auralis Insights | Calm Data Intelligence</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      /* 🌿 Brighter but calm palette */
+      --primary: #3c583cff;
+      --primary-bright: #447041ff;
+      --primary-dark: #57755bff;
+
+      --background-base: #F2EFEA;
+      --background-soft: #ECE7E0;
+
+      --card-bg: rgba(255,255,255,0.85);
+      --border-light: rgba(0,0,0,0.08);
+
+      --text-dark: #2B2B2B;
+      --text-medium: #5F5F5F;
+
+      --shadow-soft: 0 14px 34px rgba(0,0,0,0.10);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(143,191,176,0.25), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(242,239,234,0.65), transparent 70%),
+        linear-gradient(180deg, var(--background-soft), var(--background-base));
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 80px;
+    }
+
+ .navbar h1 {
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.tagline {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  
+  color: var(--text-medium);
+  margin-bottom: 26px;
+  max-width: 520px;
+}
+
+
+    .nav-actions a {
+      margin-left: 22px;
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--primary-dark);
+      font-size: 15px;
+    }
+
+    /* ===== HERO (FULL WIDTH) ===== */
+    .hero {
+      width: 100%;
+      padding: 100px 120px 80px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 36px;
+      line-height: 1.2;
+      color: var(--primary-dark);
+      margin-bottom: 26px;
+    }
+
+    .hero p {
+      font-size: 19px;
+      line-height: 1.8;
+      color: var(--text-medium);
+      max-width: 900px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-buttons a {
+      display: inline-block;
+      padding: 15px 36px;
+      border-radius: 999px;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: all 250ms ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, var(--primary-bright), var(--primary-dark));
+      color: white;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 2px solid var(--primary-dark);
+      color: var(--primary-dark);
+    }
+
+    /* ===== SECTION ===== */
+    section {
+      padding: 90px 120px;
+    }
+
+    section h3 {
+      font-size: 36px;
+      text-align: center;
+      color: var(--primary-dark);
+      margin-bottom: 50px;
+
+    }
+
+    /* ===== FEATURES ===== */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 44px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 40px;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .feature-card i {
+      font-size: 32px;
+      color: var(--primary-dark);
+      margin-bottom: 18px;
+    }
+
+    .feature-card h4 {
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--text-medium);
+      line-height: 1.7;
+    }
+
+    /* ===== PLATFORM INFO ===== */
+    .info {
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .info p {
+      font-size: 18px;
+      line-height: 1.9;
+      color: var(--text-medium);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 42px;
+      font-size: 14px;
+      color: var(--text-medium);
+    }
+
+    @media (max-width: 900px) {
+      .hero, section {
+        padding: 60px 30px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+  <div class="brand">
+    <h1>Auralis Insights</h1>
+    <span class="tagline">Calm Intelligence · Clear Decisions</span>
+  </div>
+
+  <div class="nav-actions">
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}">Sign Up</a>
+  </div>
+</div>
+
+
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Calm Data Visualization for<br>Clear & Confident Decisions</h2>
+    <p>
+        
+  Modern data analysis often presents information in a way that is dense, cluttered, and cognitively demanding. Auralis Insights addresses this challenge by offering a calm, user-centered approach to data visualization and reporting. The platform transforms raw data into structured visual narratives, helping users quickly grasp insights without unnecessary mental effort.
+
+By prioritizing clarity and simplicity, Auralis Insights allows users to focus on what truly matters—understanding data, identifying trends, and making informed decisions with confidence. Whether analyzing reports or exploring dashboards, the experience remains smooth, balanced, and visually comfortable.
+</p>
+
+
+
+    <div class="hero-buttons">
+      <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
+      
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section>
+    <h3>Key Features</h3>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <i class="fas fa-chart-line"></i>
+        <h4>Interactive Dashboards</h4>
+        <p>
+          Visualize data through interactive charts that highlight trends,
+          comparisons, and patterns clearly.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-file-alt"></i>
+        <h4>Automated Reports</h4>
+        <p>
+          Generate structured reports that summarize insights and support
+          data-driven decision-making.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fas fa-lightbulb"></i>
+        <h4>Insight Discovery</h4>
+        <p>
+          Identify meaningful insights quickly using clean layouts and
+          focused visual representations.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+  <h3>How Auralis Insights Helps You</h3>
+
+  <div class="info">
+    <p>
+      Auralis Insights helps users understand and work with data in a calm, structured, and meaningful way. Instead of overwhelming users with complex charts and cluttered dashboards, the platform presents information using clean visual layouts that are easy to read and interpret. This reduces mental effort and allows users to focus on insights rather than struggling with the interface.
+
+The platform supports users in identifying trends, patterns, and summaries quickly through well-organized dashboards and automated reports. By simplifying data presentation, Auralis Insights improves decision-making efficiency and helps users draw conclusions with greater confidence and accuracy.
+
+Auralis Insights also enhances productivity by reducing the time required to analyze data and generate reports. Users can spend less time formatting or searching for information and more time understanding results. 
+    </p>
+  </div>
+</section>
+
+  <!-- INFO -->
+  <section>
+    <div class="info">
+      <h3>Why Auralis Insights?</h3>
+      <p>
+        Auralis Insights stands out by combining calm UI design with analytical functionality. Instead of prioritizing excessive features or dense visuals, the platform emphasizes simplicity, readability, and thoughtful interaction. This design philosophy ensures that users remain engaged without experiencing fatigue or confusion.
+
+The platform is especially suited for academic environments, students, analysts, and professionals who value structured thinking and clarity in data interpretation. By reducing visual clutter and emphasizing meaningful presentation, Auralis Insights enables users to make better decisions through a more relaxed and focused analytical experience.
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Auralis Insights · Calm Intelligence · Clear Decisions
+  </footer>
+
+</body>
+</html>

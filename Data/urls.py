@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("Authentication.urls")),
+    path("", include('data_preparation.urls')),
 ]
 
 # ✅ MEDIA FILES (ONLY HERE)

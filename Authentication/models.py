@@ -15,17 +15,3 @@ class CustomUser(models.Model):
     def __str__(self):
         return self.email
     
-class Dataset(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    file = models.FileField(upload_to="datasets/", null=True, blank=True)
-    file_name = models.CharField(max_length=255)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    is_processed = models.BooleanField(default=False)
-
-
-
-
-class Report(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
