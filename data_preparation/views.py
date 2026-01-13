@@ -6,11 +6,6 @@ from Authentication.models import CustomUser
 
 from django.core.files.base import ContentFile
 
-from .services.data_preparation import prepare_dataset_for_analysis
-
-
-
-from .services.data_preparation import automated_data_preparation
 
 def upload_and_prepare(request):
     if request.method == "POST":
@@ -27,51 +22,10 @@ def upload_and_prepare(request):
             {"summary": summary}
         )
 
-def data_cleaning(request, dataset_id):
 
-    dataset = get_object_or_404(Dataset, id=dataset_id)
 
-    # Load dataset
-    if dataset.file.name.endswith(".xlsx"):
-        df = pd.read_excel(dataset.file.path)
-    else:
-        df = pd.read_csv(dataset.file.path)
-
-    initial_rows = len(df)
-
-    # 🔹 APPLY DATA PREPARATION (NOT VALIDATION)
-    prepared_df, prep_report = prepare_dataset_for_analysis(df)
-
-    # Save prepared dataset (new version)
-    prepared = Dataset.objects.create(
-        user=dataset.user,
-        file_name=f"{dataset.file_name} (Prepared)",
-        parent_dataset=dataset,
-        status="prepared",
-        is_processed=True
-    )
-
-    prepared.file.save(
-        f"prepared_{dataset.id}.csv",
-        ContentFile(prepared_df.to_csv(index=False))
-    )
-
-    preview = prepared_df.head(10).to_html(
-        classes="preview-table",
-        index=False
-    )
-
-    return render(
-        request,
-        "data_preparation/data_cleaning.html",
-        {
-            "dataset": prepared,
-            "initial_rows": initial_rows,
-            "final_rows": len(prepared_df),
-            "outlier_count": prep_report["outliers_detected"],
-            "preview": preview
-        }
-    )
+    
+    
 # ==================================================
 # 🏠 USER HOME (PLACEHOLDER)
 # ==================================================
