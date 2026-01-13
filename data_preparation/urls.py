@@ -14,16 +14,6 @@ urlpatterns = [
     path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
     path("dataset/delete/<int:dataset_id>/", views.delete_dataset, name="delete_dataset"),
     path("profile/", views.profile_view, name="profile"),
-    path(
-        "prepare/<int:dataset_id>/",
-        views.prepare_data,
-        name="prepare_data"
-    ),
-
-    path(
-        "analysis/<int:dataset_id>/",
-        views.analysis_dashboard,
-        name="analysis_dashboard"
-    ),
-     path('<int:dataset_id>/', views.data_cleaning, name='data_cleaning'),
+    path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
+    path('<int:dataset_id>/', views.data_cleaning, name='data_cleaning'),
 ]

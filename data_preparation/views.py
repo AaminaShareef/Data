@@ -3,76 +3,75 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from data_preparation.models import Dataset ,Report 
 from Authentication.models import CustomUser
-from .services.pipeline import profile_dataset, clean_dataset
+
 from django.core.files.base import ContentFile
 
+from .services.data_preparation import prepare_dataset_for_analysis
+
+
+
+from .services.data_preparation import automated_data_preparation
+
+def upload_and_prepare(request):
+    if request.method == "POST":
+        file = request.FILES["file"]
+        df = pd.read_excel(file)  # or read_csv
+
+        cleaned_df, summary = automated_data_preparation(df)
+
+        request.session["cleaning_summary"] = summary
+
+        return render(
+            request,
+            "data_preparation/summary.html",
+            {"summary": summary}
+        )
+
 def data_cleaning(request, dataset_id):
+
     dataset = get_object_or_404(Dataset, id=dataset_id)
 
     # Load dataset
-    df = pd.read_csv(dataset.file.path)
-
-    # -----------------------------
-    # AUTOMATED DATA CLEANING
-    # -----------------------------
+    if dataset.file.name.endswith(".xlsx"):
+        df = pd.read_excel(dataset.file.path)
+    else:
+        df = pd.read_csv(dataset.file.path)
 
     initial_rows = len(df)
 
-    # 1️⃣ Standardize column names
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
+    # 🔹 APPLY DATA PREPARATION (NOT VALIDATION)
+    prepared_df, prep_report = prepare_dataset_for_analysis(df)
+
+    # Save prepared dataset (new version)
+    prepared = Dataset.objects.create(
+        user=dataset.user,
+        file_name=f"{dataset.file_name} (Prepared)",
+        parent_dataset=dataset,
+        status="prepared",
+        is_processed=True
     )
 
-    # 2️⃣ Remove duplicate rows
-    duplicate_count = df.duplicated().sum()
-    df = df.drop_duplicates()
+    prepared.file.save(
+        f"prepared_{dataset.id}.csv",
+        ContentFile(prepared_df.to_csv(index=False))
+    )
 
-    # 3️⃣ Count missing values BEFORE cleaning
-    missing_count = df.isnull().sum().sum()
-
-    # 4️⃣ Handle missing values automatically
-    for col in df.columns:
-        if pd.api.types.is_numeric_dtype(df[col]):
-            df[col] = df[col].fillna(df[col].median())
-        else:
-            if not df[col].mode().empty:
-                df[col] = df[col].fillna(df[col].mode()[0])
-
-    # 5️⃣ Fix inconsistent text values
-    for col in df.select_dtypes(include="object").columns:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-        )
-
-    # 6️⃣ Auto-fix data types (convert numeric strings)
-    for col in df.columns:
-        try:
-            df[col] = pd.to_numeric(df[col])
-        except:
-            pass
-
-    final_rows = len(df)
-
-    # Preview cleaned data
-    preview = df.head(10).to_html(
+    preview = prepared_df.head(10).to_html(
         classes="preview-table",
         index=False
     )
 
-    return render(request, "data_preparation/data_cleaning.html", {
-        "dataset": dataset,
-        "preview": preview,
-        "duplicate_count": duplicate_count,
-        "missing_count": missing_count,
-        "initial_rows": initial_rows,
-        "final_rows": final_rows
-    })
+    return render(
+        request,
+        "data_preparation/data_cleaning.html",
+        {
+            "dataset": prepared,
+            "initial_rows": initial_rows,
+            "final_rows": len(prepared_df),
+            "outlier_count": prep_report["outliers_detected"],
+            "preview": preview
+        }
+    )
 # ==================================================
 # 🏠 USER HOME (PLACEHOLDER)
 # ==================================================
@@ -299,39 +298,6 @@ def profile_view(request):
 
     return render(request, "data_preparation/profile.html", context)
 
-def prepare_data(request, dataset_id):
-
-    dataset = get_object_or_404(Dataset, id=dataset_id, status="original")
-
-    df = pd.read_csv(dataset.file.path)
-
-    profile = profile_dataset(df)
-    cleaned_df, report = clean_dataset(df)
-
-    prepared = Dataset.objects.create(
-        user=dataset.user,
-        file_name=f"{dataset.file_name} (Prepared)",
-        parent_dataset=dataset,
-        status="prepared",
-        is_processed=True
-    )
-
-    prepared.file.save(
-        f"prepared_{dataset.id}.csv",
-        ContentFile(cleaned_df.to_csv(index=False))
-    )
-
-    preview = cleaned_df.head(10).to_html(
-        classes="preview-table",
-        index=False
-    )
-
-    return render(request, "data_preparation/preparation_result.html", {
-        "profile": profile,
-        "report": report,
-        "preview": preview,
-        "prepared": prepared
-    })
 
 def logout_view(request):
     request.session.flush()   # Clears all session data
