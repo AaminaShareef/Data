@@ -100,10 +100,10 @@ th {
 .btn:hover {
   transform: translateY(-2px);
 }
-
 .btn-primary {
   background: var(--primary);
   color: white;
+  border: none;
 }
 
 .btn-outline {
@@ -160,10 +160,13 @@ th {
 
   <!-- ACTIONS -->
   <div class="actions">
-    <a href="{% url 'profile' %}" class="btn btn-outline">← Go Back</a>
-    <a href="{% url 'data_cleaning' dataset.id %}" class="btn btn-primary">
-  Proceed to Data Cleaning
-</a>
+    <a href="{% url 'profile' %}" class="btn btn-outline">Go Back</a>
+    <form method="post" action="{% url 'clean_dataset' dataset.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+        Proceed to Cleaning
+    </button>
+</form>
   </div>
 
 </div>

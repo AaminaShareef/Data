@@ -191,11 +191,7 @@ body {
 <!-- PAGE HEADER -->
 <div class="page-header">
   <h1>Dataset Upload Status</h1>
-  <p>
-    This page summarizes the outcome of your dataset upload.  
-    We automatically validate your file and provide clear feedback to help you proceed
-    confidently — even if you’re not from a technical background.
-  </p>
+ 
 </div>
 
 <!-- STATUS CARD -->
@@ -215,51 +211,9 @@ body {
 
   <p class="status-desc">
     Your dataset has been uploaded successfully and is now available in your workspace.
-    Below is a summary of the checks performed on your data and what they mean for you.
   </p>
 
-  <!-- DETAILS -->
-  <div class="details-grid">
-    <div class="detail-box">
-      <span>File Name</span>
-      <strong>{{ file_name }}</strong>
-    </div>
-
-    <div class="detail-box">
-      <span>Upload Status</span>
-      <strong>{{ dataset_status }}</strong>
-    </div>
-
-    <div class="detail-box">
-      <span>Rows Detected</span>
-      <strong>{{ row_count }}</strong>
-    </div>
-
-    <div class="detail-box">
-      <span>Columns Detected</span>
-      <strong>{{ column_count }}</strong>
-    </div>
-  </div>
-
-  <!-- INSIGHTS -->
-  <div class="insights">
-    <h3>Data Quality Summary</h3>
-
-    <div class="insight">
-      <i class="fas fa-info-circle"></i>
-      <span>{{ duplicate_info }}</span>
-    </div>
-
-    <div class="insight">
-      <i class="fas fa-info-circle"></i>
-      <span>{{ missing_value_info }}</span>
-    </div>
-
-    <div class="insight">
-      <i class="fas fa-info-circle"></i>
-      <span>{{ format_validation_info }}</span>
-    </div>
-  </div>
+ 
 
   <!-- ACTIONS -->
   <div class="actions">

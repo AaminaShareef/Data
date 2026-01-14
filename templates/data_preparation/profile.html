@@ -202,7 +202,7 @@ tbody tr:hover {
 /* STATUS BADGES */
 .badge {
   padding: 6px 14px;
-  border-radius: 999px;
+  border-radius: 1000px;
   font-size: 12px;
   font-weight: 600;
 }
@@ -252,6 +252,71 @@ tbody tr:hover {
   .stats { grid-template-columns: 1fr; }
   .profile-card { flex-direction: column; text-align: center; }
 }
+
+.dataset-table-wrapper {
+  max-height: 320px;        /* ~5 rows height */
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+/* Optional: smooth scrollbar */
+.dataset-table-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dataset-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.dataset-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.no-dataset-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.upload-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 22px;
+  background-color: #2e7d32;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #1b5e20;
+}
+
+
+/* FINAL, CORRECT TABLE ALIGNMENT FIX */
+.manage-datasets table {
+  table-layout: fixed;
+}
+
+.manage-datasets table th:nth-child(1),
+.manage-datasets table td:nth-child(1) {
+  width: 65%;
+}
+
+.manage-datasets table th:nth-child(2),
+.manage-datasets table td:nth-child(2) {
+  text-align: left;
+}
+
+.manage-datasets table th:nth-child(3),
+.manage-datasets table td:nth-child(3) {
+  width: 20%;
+  text-align: center;
+}
+
 
 </style>
 </head>
@@ -310,44 +375,60 @@ tbody tr:hover {
   <h3>Manage Datasets</h3>
 
   {% if recent_datasets %}
-  <table>
+<div class="dataset-table-wrapper">
+
+  <table class="dataset-table">
     <thead>
       <tr>
-        <th>Dataset</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th class="col-dataset">Dataset</th>
+<th class="col-status">Status</th>
+<th class="col-actions">Actions</th>
+
       </tr>
     </thead>
-
-    <tbody>
-    {% for ds in recent_datasets %}
-      <tr>
-        <td>{{ ds.file_name }}</td>
-        <td>
-          {% if ds.is_processed %}
-            <span class="badge badge-processed">Processed</span>
-          {% else %}
-            <span class="badge badge-pending">Pending</span>
-          {% endif %}
-        </td>
-        <td class="dataset-actions">
-          <a href="{% url 'dataset_detail' ds.id %}">View</a>
-
-          <form action="{% url 'delete_dataset' ds.id %}"
-                method="post"
-                style="display:inline;"
-                onsubmit="return confirm('Are you sure you want to delete this dataset?');">
-            {% csrf_token %}
-            <button type="submit" class="link-btn">Delete</button>
-          </form>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
   </table>
-  {% else %}
+
+  <div class="dataset-table-body">
+    <table class="dataset-table">
+      <tbody>
+        {% for ds in recent_datasets %}
+        <tr>
+          <td>{{ ds.file_name }}</td>
+          <td>
+            {% if ds.is_processed %}
+              <span class="badge badge-processed">Processed</span>
+            {% else %}
+              <span class="badge badge-pending">Pending</span>
+            {% endif %}
+          </td>
+          <td class="dataset-actions">
+            <a href="{% url 'dataset_detail' ds.id %}">View</a>
+
+            <form action="{% url 'delete_dataset' ds.id %}"
+                  method="post"
+                  style="display:inline;"
+                  onsubmit="return confirm('Are you sure you want to delete this dataset?');">
+              {% csrf_token %}
+              <button type="submit" class="link-btn">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% else %}
+  <div class="no-dataset-state">
     <p>No datasets available to manage.</p>
-  {% endif %}
+
+    <a href="{% url 'upload_data' %}" class="upload-btn">
+      Upload Dataset
+    </a>
+  </div>
+{% endif %}
+
 </div>
 
 </body>

@@ -1,33 +1,17 @@
 import pandas as pd
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from data_preparation.models import Dataset ,Report 
+
+from data_preparation.models import Dataset, Report
 from Authentication.models import CustomUser
 
-from django.core.files.base import ContentFile
+from .services.pipeline import prepare_dataset_for_analysis
 
 
-def upload_and_prepare(request):
-    if request.method == "POST":
-        file = request.FILES["file"]
-        df = pd.read_excel(file)  # or read_csv
-
-        cleaned_df, summary = automated_data_preparation(df)
-
-        request.session["cleaning_summary"] = summary
-
-        return render(
-            request,
-            "data_preparation/summary.html",
-            {"summary": summary}
-        )
-
-
-
-    
-    
 # ==================================================
-# 🏠 USER HOME (PLACEHOLDER)
+# 🏠 USER HOME
 # ==================================================
 
 def home(request):
@@ -53,16 +37,9 @@ def home(request):
     return render(request, "data_preparation/home.html", context)
 
 
-
-
-
-
-
-import pandas as pd
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Dataset
-
+# ==================================================
+# 📤 UPLOAD DATA
+# ==================================================
 
 def upload_data(request):
     if "user_id" not in request.session:
@@ -113,14 +90,6 @@ def upload_data(request):
             )
             return render(request, "data_preparation/upload_data.html")
 
-        # 5️⃣ Duplicate rows
-        duplicate_count = df.duplicated().sum()
-        if duplicate_count > 0:
-            df = df.drop_duplicates()
-
-        # 6️⃣ Missing values
-        missing_values = df.isnull().sum().sum()
-
         # 🔹 Save dataset record
         dataset = Dataset.objects.create(
             user_id=request.session["user_id"],
@@ -129,21 +98,14 @@ def upload_data(request):
             is_processed=False
         )
 
-        # 🔹 Store validation summary in session
+        # ✅ REQUIRED LINE (FIX)
+        request.session["uploaded_file_path"] = dataset.file.path
+
+        # 🔹 Store upload summary in session
         request.session["upload_summary"] = {
             "file_name": file.name,
             "row_count": len(df),
             "column_count": len(df.columns),
-            "duplicate_info": (
-                f"{duplicate_count} duplicate rows were detected and removed."
-                if duplicate_count > 0
-                else "No duplicate rows were detected."
-            ),
-            "missing_value_info": (
-                f"{missing_values} missing values were found."
-                if missing_values > 0
-                else "No missing values were detected."
-            ),
             "format_validation_info": "File format validated successfully.",
             "dataset_status": "Uploaded successfully",
         }
@@ -152,18 +114,22 @@ def upload_data(request):
 
     return render(request, "data_preparation/upload_data.html")
 
+
+# ==================================================
+# 📄 UPLOAD STATUS
+# ==================================================
+
 def upload_status(request):
     if "upload_summary" not in request.session:
         return redirect("upload_data")
 
     context = request.session.get("upload_summary")
-
     return render(request, "data_preparation/upload_status.html", context)
 
 
-import pandas as pd
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Dataset
+# ==================================================
+# 📂 DATASETS LIST
+# ==================================================
 
 def datasets_view(request):
     user_id = request.session.get("user_id")
@@ -171,9 +137,9 @@ def datasets_view(request):
     return render(request, "datasets.html", {"datasets": datasets})
 
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-import pandas as pd
+# ==================================================
+# 🔍 DATASET DETAIL
+# ==================================================
 
 def dataset_detail(request, dataset_id):
     if "user_id" not in request.session:
@@ -197,16 +163,20 @@ def dataset_detail(request, dataset_id):
     }
 
     return render(request, "data_preparation/dataset_detail.html", context)
+
+
+# ==================================================
+# 📊 ANALYSIS DASHBOARD
+# ==================================================
+
 def analysis_dashboard(request, dataset_id):
     dataset = get_object_or_404(Dataset, id=dataset_id)
     return render(request, "data_preparation/data_cleaning.html", {"dataset": dataset})
 
 
-from django.shortcuts import get_object_or_404, redirect
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-
-from django.views.decorators.http import require_POST
+# ==================================================
+# 🧹 DELETE DATASET
+# ==================================================
 
 @require_POST
 def delete_dataset(request, dataset_id):
@@ -224,6 +194,10 @@ def delete_dataset(request, dataset_id):
     return redirect("profile")
 
 
+# ==================================================
+# 👤 PROFILE VIEW
+# ==================================================
+
 def profile_view(request):
     if "user_id" not in request.session:
         return redirect("login")
@@ -239,7 +213,9 @@ def profile_view(request):
     ).count()
     total_reports = Report.objects.filter(user=user).count()
 
-    recent_datasets = Dataset.objects.filter(user=user).order_by("-uploaded_at")[:5]
+    recent_datasets = Dataset.objects.filter(
+        user_id=request.session["user_id"]
+    ).order_by('-id')
 
     context = {
         "user": user,
@@ -253,6 +229,32 @@ def profile_view(request):
     return render(request, "data_preparation/profile.html", context)
 
 
+# ==================================================
+# 🧠 CLEAN DATASET
+# ==================================================
+def clean_result(request, dataset_id):
+    dataset = Dataset.objects.get(id=dataset_id)
+    file_path = dataset.file.path
+
+    df = pd.read_csv(file_path) if file_path.endswith(".csv") else pd.read_excel(file_path)
+
+    cleaned_df, report = prepare_dataset_for_analysis(df)
+
+    cleaned_path = file_path.replace(".", "_cleaned.")
+    cleaned_df.to_csv(cleaned_path, index=False)
+
+    request.session["cleaned_file_path"] = cleaned_path
+
+    return render(request, "data_preparation/clean_result.html", {
+        "preview": cleaned_df.head(10).to_html(classes="table table-striped"),
+        "report": report
+    })
+
+
+# ==================================================
+# 🚪 LOGOUT
+# ==================================================
+
 def logout_view(request):
-    request.session.flush()   # Clears all session data
+    request.session.flush()
     return redirect("login")

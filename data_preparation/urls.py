@@ -1,7 +1,6 @@
 from django.urls import path
-from . import views
-
-
+from . import views 
+from .views import clean_result 
 urlpatterns = [
     
 
@@ -14,6 +13,7 @@ urlpatterns = [
     path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
     path("dataset/delete/<int:dataset_id>/", views.delete_dataset, name="delete_dataset"),
     path("profile/", views.profile_view, name="profile"),
-    path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
-    
+    path("clean-dataset/<int:dataset_id>/",views.clean_result, name="clean_dataset"),
+   
 ]
+
