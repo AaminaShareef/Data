@@ -38,3 +38,15 @@ class Report(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class CleanedDataset(models.Model):
+    original_dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='cleaned_versions')
+    file = models.FileField(upload_to='cleaned_datasets/')
+    cleaned_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    cleaned_at = models.DateTimeField(auto_now_add=True)
+    cleaning_report = models.JSONField(default=dict)
+    rows = models.IntegerField(default=0)
+    columns = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return f"Cleaned: {self.original_dataset.name}"

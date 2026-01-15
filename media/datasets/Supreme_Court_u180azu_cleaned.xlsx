@@ -1,0 +1,201 @@
+case_id,term,case_name,petitioner,hearing_date,issue_area,decision_type,direction,majority_votes,minority_votes,chief_justice,case_status,courtroom,duration_days,victim_count,state,district
+SC1000,1996,Freedom of speech,Smith & Co,2015-01-01,Environmental Law,Unanimous,Liberal,5,2,Mrs. Victoria Baker MD,Disposed,3.0,33.0,3.0,Uttar Pradesh,Agra
+SC1001,1996,Contract law,"Jones, Brown and Parker",2015-01-02,Criminal Law,Unanimous,Conservative,8,3,Mrs. Tammy Alexander MD,Pending,6.0,35.0,0.0,Madhya Pradesh,Bhopal
+SC1002,2004,Contract law,"Patel, Kumar and Singh",2015-01-03,Judicial Power,Unanimous,Liberal,8,2,Mr. Anthony Brown,Disposed,5.0,12.0,4.0,Maharashtra,Aurangabad
+SC1003,2004,Criminal appeal,"Torres, Harris and Baker",2015-01-04,Civil Rights,Plurality,Liberal,7,4,Mrs. Victoria Baker MD,Unknown,17.0,29.0,5.0,Tamil Nadu,Coimbatore
+SC1004,2007,Criminal appeal,Sharma Associates,2015-01-05,Judicial Power,Unanimous,Liberal,6,3,Mrs. Victoria Baker MD,Disposed,2.0,22.0,3.0,Madhya Pradesh,Jabalpur
+SC1005,2009,Freedom of speech,Gupta Group,2015-01-06,Criminal Law,Majority,Conservative,8,1,Mr. John Stevens,Adjourned,15.0,38.0,2.0,Tamil Nadu,Coimbatore
+SC1006,2014,Judicial review,Rao and Sons,Unknown,Environmental Law,Plurality,Conservative,8,4,Christopher Rivera,Pending,5.0,37.0,4.0,Karnataka,Mysuru
+SC1007,2000,Property dispute,Smith & Co,2015-01-08,Judicial Power,Majority,Conservative,8,2,Dr. Lisa Morgan,Adjourned,6.0,20.0,19.0,Karnataka,Bengaluru
+SC1008,2012,Criminal appeal,White Group,2015-01-09,Economic Activity,Majority,Conservative,6,3,Mr. John Stevens,Adjourned,6.0,10.0,6.0,Rajasthan,Jaipur
+SC1009,2002,Case about tax,Rao and Sons,2015-01-10,Judicial Power,Unanimous,Liberal,6,2,Mrs. Victoria Baker MD,Pending,18.0,36.0,0.0,Karnataka,Hubli
+SC1010,1998,Criminal appeal,Smith & Co,2015-01-11,Judicial Power,Plurality,Liberal,9,2,Christopher Rivera,Pending,18.0,22.0,15.0,Madhya Pradesh,Ujjain
+SC1011,2019,Labor dispute,"Torres, Harris and Baker",Unknown,Criminal Law,Per Curiam,Liberal,9,1,Mr. John Stevens,Adjourned,4.0,29.0,15.0,Karnataka,Mangalore
+SC1012,2023,Criminal appeal,"Patel, Kumar and Singh",2015-01-13,Criminal Law,Unanimous,Conservative,8,2,Mr. John Stevens,Adjourned,17.0,22.0,16.0,Rajasthan,Jodhpur
+SC1013,2009,Labor dispute,Sharma Associates,2015-01-14,Economic Activity,Unanimous,Conservative,9,1,Mr. Anthony Brown,Adjourned,14.0,24.0,2.0,Rajasthan,Kota
+SC1014,2016,Freedom of speech,"Patel, Kumar and Singh",2015-01-15,Civil Rights,Per Curiam,Conservative,9,0,Mr. John Stevens,Adjourned,14.0,23.0,17.0,West Bengal,Howrah
+SC1015,2024,Labor dispute,"Jones, Brown and Parker",2015-01-16,Economic Activity,Unanimous,Liberal,9,1,Christopher Rivera,Pending,13.0,23.0,7.0,Uttar Pradesh,Allahabad
+SC1016,2024,Contract law,"Jones, Brown and Parker",2015-01-17,Civil Rights,Per Curiam,Liberal,9,2,Mr. Anthony Brown,Pending,7.0,10.0,16.0,Bihar,Muzaffarpur
+SC1017,2005,Judicial review,"Jones, Brown and Parker",2015-01-18,Civil Rights,Plurality,Liberal,7,4,Mrs. Victoria Baker MD,Adjourned,12.0,14.0,9.0,Uttar Pradesh,Lucknow
+SC1018,2007,Freedom of speech,Sharma Associates,2015-01-19,Criminal Law,Unanimous,Conservative,5,0,Christopher Rivera,Disposed,15.0,32.0,5.0,Karnataka,Hubli
+SC1019,2017,Property dispute,"Patel, Kumar and Singh",2015-01-20,Judicial Power,Majority,Conservative,5,1,Mrs. Victoria Baker MD,Disposed,19.0,13.0,5.0,Maharashtra,Nagpur
+SC1020,2010,Property dispute,"Patel, Kumar and Singh",2015-01-21,Environmental Law,Per Curiam,Conservative,6,3,Mr. Anthony Brown,Pending,11.0,17.0,0.0,Kerala,Kollam
+SC1021,2018,Judicial review,"Jones, Brown and Parker",2015-01-22,Economic Activity,Per Curiam,Liberal,6,2,Mr. John Stevens,Adjourned,15.0,11.0,0.0,Gujarat,Ahmedabad
+SC1022,2000,Environmental law,Sharma Associates,Unknown,Judicial Power,Per Curiam,Conservative,5,1,Mr. Anthony Brown,Adjourned,12.0,21.0,11.0,Gujarat,Surat
+SC1023,2015,Contract law,Gupta Group,2015-01-24,Judicial Power,Majority,Liberal,9,1,Mr. Anthony Brown,Pending,3.0,39.0,14.0,Madhya Pradesh,Ujjain
+SC1024,2003,Contract law,Rao and Sons,2015-01-25,Criminal Law,Majority,Conservative,8,4,Mr. John Stevens,Disposed,17.0,3.0,16.0,Tamil Nadu,Madurai
+SC1025,2003,Contract law,Smith & Co,2015-01-26,Environmental Law,Unanimous,Conservative,6,3,Mrs. Victoria Baker MD,Disposed,3.0,11.0,11.0,Bihar,Bhagalpur
+SC1026,2005,Judicial review,Rao and Sons,2015-01-27,Civil Rights,Per Curiam,Liberal,6,0,Mr. Anthony Brown,Disposed,19.0,22.0,5.0,Rajasthan,Udaipur
+SC1027,2016,Criminal appeal,White Group,2015-01-28,Judicial Power,Per Curiam,Conservative,7,1,Mrs. Tammy Alexander MD,Pending,4.0,19.0,9.0,West Bengal,Howrah
+SC1028,2008,Property dispute,Smith & Co,2015-01-29,Environmental Law,Unanimous,Liberal,5,3,Mrs. Victoria Baker MD,Disposed,3.0,29.0,6.0,Madhya Pradesh,Ujjain
+SC1029,2014,Labor dispute,"Jones, Brown and Parker",2015-01-30,Criminal Law,Majority,Liberal,5,1,Christopher Rivera,Pending,16.0,32.0,16.0,Bihar,Gaya
+SC1030,2003,Case about tax,Gupta Group,2015-01-31,Economic Activity,Per Curiam,Liberal,6,1,Mr. John Stevens,Pending,12.0,23.0,4.0,Gujarat,Ahmedabad
+SC1031,2018,Contract law,"Jones, Brown and Parker",2015-02-01,Civil Rights,Per Curiam,Liberal,8,3,Mr. John Stevens,Adjourned,8.0,26.0,7.0,West Bengal,Kolkata
+SC1032,1996,Criminal appeal,"Torres, Harris and Baker",2015-02-02,Economic Activity,Per Curiam,Liberal,6,4,Mr. Anthony Brown,Disposed,17.0,17.0,15.0,Bihar,Bhagalpur
+SC1033,2021,Contract law,Gupta Group,2015-02-03,Civil Rights,Majority,Conservative,5,3,Mrs. Victoria Baker MD,Pending,7.0,25.0,1.0,Madhya Pradesh,Gwalior
+SC1034,2024,Case about tax,Rao and Sons,2015-02-04,Judicial Power,Plurality,Liberal,8,0,Dr. Lisa Morgan,Disposed,11.0,22.0,19.0,Bihar,Bhagalpur
+SC1035,1998,Property dispute,"Patel, Kumar and Singh",Unknown,Judicial Power,Unanimous,Conservative,5,2,Mr. John Stevens,Disposed,18.0,22.0,10.0,Tamil Nadu,Coimbatore
+SC1036,2020,Contract law,"Jones, Brown and Parker",2015-02-06,Civil Rights,Plurality,Conservative,7,1,Mr. Anthony Brown,Adjourned,1.0,4.0,11.0,Karnataka,Hubli
+SC1037,1999,Case about tax,Rao and Sons,2015-02-07,Criminal Law,Majority,Conservative,6,3,Mr. John Stevens,Disposed,3.0,1.0,4.0,Gujarat,Ahmedabad
+SC1038,2022,Labor dispute,"Patel, Kumar and Singh",2015-02-08,Civil Rights,Plurality,Conservative,5,2,Dr. Lisa Morgan,Adjourned,4.0,38.0,7.0,Karnataka,Mangalore
+SC1039,2009,Freedom of speech,Rao and Sons,2015-02-09,Environmental Law,Per Curiam,Conservative,9,3,Dr. Lisa Morgan,Pending,13.0,24.0,17.0,Madhya Pradesh,Bhopal
+SC1040,2009,Environmental law,Sharma Associates,2015-02-10,Criminal Law,Per Curiam,Liberal,9,2,Christopher Rivera,Disposed,6.0,39.0,16.0,Maharashtra,Nashik
+SC1041,2011,Environmental law,White Group,2015-02-11,Environmental Law,Plurality,Conservative,9,3,Dr. Lisa Morgan,Pending,14.0,22.0,13.0,Gujarat,Vadodara
+SC1042,2006,Case about tax,Rao and Sons,2015-02-12,Environmental Law,Plurality,Conservative,7,4,Mrs. Victoria Baker MD,Disposed,5.0,27.0,14.0,Madhya Pradesh,Bhopal
+SC1043,2024,Judicial review,Gupta Group,2015-02-13,Economic Activity,Majority,Conservative,5,4,Mrs. Tammy Alexander MD,Pending,16.0,22.0,15.0,Rajasthan,Jodhpur
+SC1044,1997,Criminal appeal,Smith & Co,2015-02-14,Judicial Power,Unanimous,Liberal,5,4,Christopher Rivera,Disposed,15.0,37.0,7.0,Maharashtra,Mumbai
+SC1045,2008,Property dispute,"Patel, Kumar and Singh",2015-02-15,Environmental Law,Majority,Conservative,6,1,Mr. Anthony Brown,Disposed,15.0,3.0,18.0,Tamil Nadu,Coimbatore
+SC1046,2017,Judicial review,"Jones, Brown and Parker",2015-02-16,Civil Rights,Per Curiam,Liberal,5,4,Mrs. Tammy Alexander MD,Disposed,4.0,12.0,1.0,Kerala,Thiruvananthapuram
+SC1047,2012,Case about tax,"Jones, Brown and Parker",Unknown,Civil Rights,Majority,Liberal,6,2,Dr. Lisa Morgan,Disposed,8.0,12.0,2.0,Tamil Nadu,Coimbatore
+SC1048,2009,Environmental law,"Torres, Harris and Baker",2015-02-18,Judicial Power,Plurality,Liberal,9,4,Mrs. Victoria Baker MD,Unknown,16.0,30.0,7.0,Bihar,Darbhanga
+SC1049,1998,Environmental law,Sharma Associates,2015-02-19,Civil Rights,Per Curiam,Liberal,5,3,Mr. John Stevens,Disposed,16.0,3.0,12.0,Kerala,Kozhikode
+SC1050,2024,Criminal appeal,"Jones, Brown and Parker",2015-02-20,Environmental Law,Per Curiam,Conservative,8,0,Mr. John Stevens,Disposed,4.0,32.0,17.0,Uttar Pradesh,Lucknow
+SC1051,1995,Judicial review,"Patel, Kumar and Singh",2015-02-21,Environmental Law,Per Curiam,Conservative,9,4,Mr. John Stevens,Disposed,13.0,23.0,12.0,Rajasthan,Jodhpur
+SC1052,2007,Case about tax,Rao and Sons,2015-02-22,Economic Activity,Per Curiam,Conservative,5,2,Christopher Rivera,Disposed,13.0,16.0,12.0,Tamil Nadu,Salem
+SC1053,2004,Environmental law,Gupta Group,2015-02-23,Judicial Power,Plurality,Conservative,9,0,Mr. John Stevens,Pending,2.0,14.0,2.0,Madhya Pradesh,Jabalpur
+SC1054,2014,Property dispute,Smith & Co,2015-02-24,Economic Activity,Majority,Liberal,9,1,Christopher Rivera,Adjourned,3.0,9.0,7.0,Maharashtra,Aurangabad
+SC1055,2010,Case about tax,"Patel, Kumar and Singh",2015-02-25,Environmental Law,Plurality,Conservative,6,3,Christopher Rivera,Disposed,8.0,8.0,8.0,Maharashtra,Nashik
+SC1056,2015,Contract law,"Patel, Kumar and Singh",2015-02-26,Economic Activity,Per Curiam,Conservative,6,1,Dr. Lisa Morgan,Adjourned,15.0,5.0,14.0,Madhya Pradesh,Indore
+SC1057,2000,Case about tax,White Group,2015-02-27,Judicial Power,Unanimous,Conservative,8,4,Christopher Rivera,Disposed,11.0,18.0,3.0,Kerala,Kozhikode
+SC1058,2015,Property dispute,Smith & Co,2015-02-28,Economic Activity,Plurality,Liberal,6,1,Mrs. Victoria Baker MD,Disposed,9.0,39.0,14.0,Rajasthan,Udaipur
+SC1059,1998,Criminal appeal,Smith & Co,2015-03-01,Economic Activity,Plurality,Liberal,7,3,Mr. Anthony Brown,Pending,7.0,17.0,13.0,Gujarat,Bhavnagar
+SC1060,2016,Case about tax,Rao and Sons,2015-03-02,Environmental Law,Per Curiam,Conservative,8,0,Dr. Lisa Morgan,Pending,13.0,28.0,12.0,Gujarat,Vadodara
+SC1061,2008,Contract law,"Jones, Brown and Parker",2015-03-03,Judicial Power,Unanimous,Liberal,8,3,Mrs. Victoria Baker MD,Adjourned,2.0,27.0,2.0,Tamil Nadu,Salem
+SC1062,2002,Environmental law,Sharma Associates,2015-03-04,Criminal Law,Unanimous,Liberal,5,4,Mrs. Tammy Alexander MD,Pending,8.0,31.0,8.0,Maharashtra,Pune
+SC1063,2021,Property dispute,White Group,2015-03-05,Criminal Law,Per Curiam,Conservative,8,1,Mrs. Victoria Baker MD,Pending,7.0,10.0,18.0,Bihar,Bhagalpur
+SC1064,2000,Property dispute,Sharma Associates,2015-03-06,Criminal Law,Plurality,Conservative,7,0,Dr. Lisa Morgan,Adjourned,12.0,29.0,0.0,Gujarat,Bhavnagar
+SC1065,2012,Property dispute,Smith & Co,2015-03-07,Criminal Law,Plurality,Liberal,9,1,Christopher Rivera,Pending,19.0,10.0,13.0,Madhya Pradesh,Ujjain
+SC1066,2016,Criminal appeal,Rao and Sons,2015-03-08,Civil Rights,Majority,Conservative,8,2,Mr. Anthony Brown,Disposed,7.0,2.0,9.0,Karnataka,Bengaluru
+SC1067,2005,Judicial review,Smith & Co,2015-03-09,Civil Rights,Majority,Liberal,6,3,Dr. Lisa Morgan,Adjourned,10.0,4.0,9.0,Madhya Pradesh,Jabalpur
+SC1068,2005,Environmental law,Rao and Sons,2015-03-10,Civil Rights,Plurality,Conservative,9,3,Mr. John Stevens,Adjourned,16.0,9.0,19.0,West Bengal,Asansol
+SC1069,2005,Freedom of speech,"Patel, Kumar and Singh",2015-03-11,Civil Rights,Per Curiam,Liberal,7,0,Mr. Anthony Brown,Disposed,3.0,25.0,18.0,Karnataka,Belgaum
+SC1070,1998,Contract law,Sharma Associates,2015-03-12,Judicial Power,Unanimous,Conservative,6,4,Mr. Anthony Brown,Pending,10.0,17.0,5.0,Karnataka,Bengaluru
+SC1071,2008,Freedom of speech,White Group,2015-03-13,Criminal Law,Per Curiam,Liberal,7,3,Christopher Rivera,Adjourned,11.0,15.0,17.0,Gujarat,Rajkot
+SC1072,2010,Labor dispute,Gupta Group,2015-03-14,Judicial Power,Majority,Liberal,9,1,Mrs. Tammy Alexander MD,Adjourned,18.0,18.0,9.0,Karnataka,Bengaluru
+SC1073,2000,Freedom of speech,White Group,Unknown,Economic Activity,Unanimous,Conservative,7,0,Mr. John Stevens,Disposed,18.0,37.0,18.0,Uttar Pradesh,Lucknow
+SC1074,2011,Environmental law,"Torres, Harris and Baker",2015-03-16,Civil Rights,Per Curiam,Conservative,5,3,Dr. Lisa Morgan,Disposed,11.0,28.0,10.0,Tamil Nadu,Chennai
+SC1075,2012,Contract law,Gupta Group,2015-03-17,Economic Activity,Plurality,Liberal,5,3,Mrs. Tammy Alexander MD,Pending,7.0,34.0,11.0,West Bengal,Durgapur
+SC1076,2023,Case about tax,"Torres, Harris and Baker",2015-03-18,Civil Rights,Per Curiam,Liberal,9,3,Mrs. Victoria Baker MD,Adjourned,2.0,37.0,12.0,Gujarat,Vadodara
+SC1077,2000,Property dispute,Smith & Co,2015-03-19,Criminal Law,Per Curiam,Conservative,6,2,Mrs. Victoria Baker MD,Pending,11.0,28.0,3.0,Gujarat,Ahmedabad
+SC1078,2003,Freedom of speech,Sharma Associates,2015-03-20,Judicial Power,Per Curiam,Conservative,5,4,Mrs. Victoria Baker MD,Pending,13.0,12.0,8.0,West Bengal,Howrah
+SC1079,2006,Contract law,Rao and Sons,2015-03-21,Civil Rights,Unanimous,Conservative,7,2,Mr. John Stevens,Disposed,5.0,12.0,16.0,Tamil Nadu,Salem
+SC1080,2009,Freedom of speech,Sharma Associates,2015-03-22,Economic Activity,Per Curiam,Liberal,9,2,Mr. John Stevens,Adjourned,6.0,25.0,2.0,Uttar Pradesh,Allahabad
+SC1081,1996,Contract law,Smith & Co,2015-03-23,Environmental Law,Per Curiam,Conservative,7,1,Mr. John Stevens,Adjourned,14.0,15.0,8.0,Uttar Pradesh,Agra
+SC1082,2004,Freedom of speech,White Group,2015-03-24,Economic Activity,Per Curiam,Liberal,6,3,Mrs. Victoria Baker MD,Adjourned,12.0,39.0,14.0,Maharashtra,Aurangabad
+SC1083,2016,Environmental law,Smith & Co,2015-03-25,Judicial Power,Per Curiam,Liberal,7,4,Dr. Lisa Morgan,Disposed,4.0,3.0,4.0,Tamil Nadu,Coimbatore
+SC1084,2023,Environmental law,"Torres, Harris and Baker",2015-03-26,Judicial Power,Per Curiam,Conservative,5,4,Dr. Lisa Morgan,Disposed,6.0,5.0,12.0,Bihar,Bhagalpur
+SC1085,2003,Case about tax,Rao and Sons,2015-03-27,Criminal Law,Majority,Conservative,9,0,Mr. John Stevens,Disposed,10.0,18.0,16.0,West Bengal,Siliguri
+SC1086,2017,Case about tax,White Group,2015-03-28,Economic Activity,Per Curiam,Liberal,9,1,Mr. Anthony Brown,Disposed,18.0,18.0,19.0,Kerala,Kozhikode
+SC1087,2004,Property dispute,Gupta Group,2015-03-29,Environmental Law,Per Curiam,Liberal,7,3,Mr. John Stevens,Disposed,15.0,32.0,14.0,Tamil Nadu,Trichy
+SC1088,2015,Case about tax,"Jones, Brown and Parker",2015-03-30,Judicial Power,Unanimous,Liberal,9,0,Dr. Lisa Morgan,Adjourned,8.0,15.0,7.0,Bihar,Patna
+SC1089,2021,Freedom of speech,Smith & Co,2015-03-31,Judicial Power,Per Curiam,Conservative,6,0,Mr. John Stevens,Pending,9.0,29.0,2.0,West Bengal,Asansol
+SC1090,1999,Judicial review,"Torres, Harris and Baker",Unknown,Criminal Law,Plurality,Conservative,5,4,Mr. John Stevens,Adjourned,5.0,23.0,10.0,Maharashtra,Nagpur
+SC1091,2022,Freedom of speech,Smith & Co,2015-04-02,Economic Activity,Unanimous,Liberal,9,0,Mr. John Stevens,Pending,10.0,8.0,11.0,Gujarat,Bhavnagar
+SC1092,2010,Case about tax,Sharma Associates,2015-04-03,Judicial Power,Majority,Liberal,7,1,Christopher Rivera,Disposed,6.0,35.0,3.0,Maharashtra,Aurangabad
+SC1093,2009,Case about tax,Rao and Sons,2015-04-04,Economic Activity,Per Curiam,Liberal,6,3,Mr. Anthony Brown,Pending,16.0,29.0,13.0,Madhya Pradesh,Jabalpur
+SC1094,2022,Environmental law,Rao and Sons,2015-04-05,Environmental Law,Majority,Liberal,9,4,Dr. Lisa Morgan,Adjourned,11.0,28.0,7.0,Kerala,Kochi
+SC1095,2022,Freedom of speech,White Group,2015-04-06,Environmental Law,Majority,Liberal,7,4,Mrs. Tammy Alexander MD,Adjourned,10.0,12.0,13.0,Rajasthan,Jodhpur
+SC1096,2009,Labor dispute,"Patel, Kumar and Singh",2015-04-07,Civil Rights,Majority,Conservative,8,1,Dr. Lisa Morgan,Pending,11.0,19.0,16.0,Karnataka,Bengaluru
+SC1097,2008,Judicial review,Gupta Group,2015-04-08,Economic Activity,Per Curiam,Conservative,6,0,Mr. John Stevens,Disposed,11.0,18.0,18.0,Karnataka,Hubli
+SC1098,2010,Property dispute,Smith & Co,2015-04-09,Civil Rights,Per Curiam,Liberal,6,1,Dr. Lisa Morgan,Disposed,17.0,8.0,2.0,Tamil Nadu,Madurai
+SC1099,2019,Contract law,"Jones, Brown and Parker",2015-04-10,Economic Activity,Majority,Liberal,9,4,Mr. Anthony Brown,Adjourned,4.0,22.0,8.0,Kerala,Kochi
+SC1100,2002,Labor dispute,White Group,2015-04-11,Criminal Law,Majority,Conservative,9,0,Mrs. Tammy Alexander MD,Pending,4.0,7.0,7.0,Kerala,Thrissur
+SC1101,2001,Judicial review,"Patel, Kumar and Singh",2015-04-12,Environmental Law,Plurality,Liberal,7,3,Mrs. Victoria Baker MD,Disposed,17.0,39.0,4.0,Rajasthan,Ajmer
+SC1102,2023,Freedom of speech,Sharma Associates,2015-04-13,Criminal Law,Majority,Conservative,5,1,Christopher Rivera,Disposed,9.0,39.0,4.0,Uttar Pradesh,Allahabad
+SC1103,2009,Contract law,"Patel, Kumar and Singh",2015-04-14,Judicial Power,Unanimous,Liberal,6,0,Mr. Anthony Brown,Adjourned,19.0,25.0,6.0,Gujarat,Vadodara
+SC1104,2016,Environmental law,Smith & Co,2015-04-15,Civil Rights,Plurality,Liberal,9,2,Mr. John Stevens,Disposed,5.0,39.0,18.0,Bihar,Darbhanga
+SC1105,2011,Case about tax,"Torres, Harris and Baker",2015-04-16,Economic Activity,Unanimous,Conservative,8,2,Mrs. Tammy Alexander MD,Pending,6.0,27.0,17.0,Maharashtra,Mumbai
+SC1106,2008,Property dispute,"Torres, Harris and Baker",2015-04-17,Environmental Law,Plurality,Conservative,5,2,Mr. Anthony Brown,Adjourned,3.0,3.0,2.0,Gujarat,Bhavnagar
+SC1107,1999,Judicial review,Gupta Group,2015-04-18,Environmental Law,Majority,Liberal,9,4,Dr. Lisa Morgan,Adjourned,1.0,4.0,5.0,Karnataka,Belgaum
+SC1108,2006,Case about tax,"Torres, Harris and Baker",2015-04-19,Civil Rights,Per Curiam,Conservative,7,1,Christopher Rivera,Pending,16.0,35.0,3.0,Bihar,Gaya
+SC1109,2004,Freedom of speech,White Group,2015-04-20,Civil Rights,Unanimous,Liberal,9,0,Dr. Lisa Morgan,Adjourned,11.0,3.0,7.0,Gujarat,Surat
+SC1110,2007,Case about tax,"Patel, Kumar and Singh",2015-04-21,Civil Rights,Majority,Liberal,8,1,Christopher Rivera,Disposed,13.0,33.0,2.0,Kerala,Kozhikode
+SC1111,2007,Judicial review,Sharma Associates,2015-04-22,Environmental Law,Majority,Conservative,9,4,Mr. John Stevens,Disposed,10.0,32.0,9.0,Uttar Pradesh,Lucknow
+SC1112,2019,Contract law,Sharma Associates,2015-04-23,Criminal Law,Plurality,Conservative,8,4,Mrs. Tammy Alexander MD,Pending,3.0,22.0,4.0,Bihar,Bhagalpur
+SC1113,2020,Case about tax,Gupta Group,2015-04-24,Economic Activity,Per Curiam,Liberal,5,0,Dr. Lisa Morgan,Disposed,9.0,22.0,15.0,Gujarat,Bhavnagar
+SC1114,2014,Freedom of speech,Sharma Associates,2015-04-25,Criminal Law,Per Curiam,Conservative,8,3,Mr. Anthony Brown,Pending,12.0,2.0,4.0,Madhya Pradesh,Indore
+SC1115,2017,Freedom of speech,White Group,2015-04-26,Judicial Power,Majority,Liberal,8,1,Mrs. Tammy Alexander MD,Pending,11.0,10.0,8.0,Tamil Nadu,Trichy
+SC1116,2019,Labor dispute,"Torres, Harris and Baker",2015-04-27,Judicial Power,Majority,Liberal,6,4,Christopher Rivera,Disposed,1.0,12.0,12.0,Uttar Pradesh,Varanasi
+SC1117,2014,Labor dispute,Smith & Co,2015-04-28,Criminal Law,Plurality,Liberal,5,3,Mrs. Victoria Baker MD,Pending,18.0,11.0,9.0,Bihar,Bhagalpur
+SC1118,1995,Property dispute,Rao and Sons,2015-04-29,Economic Activity,Majority,Liberal,8,1,Mr. John Stevens,Disposed,17.0,24.0,9.0,West Bengal,Durgapur
+SC1119,2015,Contract law,"Torres, Harris and Baker",2015-04-30,Judicial Power,Majority,Conservative,9,3,Dr. Lisa Morgan,Adjourned,9.0,37.0,18.0,Uttar Pradesh,Agra
+SC1120,2017,Contract law,Gupta Group,Unknown,Judicial Power,Unanimous,Conservative,9,1,Dr. Lisa Morgan,Adjourned,9.0,27.0,10.0,Gujarat,Vadodara
+SC1121,2013,Contract law,Gupta Group,2015-05-02,Environmental Law,Plurality,Liberal,6,3,Mrs. Tammy Alexander MD,Unknown,10.0,25.0,18.0,Tamil Nadu,Chennai
+SC1122,2004,Case about tax,Gupta Group,2015-05-03,Judicial Power,Plurality,Liberal,9,1,Dr. Lisa Morgan,Disposed,19.0,22.0,4.0,Karnataka,Belgaum
+SC1123,2004,Criminal appeal,Gupta Group,2015-05-04,Civil Rights,Majority,Conservative,9,0,Mr. John Stevens,Disposed,15.0,5.0,5.0,Rajasthan,Jaipur
+SC1124,2018,Criminal appeal,"Patel, Kumar and Singh",2015-05-05,Environmental Law,Per Curiam,Liberal,9,3,Dr. Lisa Morgan,Adjourned,5.0,38.0,9.0,Karnataka,Hubli
+SC1125,2002,Judicial review,Smith & Co,2015-05-06,Environmental Law,Majority,Liberal,5,4,Dr. Lisa Morgan,Adjourned,11.0,36.0,9.0,Uttar Pradesh,Kanpur
+SC1126,1997,Freedom of speech,Gupta Group,2015-05-07,Judicial Power,Majority,Conservative,8,0,Mrs. Tammy Alexander MD,Disposed,2.0,19.0,4.0,West Bengal,Asansol
+SC1127,2023,Criminal appeal,"Torres, Harris and Baker",2015-05-08,Civil Rights,Plurality,Liberal,8,1,Mr. John Stevens,Pending,13.0,31.0,4.0,Karnataka,Belgaum
+SC1128,1995,Environmental law,Sharma Associates,2015-05-09,Judicial Power,Majority,Liberal,6,1,Mrs. Victoria Baker MD,Adjourned,16.0,8.0,13.0,West Bengal,Durgapur
+SC1129,2017,Freedom of speech,Smith & Co,2015-05-10,Judicial Power,Majority,Conservative,9,0,Mrs. Tammy Alexander MD,Pending,11.0,9.0,16.0,Uttar Pradesh,Allahabad
+SC1130,2005,Case about tax,"Torres, Harris and Baker",2015-05-11,Criminal Law,Unanimous,Conservative,5,0,Mr. Anthony Brown,Pending,10.0,13.0,4.0,Karnataka,Mangalore
+SC1131,1995,Freedom of speech,Rao and Sons,2015-05-12,Criminal Law,Majority,Conservative,9,2,Christopher Rivera,Adjourned,14.0,24.0,13.0,Karnataka,Bengaluru
+SC1132,2006,Contract law,Rao and Sons,2015-05-13,Environmental Law,Per Curiam,Liberal,8,4,Mrs. Victoria Baker MD,Pending,10.0,29.0,19.0,Maharashtra,Nashik
+SC1133,2021,Freedom of speech,Sharma Associates,2015-05-14,Economic Activity,Per Curiam,Conservative,6,1,Mr. John Stevens,Pending,14.0,28.0,8.0,Gujarat,Rajkot
+SC1134,2019,Case about tax,Smith & Co,2015-05-15,Economic Activity,Unanimous,Liberal,9,0,Mrs. Tammy Alexander MD,Disposed,9.0,32.0,5.0,West Bengal,Kolkata
+SC1135,1997,Judicial review,Gupta Group,2015-05-16,Criminal Law,Unanimous,Liberal,7,2,Dr. Lisa Morgan,Pending,14.0,17.0,16.0,Kerala,Kollam
+SC1136,2004,Property dispute,"Torres, Harris and Baker",2015-05-17,Judicial Power,Plurality,Liberal,9,3,Mrs. Tammy Alexander MD,Disposed,3.0,4.0,11.0,Gujarat,Rajkot
+SC1137,2006,Criminal appeal,"Patel, Kumar and Singh",2015-05-18,Environmental Law,Plurality,Liberal,5,1,Mrs. Victoria Baker MD,Adjourned,11.0,26.0,2.0,Gujarat,Rajkot
+SC1138,2024,Criminal appeal,Smith & Co,2015-05-19,Environmental Law,Unanimous,Liberal,5,3,Mr. John Stevens,Unknown,2.0,27.0,4.0,Gujarat,Bhavnagar
+SC1139,2004,Environmental law,Sharma Associates,2015-05-20,Judicial Power,Per Curiam,Liberal,5,1,Mr. John Stevens,Disposed,10.0,24.0,15.0,Kerala,Thiruvananthapuram
+SC1140,2017,Judicial review,Gupta Group,2015-05-21,Economic Activity,Unanimous,Liberal,6,0,Dr. Lisa Morgan,Adjourned,3.0,28.0,2.0,Maharashtra,Nagpur
+SC1141,2023,Case about tax,"Jones, Brown and Parker",2015-05-22,Criminal Law,Unanimous,Liberal,9,2,Dr. Lisa Morgan,Pending,11.0,14.0,16.0,Gujarat,Rajkot
+SC1142,2013,Judicial review,"Jones, Brown and Parker",2015-05-23,Civil Rights,Per Curiam,Conservative,8,4,Christopher Rivera,Pending,11.0,17.0,17.0,Kerala,Kozhikode
+SC1143,2006,Judicial review,Gupta Group,2015-05-24,Civil Rights,Plurality,Liberal,9,0,Dr. Lisa Morgan,Pending,13.0,16.0,3.0,Madhya Pradesh,Ujjain
+SC1144,2017,Criminal appeal,"Jones, Brown and Parker",2015-05-25,Judicial Power,Plurality,Liberal,9,3,Christopher Rivera,Adjourned,7.0,2.0,0.0,Kerala,Thiruvananthapuram
+SC1145,2003,Freedom of speech,"Patel, Kumar and Singh",2015-05-26,Environmental Law,Majority,Conservative,6,4,Christopher Rivera,Unknown,17.0,26.0,8.0,Uttar Pradesh,Kanpur
+SC1146,1997,Environmental law,Rao and Sons,2015-05-27,Economic Activity,Majority,Liberal,7,1,Dr. Lisa Morgan,Adjourned,2.0,22.0,2.0,Uttar Pradesh,Varanasi
+SC1147,2024,Labor dispute,Sharma Associates,2015-05-28,Environmental Law,Plurality,Conservative,7,3,Mrs. Tammy Alexander MD,Pending,12.0,32.0,11.0,Kerala,Thiruvananthapuram
+SC1148,2005,Case about tax,Sharma Associates,2015-05-29,Judicial Power,Per Curiam,Conservative,5,4,Christopher Rivera,Disposed,10.0,22.0,11.0,Tamil Nadu,Madurai
+SC1149,1997,Environmental law,White Group,2015-05-30,Environmental Law,Unanimous,Liberal,9,0,Mrs. Tammy Alexander MD,Adjourned,18.0,33.0,17.0,Uttar Pradesh,Kanpur
+SC1150,2019,Freedom of speech,Rao and Sons,2015-05-31,Civil Rights,Plurality,Liberal,5,3,Mr. John Stevens,Adjourned,11.0,31.0,15.0,Rajasthan,Ajmer
+SC1151,2023,Property dispute,Gupta Group,2015-06-01,Environmental Law,Majority,Conservative,5,2,Mrs. Victoria Baker MD,Pending,16.0,20.0,14.0,Madhya Pradesh,Gwalior
+SC1152,2014,Labor dispute,Smith & Co,2015-06-02,Economic Activity,Unanimous,Conservative,5,1,Mrs. Tammy Alexander MD,Adjourned,17.0,32.0,9.0,Maharashtra,Mumbai
+SC1153,2009,Property dispute,White Group,2015-06-03,Judicial Power,Plurality,Conservative,6,2,Mr. Anthony Brown,Adjourned,19.0,14.0,8.0,Rajasthan,Kota
+SC1154,2012,Criminal appeal,"Jones, Brown and Parker",2015-06-04,Judicial Power,Per Curiam,Conservative,5,2,Christopher Rivera,Disposed,18.0,26.0,15.0,Tamil Nadu,Coimbatore
+SC1155,2006,Judicial review,"Patel, Kumar and Singh",2015-06-05,Judicial Power,Unanimous,Liberal,8,0,Mrs. Victoria Baker MD,Disposed,3.0,4.0,6.0,Maharashtra,Pune
+SC1156,2010,Environmental law,"Torres, Harris and Baker",2015-06-06,Environmental Law,Plurality,Conservative,7,2,Mr. John Stevens,Pending,16.0,30.0,18.0,Maharashtra,Nashik
+SC1157,2015,Property dispute,Rao and Sons,2015-06-07,Environmental Law,Unanimous,Conservative,6,2,Mr. Anthony Brown,Disposed,6.0,36.0,0.0,Uttar Pradesh,Allahabad
+SC1158,2022,Judicial review,White Group,2015-06-08,Criminal Law,Per Curiam,Liberal,8,0,Christopher Rivera,Pending,12.0,5.0,2.0,West Bengal,Kolkata
+SC1159,2013,Labor dispute,Gupta Group,2015-06-09,Criminal Law,Unanimous,Conservative,9,2,Mrs. Victoria Baker MD,Pending,11.0,28.0,16.0,Uttar Pradesh,Lucknow
+SC1160,1996,Property dispute,White Group,2015-06-10,Criminal Law,Per Curiam,Conservative,6,1,Mr. Anthony Brown,Pending,15.0,18.0,10.0,Karnataka,Hubli
+SC1161,2000,Property dispute,Rao and Sons,2015-06-11,Civil Rights,Majority,Liberal,7,0,Mr. John Stevens,Adjourned,15.0,6.0,0.0,Maharashtra,Nashik
+SC1162,2016,Property dispute,"Torres, Harris and Baker",2015-06-12,Criminal Law,Majority,Liberal,6,3,Mr. Anthony Brown,Unknown,16.0,18.0,14.0,Bihar,Muzaffarpur
+SC1163,2024,Contract law,Rao and Sons,2015-06-13,Judicial Power,Majority,Conservative,5,1,Mrs. Victoria Baker MD,Pending,10.0,8.0,5.0,Maharashtra,Nagpur
+SC1164,2020,Case about tax,"Patel, Kumar and Singh",2015-06-14,Civil Rights,Majority,Liberal,8,1,Mr. John Stevens,Disposed,12.0,31.0,18.0,Karnataka,Belgaum
+SC1165,2012,Criminal appeal,Gupta Group,2015-06-15,Judicial Power,Majority,Conservative,5,3,Mr. John Stevens,Pending,13.0,5.0,15.0,Tamil Nadu,Coimbatore
+SC1166,2000,Case about tax,Sharma Associates,2015-06-16,Environmental Law,Plurality,Conservative,8,2,Mr. John Stevens,Disposed,4.0,33.0,14.0,Gujarat,Surat
+SC1167,2003,Environmental law,White Group,2015-06-17,Environmental Law,Majority,Liberal,5,4,Mr. Anthony Brown,Unknown,7.0,21.0,13.0,Kerala,Kozhikode
+SC1168,1999,Judicial review,"Torres, Harris and Baker",2015-06-18,Civil Rights,Per Curiam,Liberal,6,4,Mrs. Tammy Alexander MD,Pending,2.0,22.0,3.0,West Bengal,Howrah
+SC1169,2009,Property dispute,"Patel, Kumar and Singh",2015-06-19,Criminal Law,Per Curiam,Conservative,8,3,Dr. Lisa Morgan,Adjourned,15.0,24.0,7.0,Tamil Nadu,Coimbatore
+SC1170,2004,Criminal appeal,"Jones, Brown and Parker",2015-06-20,Judicial Power,Plurality,Conservative,6,3,Dr. Lisa Morgan,Disposed,8.0,10.0,10.0,Bihar,Gaya
+SC1171,2004,Environmental law,White Group,2015-06-21,Judicial Power,Per Curiam,Conservative,8,2,Mrs. Tammy Alexander MD,Adjourned,11.0,19.0,14.0,Uttar Pradesh,Kanpur
+SC1172,2009,Freedom of speech,"Jones, Brown and Parker",2015-06-22,Civil Rights,Plurality,Liberal,8,4,Dr. Lisa Morgan,Adjourned,15.0,25.0,18.0,Bihar,Bhagalpur
+SC1173,2013,Contract law,White Group,2015-06-23,Judicial Power,Majority,Conservative,7,1,Mrs. Victoria Baker MD,Pending,14.0,27.0,10.0,Tamil Nadu,Coimbatore
+SC1174,1996,Property dispute,Rao and Sons,2015-06-24,Judicial Power,Plurality,Liberal,9,0,Mr. Anthony Brown,Pending,8.0,25.0,5.0,Maharashtra,Pune
+SC1175,2001,Judicial review,"Patel, Kumar and Singh",2015-06-25,Civil Rights,Majority,Conservative,9,2,Mrs. Tammy Alexander MD,Pending,12.0,39.0,9.0,Madhya Pradesh,Ujjain
+SC1176,2011,Environmental law,"Jones, Brown and Parker",2015-06-26,Environmental Law,Plurality,Conservative,7,2,Mr. Anthony Brown,Disposed,13.0,22.0,4.0,Tamil Nadu,Madurai
+SC1177,2012,Labor dispute,Gupta Group,2015-06-27,Environmental Law,Plurality,Conservative,7,2,Dr. Lisa Morgan,Pending,11.0,39.0,7.0,Uttar Pradesh,Allahabad
+SC1178,2015,Environmental law,"Jones, Brown and Parker",2015-06-28,Environmental Law,Unanimous,Liberal,5,4,Mrs. Victoria Baker MD,Pending,17.0,8.0,9.0,Maharashtra,Aurangabad
+SC1179,2024,Contract law,Smith & Co,2015-06-29,Civil Rights,Plurality,Liberal,7,4,Mr. John Stevens,Disposed,17.0,17.0,8.0,Kerala,Kozhikode
+SC1180,1998,Environmental law,"Patel, Kumar and Singh",2015-06-30,Environmental Law,Majority,Liberal,8,3,Dr. Lisa Morgan,Disposed,4.0,10.0,9.0,West Bengal,Siliguri
+SC1181,1995,Criminal appeal,Gupta Group,2015-07-01,Judicial Power,Per Curiam,Liberal,8,1,Mrs. Victoria Baker MD,Pending,8.0,37.0,10.0,Rajasthan,Jaipur
+SC1182,2013,Contract law,"Patel, Kumar and Singh",2015-07-02,Criminal Law,Plurality,Conservative,5,2,Mr. Anthony Brown,Pending,5.0,25.0,2.0,Madhya Pradesh,Indore
+SC1183,1997,Criminal appeal,"Patel, Kumar and Singh",2015-07-03,Economic Activity,Majority,Liberal,5,2,Mrs. Victoria Baker MD,Pending,16.0,15.0,13.0,Maharashtra,Pune
+SC1184,2019,Environmental law,"Torres, Harris and Baker",2015-07-04,Economic Activity,Per Curiam,Liberal,6,2,Mrs. Victoria Baker MD,Unknown,4.0,23.0,15.0,Bihar,Muzaffarpur
+SC1185,2013,Criminal appeal,"Jones, Brown and Parker",2015-07-05,Judicial Power,Per Curiam,Liberal,8,2,Mr. John Stevens,Adjourned,15.0,27.0,8.0,Bihar,Gaya
+SC1186,2022,Environmental law,Gupta Group,2015-07-06,Criminal Law,Unanimous,Conservative,6,3,Dr. Lisa Morgan,Adjourned,12.0,14.0,2.0,West Bengal,Asansol
+SC1187,2019,Case about tax,"Patel, Kumar and Singh",2015-07-07,Economic Activity,Unanimous,Conservative,6,2,Dr. Lisa Morgan,Pending,5.0,5.0,8.0,Maharashtra,Nagpur
+SC1188,2013,Property dispute,"Patel, Kumar and Singh",2015-07-08,Economic Activity,Per Curiam,Conservative,9,1,Christopher Rivera,Adjourned,16.0,1.0,0.0,Madhya Pradesh,Jabalpur
+SC1189,1998,Freedom of speech,Smith & Co,2015-07-09,Environmental Law,Plurality,Liberal,7,4,Mrs. Victoria Baker MD,Disposed,14.0,37.0,15.0,Maharashtra,Nashik
+SC1190,2010,Property dispute,"Torres, Harris and Baker",2015-07-10,Criminal Law,Unanimous,Conservative,7,3,Mr. Anthony Brown,Adjourned,10.0,13.0,0.0,West Bengal,Siliguri
+SC1191,1999,Criminal appeal,Rao and Sons,2015-07-11,Environmental Law,Unanimous,Conservative,8,0,Mrs. Victoria Baker MD,Adjourned,7.0,20.0,8.0,Karnataka,Hubli
+SC1192,2013,Property dispute,"Jones, Brown and Parker",2015-07-12,Environmental Law,Per Curiam,Conservative,6,2,Mr. Anthony Brown,Unknown,13.0,38.0,18.0,Madhya Pradesh,Indore
+SC1193,2013,Case about tax,Gupta Group,2015-07-13,Judicial Power,Unanimous,Liberal,5,1,Christopher Rivera,Adjourned,5.0,4.0,0.0,Uttar Pradesh,Allahabad
+SC1194,2017,Environmental law,Smith & Co,2015-07-14,Environmental Law,Majority,Liberal,8,2,Christopher Rivera,Adjourned,3.0,18.0,3.0,Maharashtra,Nagpur
+SC1195,1996,Contract law,"Jones, Brown and Parker",2015-07-15,Economic Activity,Per Curiam,Liberal,7,3,Mr. Anthony Brown,Adjourned,15.0,23.0,9.0,Bihar,Patna
+SC1196,2004,Contract law,Rao and Sons,2015-07-16,Criminal Law,Unanimous,Conservative,8,3,Dr. Lisa Morgan,Adjourned,4.0,29.0,0.0,Maharashtra,Nagpur
+SC1197,1996,Criminal appeal,Sharma Associates,2015-07-17,Judicial Power,Unanimous,Conservative,9,3,Dr. Lisa Morgan,Disposed,15.0,10.0,2.0,Karnataka,Bengaluru
+SC1198,2023,Labor dispute,Smith & Co,2015-07-18,Judicial Power,Per Curiam,Conservative,5,2,Mrs. Victoria Baker MD,Pending,14.0,21.0,0.0,Maharashtra,Pune
+SC1199,2023,Environmental law,"Patel, Kumar and Singh",2015-07-19,Criminal Law,Plurality,Liberal,8,0,Mrs. Tammy Alexander MD,Pending,19.0,1.0,11.0,Karnataka,Mysuru
