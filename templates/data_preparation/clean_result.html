@@ -10,61 +10,135 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-        .dashboard-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid #3498db;
-        }
-        .btn-clean {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: 600;
-        }
-        .btn-download {
-            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: 600;
-        }
-        .preview-table {
-            width: 100%;
-            font-size: 0.9rem;
-        }
-        .preview-table th {
-            background: #2c3e50;
-            color: white;
-            padding: 0.75rem;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-    </style>
+<style>
+:root {
+  --primary: #5d8361;
+  --primary-light: #83b282;
+  --primary-soft: #97d19a;
+
+  --mint-soft: #E8F3EC;
+  --warm-beige: #F6EFE7;
+
+  --bg-base: #FAFAF8;
+  --card-bg: #FFFFFF;
+  --border-light: #E5E4E2;
+
+  --text-dark: #3A3A3A;
+  --text-medium: #7A756F;
+
+  --shadow-subtle: 0px 2px 4px rgba(0,0,0,0.04);
+  --shadow-card: 0px 4px 12px rgba(0,0,0,0.07);
+  --shadow-deep: 0px 8px 24px rgba(0,0,0,0.08);
+
+  --radius-soft: 12px;
+  --radius-medium: 18px;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(180deg, var(--bg-base), var(--warm-beige));
+  color: var(--text-dark);
+}
+
+/* Header */
+.dashboard-header {
+  background: linear-gradient(160deg, #FFFFFF, var(--bg-base), var(--warm-beige));
+  padding: 2.5rem 0;
+  box-shadow: var(--shadow-subtle);
+}
+
+.dashboard-header h1 {
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  color: var(--text-medium);
+}
+
+/* Cards */
+.card {
+  border-radius: var(--radius-soft);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+}
+
+/* Stat cards */
+.stat-card {
+  background: linear-gradient(180deg, #FFFFFF, var(--mint-soft));
+  border-radius: var(--radius-medium);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-subtle);
+}
+
+.stat-card h3 {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Buttons */
+.btn-clean {
+  background: var(--primary);
+  color: white;
+  border-radius: 999px;
+  padding: 0.6rem 1.6rem;
+  font-weight: 600;
+}
+
+.btn-clean:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-download {
+  background: var(--primary-light);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.6rem 1.6rem;
+  font-weight: 600;
+}
+
+/* Tables */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.preview-table th {
+  background: var(--primary);
+  color: white;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+}
+
+.preview-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-medium);
+}
+
+/* Scrollable preview box */
+.table-scroll {
+  max-height: 320px;
+  overflow: auto;
+  border-radius: var(--radius-soft);
+  border: 1px solid var(--border-light);
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(250,250,248,0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+</style>
+
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay">
@@ -123,6 +197,47 @@
                     </div>
                 </div>
             </div>
+
+
+            {% if original_preview %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">
+          <i class="fas fa-eye me-2"></i>
+          Original Dataset Preview (First 10 Rows)
+        </h5>
+      </div>
+
+      <div class="card-body">
+        <div class="table-scroll">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                {% for col in original_preview.0.keys %}
+                  <th>{{ col }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in original_preview %}
+              <tr>
+                {% for value in row.values %}
+                  <td>{{ value }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
 
             {% if cleaned_preview %}
             <div class="row mb-4">

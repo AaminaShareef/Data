@@ -697,6 +697,11 @@ def download_cleaned_dataset(request, cleaned_dataset_id):
         return redirect('dataset_detail', dataset_id=cleaned_dataset_id)
 
 
+import pandas as pd
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Dataset
+
+
 def clean_result(request, dataset_id):
     """Display cleaning results page"""
     if "user_id" not in request.session:
@@ -708,15 +713,42 @@ def clean_result(request, dataset_id):
         user_id=request.session["user_id"]
     )
     
-    # Get cleaning report from session
+    # Existing session-based data (UNCHANGED)
     cleaning_report = request.session.get('cleaning_report', {})
     cleaned_preview = request.session.get('cleaned_preview', [])
-    
+
+    # -------------------------------------------------
+    # ✅ NEW: ORIGINAL DATASET PREVIEW (First 10 Rows)
+    # -------------------------------------------------
+    original_preview = []
+    try:
+        file_path = dataset.file.path
+
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        elif file_path.endswith(('.xls', '.xlsx')):
+            df = pd.read_excel(file_path)
+        else:
+            df = None
+
+        if df is not None:
+            original_preview = df.head(10).to_dict(orient="records")
+
+    except Exception as e:
+        # Fail silently to avoid breaking page
+        original_preview = []
+
+    # -------------------------------------------------
+    # Context
+    # -------------------------------------------------
     context = {
         'dataset': dataset,
         'cleaning_report': cleaning_report,
         'cleaned_preview': cleaned_preview,
-        'preview_count': len(cleaned_preview) if cleaned_preview else 0
+        'preview_count': len(cleaned_preview) if cleaned_preview else 0,
+
+        # ✅ NEW
+        'original_preview': original_preview,
     }
     
     return render(request, 'data_preparation/clean_result.html', context)
