@@ -244,9 +244,16 @@ def profile_view(request):
 # ==================================================
 
 class DataCleaner:
-    def __init__(self, df):
+    def _init_(self, df):
         self.original_df = df.copy()
-        self.df = df.copy()
+        # ✅ CRITICAL FIX: Convert ALL categorical columns to object at start
+        # This prevents categorical errors throughout the entire pipeline
+        df_copy = df.copy()
+        for col in df_copy.columns:
+            if pd.api.types.is_categorical_dtype(df_copy[col]):
+                df_copy[col] = df_copy[col].astype('object')
+        
+        self.df = df_copy
         self.cleaning_report = defaultdict(dict)
         self.metadata = {}
         
@@ -291,6 +298,7 @@ class DataCleaner:
     
     def profile_dataset(self):
         """Step 1: Dataset Profiling"""
+        print("🔍 STEP 1: Starting profile_dataset")
         self.metadata['original_shape'] = self.df.shape
         self.metadata['dtypes'] = self.df.dtypes.to_dict()
         
@@ -304,9 +312,11 @@ class DataCleaner:
         }
         
         self.cleaning_report['profiling'] = profile
+        print(f"✅ STEP 1 COMPLETE: Profiled {len(self.df)} rows, {len(self.df.columns)} columns")
     
     def standardize_columns(self):
         """Step 2: Column Standardization"""
+        print("🔍 STEP 2: Starting standardize_columns")
         original_columns = self.df.columns.tolist()
         
         # Convert to lowercase and snake_case
@@ -322,7 +332,7 @@ class DataCleaner:
             col = re.sub(r'\s+', '_', col)
             
             # Remove multiple underscores
-            col = re.sub(r'_+', '_', col)
+            col = re.sub(r'+', '', col)
             
             # Remove leading/trailing underscores
             col = col.strip('_')
@@ -331,9 +341,11 @@ class DataCleaner:
         
         self.df.columns = new_columns
         self.cleaning_report['column_renaming'] = dict(zip(original_columns, new_columns))
+        print(f"✅ STEP 2 COMPLETE: Renamed {len(new_columns)} columns")
     
     def handle_missing_values(self):
         """Step 3: Missing Value Handling"""
+        print("🔍 STEP 3: Starting handle_missing_values")
         missing_report = {}
         
         for col in self.df.columns:
@@ -341,31 +353,36 @@ class DataCleaner:
             missing_pct = (missing_count / len(self.df)) * 100
             
             if missing_count > 0:
+                print(f"  Processing column '{col}' - dtype: {self.df[col].dtype}, missing: {missing_count}")
+                
                 # Determine column type
                 if pd.api.types.is_numeric_dtype(self.df[col]):
                     # For numeric columns, use median (robust to outliers)
                     fill_value = self.df[col].median()
                     method = 'median'
+                    self.df[col] = self.df[col].fillna(fill_value)
+                    
                 elif pd.api.types.is_datetime64_any_dtype(self.df[col]):
                     # For dates, use forward fill then backward fill
                     self.df[col] = self.df[col].ffill().bfill()
                     fill_value = 'forward/backward fill'
                     method = 'ffill_bfill'
+                    
                 elif self.df[col].dtype == 'bool':
                     # For boolean, fill with False
                     fill_value = False
                     method = 'default_false'
+                    self.df[col] = self.df[col].fillna(fill_value)
+                    
                 else:
-                    # For categorical/text, use mode or 'Unknown'
+                    # For object/text (categorical already converted in _init_)
                     if not self.df[col].mode().empty:
                         fill_value = self.df[col].mode()[0]
                         method = 'mode'
                     else:
                         fill_value = 'Unknown'
                         method = 'unknown'
-                
-                # Apply filling
-                self.df[col].fillna(fill_value, inplace=True)
+                    self.df[col] = self.df[col].fillna(fill_value)
                 
                 missing_report[col] = {
                     'missing_count': int(missing_count),
@@ -375,9 +392,11 @@ class DataCleaner:
                 }
         
         self.cleaning_report['missing_values'] = missing_report
+        print(f"✅ STEP 3 COMPLETE: Handled missing values in {len(missing_report)} columns")
     
     def remove_duplicates(self):
         """Step 4: Duplicate Detection & Removal"""
+        print("🔍 STEP 4: Starting remove_duplicates")
         # Full row duplicates
         full_duplicates = self.df.duplicated().sum()
         self.df = self.df.drop_duplicates()
@@ -386,13 +405,16 @@ class DataCleaner:
             'full_row_duplicates': int(full_duplicates),
             'rows_after_dedup': len(self.df)
         }
+        print(f"✅ STEP 4 COMPLETE: Removed {full_duplicates} duplicates")
     
     def correct_data_types(self):
         """Step 5: Data Type Correction"""
+        print("🔍 STEP 5: Starting correct_data_types")
         type_corrections = {}
         
         for col in self.df.columns:
             original_dtype = str(self.df[col].dtype)
+            print(f"  Processing column '{col}' - dtype: {original_dtype}")
             
             # Skip if already correct type
             if pd.api.types.is_numeric_dtype(self.df[col]):
@@ -402,14 +424,23 @@ class DataCleaner:
             if self.df[col].dtype == 'object':
                 # Check for currency symbols
                 sample = self.df[col].dropna().head(100)
-                if sample.astype(str).str.contains(r'[\$\£\€,]', regex=True).any():
+                if len(sample) > 0 and sample.astype(str).str.contains(r'[\$\£\€,]', regex=True).any():
                     # Remove currency symbols and commas
                     self.df[col] = self.df[col].astype(str).str.replace(r'[\$\£\€,]', '', regex=True)
                 
-                # Try numeric conversion
+                # Try numeric conversion with explicit error handling
                 try:
-                    self.df[col] = pd.to_numeric(self.df[col], errors='ignore')
-                except:
+                    # Attempt conversion with coerce (converts invalid to NaN)
+                    numeric_values = pd.to_numeric(self.df[col], errors='coerce')
+                    
+                    # Only apply if we successfully converted at least 50% of non-null values
+                    non_null_count = self.df[col].notna().sum()
+                    converted_count = numeric_values.notna().sum()
+                    
+                    if non_null_count > 0 and (converted_count / non_null_count) >= 0.5:
+                        self.df[col] = numeric_values
+                except (ValueError, TypeError):
+                    # If conversion fails, keep original values
                     pass
             
             # Convert common boolean patterns
@@ -422,9 +453,10 @@ class DataCleaner:
                 }
                 
                 # Check if column matches boolean patterns
-                unique_vals = self.df[col].dropna().unique()[:10]
-                if all(str(v).lower() in bool_patterns for v in unique_vals if pd.notna(v)):
-                    self.df[col] = self.df[col].astype(str).str.lower().map(bool_patterns)
+                unique_vals = self.df[col].dropna().unique()
+                if len(unique_vals) > 0 and len(unique_vals) <= 10:
+                    if all(str(v).lower() in bool_patterns for v in unique_vals if pd.notna(v)):
+                        self.df[col] = self.df[col].astype(str).str.lower().map(bool_patterns)
             
             # Convert date strings
             if self.df[col].dtype == 'object':
@@ -434,10 +466,15 @@ class DataCleaner:
                 
                 for fmt in date_formats:
                     try:
-                        self.df[col] = pd.to_datetime(self.df[col], format=fmt, errors='coerce')
-                        if not self.df[col].isna().all():  # If some conversions succeeded
+                        converted = pd.to_datetime(self.df[col], format=fmt, errors='coerce')
+                        # Only apply if at least 50% of values converted successfully
+                        non_null_count = self.df[col].notna().sum()
+                        converted_count = converted.notna().sum()
+                        
+                        if non_null_count > 0 and (converted_count / non_null_count) >= 0.5:
+                            self.df[col] = converted
                             break
-                    except:
+                    except (ValueError, TypeError):
                         continue
             
             new_dtype = str(self.df[col].dtype)
@@ -448,12 +485,16 @@ class DataCleaner:
                 }
         
         self.cleaning_report['type_corrections'] = type_corrections
+        print(f"✅ STEP 5 COMPLETE: Corrected {len(type_corrections)} data types")
     
     def standardize_values(self):
         """Step 6: Value Consistency & Formatting"""
+        print("🔍 STEP 6: Starting standardize_values")
         standardization_report = {}
         
         for col in self.df.columns:
+            print(f"  Processing column '{col}' - dtype: {self.df[col].dtype}")
+            # Skip non-object columns (categorical already converted in _init_)
             if self.df[col].dtype == 'object':
                 # Trim whitespace
                 self.df[col] = self.df[col].astype(str).str.strip()
@@ -482,16 +523,21 @@ class DataCleaner:
                 }
         
         self.cleaning_report['standardization'] = standardization_report
+        print(f"✅ STEP 6 COMPLETE: Standardized {len(standardization_report)} columns")
     
     def detect_outliers(self):
         """Step 7: Outlier Detection"""
+        print("🔍 STEP 7: Starting detect_outliers")
         outlier_report = {}
         
         numeric_cols = self.df.select_dtypes(include=[np.number]).columns
+        print(f"  Found {len(numeric_cols)} numeric columns: {list(numeric_cols)}")
         
         for col in numeric_cols:
+            print(f"  Processing column '{col}' for outliers")
             # Skip if not enough data
             if len(self.df[col].dropna()) < 10:
+                print(f"    Skipping '{col}' - not enough data")
                 continue
             
             # Calculate IQR
@@ -508,6 +554,7 @@ class DataCleaner:
             outlier_count = len(outliers)
             
             if outlier_count > 0:
+                print(f"    Found {outlier_count} outliers in '{col}', capping...")
                 # Cap outliers instead of removing
                 self.df.loc[self.df[col] < lower_bound, col] = lower_bound
                 self.df.loc[self.df[col] > upper_bound, col] = upper_bound
@@ -520,39 +567,68 @@ class DataCleaner:
                 }
         
         self.cleaning_report['outliers'] = outlier_report
+        print(f"✅ STEP 7 COMPLETE: Detected outliers in {len(outlier_report)} columns")
     
     def feature_engineering(self):
         """Step 8: Feature Engineering"""
+        print("🔍 STEP 8: Starting feature_engineering")
         new_columns = {}
         
         # Extract date components
         date_cols = self.df.select_dtypes(include=['datetime']).columns
+        print(f"  Found {len(date_cols)} datetime columns: {list(date_cols)}")
         
         for col in date_cols:
-            self.df[f'{col}_year'] = self.df[col].dt.year
-            self.df[f'{col}_month'] = self.df[col].dt.month
-            self.df[f'{col}_quarter'] = self.df[col].dt.quarter
-            self.df[f'{col}_day'] = self.df[col].dt.day
-            self.df[f'{col}_day_of_week'] = self.df[col].dt.dayofweek
-            
-            new_columns[col] = ['year', 'month', 'quarter', 'day', 'day_of_week']
+            try:
+                print(f"  Extracting date features from '{col}'")
+                self.df[f'{col}_year'] = self.df[col].dt.year
+                self.df[f'{col}_month'] = self.df[col].dt.month
+                self.df[f'{col}_quarter'] = self.df[col].dt.quarter
+                self.df[f'{col}_day'] = self.df[col].dt.day
+                self.df[f'{col}_day_of_week'] = self.df[col].dt.dayofweek
+                
+                new_columns[col] = ['year', 'month', 'quarter', 'day', 'day_of_week']
+            except Exception as e:
+                logger.warning(f"Could not extract date features from {col}: {e}")
+                print(f"    ⚠️ Warning: Could not extract date features from {col}: {e}")
+                continue
         
         # Create categories from numeric ranges
         numeric_cols = self.df.select_dtypes(include=[np.number]).columns
+        print(f"  Found {len(numeric_cols)} numeric columns for categorization")
         
         for col in numeric_cols[:5]:  # Limit to first 5 numeric columns
-            if self.df[col].nunique() > 10:
-                # Create quintiles
-                self.df[f'{col}_category'] = pd.qcut(self.df[col], 5, labels=['Very Low', 'Low', 'Medium', 'High', 'Very High'])
-                
-                if col not in new_columns:
-                    new_columns[col] = []
-                new_columns[col].append('category')
+            try:
+                print(f"  Creating categories for '{col}' - dtype: {self.df[col].dtype}, unique: {self.df[col].nunique()}")
+                if self.df[col].nunique() > 10:
+                    # Create quintiles
+                    print(f"    Creating quintiles for '{col}'...")
+                    category_col = pd.qcut(
+                        self.df[col], 
+                        5, 
+                        labels=['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+                        duplicates='drop'
+                    )
+                    print(f"    Created category column, dtype: {category_col.dtype}")
+                    
+                    # ✅ CRITICAL FIX: Convert categorical result to object
+                    self.df[f'{col}_category'] = category_col.astype('object')
+                    print(f"    Assigned to dataframe as object dtype")
+                    
+                    if col not in new_columns:
+                        new_columns[col] = []
+                    new_columns[col].append('category')
+            except Exception as e:
+                logger.warning(f"Could not create categories for {col}: {e}")
+                print(f"    ⚠️ Warning: Could not create categories for {col}: {e}")
+                continue
         
         self.cleaning_report['feature_engineering'] = new_columns
+        print(f"✅ STEP 8 COMPLETE: Created {len(new_columns)} feature groups")
     
     def validate_data(self):
         """Step 9: Data Validation"""
+        print("🔍 STEP 9: Starting validate_data")
         validation_report = {
             'invalid_values': {},
             'consistency_checks': [],
@@ -561,13 +637,19 @@ class DataCleaner:
         
         # Validate data types
         for col, dtype in self.df.dtypes.items():
+            print(f"  Validating column '{col}' - dtype: {dtype}")
             if dtype == 'object':
                 # Check for mixed types
-                unique_types = set(type(x) for x in self.df[col].dropna().head(100))
-                if len(unique_types) > 1:
-                    validation_report['type_validation'][col] = f'Mixed types: {unique_types}'
+                try:
+                    unique_types = set(type(x)._name_ for x in self.df[col].dropna().head(100))
+                    if len(unique_types) > 1:
+                        validation_report['type_validation'][col] = f'Mixed types: {list(unique_types)}'
+                except Exception as e:
+                    logger.warning(f"Could not validate types for {col}: {e}")
+                    print(f"    ⚠️ Warning: Could not validate types for {col}: {e}")
         
         self.cleaning_report['validation'] = validation_report
+        print(f"✅ STEP 9 COMPLETE: Validated {len(self.df.columns)} columns")
     
     def generate_cleaning_report(self):
         """Step 10: Generate Comprehensive Report"""
@@ -596,7 +678,38 @@ class DataCleaner:
 
 
 # ==================================================
-# 🧹 NEW DATA CLEANING FUNCTIONS
+# 🧹 HELPER FUNCTIONS
+# ==================================================
+
+def clean_for_json(obj):
+    """
+    Recursively clean data to make it JSON serializable.
+    Handles pandas NaT, NaN, numpy types, etc.
+    """
+    if isinstance(obj, dict):
+        return {k: clean_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_for_json(item) for item in obj]
+    elif pd.isna(obj):  # Handles NaN, NaT, None
+        return None
+    elif isinstance(obj, (np.integer, np.floating)):
+        return obj.item()  # Convert numpy types to Python native
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    elif isinstance(obj, (pd.Timestamp, datetime)):
+        return obj.isoformat() if pd.notna(obj) else None
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, pd.CategoricalDtype):
+        return str(obj)
+    elif isinstance(obj, type):
+        return str(obj)
+    else:
+        return obj
+
+
+# ==================================================
+# 🧹 DATA CLEANING ENDPOINTS
 # ==================================================
 
 @csrf_exempt
@@ -631,14 +744,19 @@ def clean_dataset(request, dataset_id):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
             cleaned_df.to_csv(tmp.name, index=False)
             
+            # ✅ CLEAN DATA FOR JSON SERIALIZATION
+            cleaned_preview = cleaned_df.head(10).fillna('').to_dict('records')
+            cleaned_preview = clean_for_json(cleaned_preview)
+            cleaning_report = clean_for_json(cleaning_report)
+            
             # Store cleaning info in session for display
             request.session['cleaning_report'] = cleaning_report
-            request.session['cleaned_preview'] = cleaned_df.head(10).to_dict('records')
+            request.session['cleaned_preview'] = cleaned_preview
             request.session['cleaned_dataset_id'] = dataset_id
             request.session['cleaned_file_path'] = tmp.name
             
-            # Prepare preview data
-            preview_data = cleaned_df.head(10).to_dict('records')
+            # Prepare preview data (already cleaned)
+            preview_data = cleaned_preview
             
             # Clean the summary data
             summary = cleaning_report.get('summary', {})
@@ -697,11 +815,6 @@ def download_cleaned_dataset(request, cleaned_dataset_id):
         return redirect('dataset_detail', dataset_id=cleaned_dataset_id)
 
 
-import pandas as pd
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Dataset
-
-
 def clean_result(request, dataset_id):
     """Display cleaning results page"""
     if "user_id" not in request.session:
@@ -713,13 +826,11 @@ def clean_result(request, dataset_id):
         user_id=request.session["user_id"]
     )
     
-    # Existing session-based data (UNCHANGED)
+    # Existing session-based data
     cleaning_report = request.session.get('cleaning_report', {})
     cleaned_preview = request.session.get('cleaned_preview', [])
 
-    # -------------------------------------------------
-    # ✅ NEW: ORIGINAL DATASET PREVIEW (First 10 Rows)
-    # -------------------------------------------------
+    # Original dataset preview (First 10 Rows)
     original_preview = []
     try:
         file_path = dataset.file.path
@@ -738,16 +849,12 @@ def clean_result(request, dataset_id):
         # Fail silently to avoid breaking page
         original_preview = []
 
-    # -------------------------------------------------
     # Context
-    # -------------------------------------------------
     context = {
         'dataset': dataset,
         'cleaning_report': cleaning_report,
         'cleaned_preview': cleaned_preview,
         'preview_count': len(cleaned_preview) if cleaned_preview else 0,
-
-        # ✅ NEW
         'original_preview': original_preview,
     }
     
