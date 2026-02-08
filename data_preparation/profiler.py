@@ -1,39 +1,74 @@
-from dateutil.parser import parse
 import pandas as pd
 
-BOOLEAN_VALUES = {
-    "true": 1, "false": 0,
-    "yes": 1, "no": 0,
-    "y": 1, "n": 0,
-    "1": 1, "0": 0
-}
+class DataProfiler:
 
-def is_date(value):
-    try:
-        parse(str(value), fuzzy=False)
-        return True
-    except:
-        return False
+    def __init__(self, df):
+        self.df = df.copy()
+        self.profile = {
+            "column_roles": {},
+            "statistics": {}
+        }
 
-def detect_column_type(series: pd.Series):
-    sample = series.dropna().astype(str).str.lower()
+    # -----------------------------------
+    # Detect column roles ONLY
+    # -----------------------------------
+    def detect_column_roles(self):
 
-    if sample.empty:
-        return "empty"
+        roles = {}
 
-    if sample.isin(BOOLEAN_VALUES.keys()).mean() > 0.8:
-        return "boolean"
+        for col in self.df.columns:
+            name = col.lower()
 
-    try:
-        pd.to_numeric(sample)
-        return "numeric"
-    except:
-        pass
+            # Identifier
+            if "id" in name or "code" in name or "number" in name:
+                roles[col] = "identifier"
+                continue
 
-    if sample.apply(is_date).mean() > 0.8:
-        return "date"
+            # Datetime
+            if "date" in name or "time" in name or "year" in name:
+                roles[col] = "datetime"
+                continue
 
-    if series.nunique() / len(series) < 0.05:
-        return "categorical"
+            # Boolean
+            unique_vals = set(self.df[col].dropna().astype(str).str.lower().unique())
+            if unique_vals.issubset({"yes","no","true","false","0","1"}):
+                roles[col] = "boolean"
+                continue
 
-    return "text"
+            # Numeric
+            if pd.api.types.is_numeric_dtype(self.df[col]):
+                roles[col] = "numeric_measure"
+                continue
+
+            # Text (long sentences)
+            if self.df[col].astype(str).str.len().mean() > 40:
+                roles[col] = "text"
+                continue
+
+            # Default
+            roles[col] = "categorical"
+
+        self.profile["column_roles"] = roles
+
+    # -----------------------------------
+    # Basic statistics
+    # -----------------------------------
+    def compute_statistics(self):
+
+        total_cells = self.df.shape[0] * self.df.shape[1]
+        missing_cells = self.df.isna().sum().sum()
+
+        self.profile["statistics"] = {
+            "rows": int(self.df.shape[0]),
+            "columns": int(self.df.shape[1]),
+            "missing_percentage": round((missing_cells / total_cells) * 100, 2),
+            "duplicate_rows": int(self.df.duplicated().sum())
+        }
+
+    # -----------------------------------
+    # MAIN
+    # -----------------------------------
+    def analyze(self):
+        self.detect_column_roles()
+        self.compute_statistics()
+        return self.profile

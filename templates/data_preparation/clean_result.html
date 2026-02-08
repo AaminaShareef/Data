@@ -137,6 +137,19 @@ body {
   justify-content: center;
   z-index: 9999;
 }
+
+.btn-outline-secondary {
+  border-radius: 999px;
+  padding: 0.5rem 1.4rem;
+  font-weight: 600;
+}
+
+.btn-outline-secondary:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
 </style>
 
 </head>
@@ -151,6 +164,13 @@ body {
     <div class="container-fluid">
         <div class="dashboard-header">
             <div class="container">
+                <!-- Go Back Button -->
+<div class="mb-3">
+    <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Go Back
+    </a>
+</div>
+
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h1><i class="fas fa-broom me-2"></i>Data Cleaning Results</h1>
@@ -186,7 +206,7 @@ body {
                                 </div>
                                 <div class="col-md-6 text-end">
                                     <button id="cleanBtn" class="btn btn-clean me-2" data-dataset-id="{{ dataset.id }}">
-                                        <i class="fas fa-redo me-1"></i>Clean Again
+                                        <i class="fas fa-redo me-1"></i>Clean Dataset
                                     </button>
                                     <a href="{% url 'download_cleaned_dataset' dataset.id %}" class="btn btn-download" id="downloadBtn">
                                         <i class="fas fa-download me-1"></i>Download Cleaned

@@ -5,6 +5,10 @@ import tempfile
 import os
 import re
 import logging
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
 from datetime import datetime
 from collections import defaultdict
 from django.shortcuts import render, get_object_or_404, redirect
@@ -244,8 +248,15 @@ def profile_view(request):
 # ==================================================
 
 class DataCleaner:
-    def __init__(self, df):
+    
+    def __init__(self, df, profile=None):
         self.original_df = df.copy()
+        self.df = df.copy()
+
+        # new intelligent info
+        self.profile = profile or {}
+        self.column_roles = self.profile.get("column_roles", {})
+        
         
         # ✅ FIX 1: Convert ALL categorical columns to object at start
         df_copy = df.copy()
@@ -300,8 +311,12 @@ class DataCleaner:
             # Step 9: Data Validation
             self.validate_data()
             
-            # Step 10: Generate Report
+            # Step 10: ML Preparation (NEW)
+            self.prepare_for_ml()
+
+            # Step 11: Generate Report
             self.generate_cleaning_report()
+    
             
             return self.df, self.cleaning_report
             
@@ -834,6 +849,134 @@ class DataCleaner:
         self.cleaning_report['validation'] = validation_report
         print(f"✅ STEP 9 COMPLETE: Validated {len(self.df.columns)} columns")
     
+        # -------------------------------------------------
+    # STEP 11: ML PREPARATION PIPELINE (NEW — NON-DESTRUCTIVE)
+    # -------------------------------------------------
+    def prepare_for_ml(self):
+        """
+        Prepare dataset for machine learning WITHOUT affecting
+        your UI cleaning output behaviour.
+        """
+        print("🔍 STEP 11: Starting ML preprocessing pipeline")
+
+        ml_report = {
+            "encoding": [],
+            "scaling": [],
+            "feature_selection_removed": [],
+            "class_imbalance": "Not Applied",
+            "train_test_split": {}
+        }
+
+        df_ml = self.df.copy()
+
+        # ----------------------------
+        # 1. Encode categorical columns
+        # ----------------------------
+        categorical_cols = df_ml.select_dtypes(include=['object']).columns
+        categorical_cols = [c for c in categorical_cols if not c.endswith('_was_missing')]
+
+        if len(categorical_cols) > 0:
+            df_ml = pd.get_dummies(df_ml, columns=categorical_cols, drop_first=True)
+            ml_report["encoding"] = list(categorical_cols)
+
+            self.log_transformation(
+                'ml_preprocessing',
+                'categorical_columns',
+                'one_hot_encoded',
+                {'columns': list(categorical_cols)}
+            )
+
+        # ----------------------------
+        # 2. Feature Scaling
+        # ----------------------------
+        numeric_cols = df_ml.select_dtypes(include=[np.number]).columns
+
+        if len(numeric_cols) > 0:
+            scaler = StandardScaler()
+            df_ml[numeric_cols] = scaler.fit_transform(df_ml[numeric_cols])
+            ml_report["scaling"] = list(numeric_cols)
+
+            self.log_transformation(
+                'ml_preprocessing',
+                'numeric_columns',
+                'standard_scaled',
+                {'scaled_columns': list(numeric_cols)}
+            )
+
+        # ----------------------------
+        # 3. Feature Selection (Low variance removal)
+        # ----------------------------
+        try:
+            selector = VarianceThreshold(threshold=0.01)
+            before_cols = df_ml.columns
+
+            df_selected = selector.fit_transform(df_ml)
+            kept_columns = df_ml.columns[selector.get_support()]
+            removed = list(set(before_cols) - set(kept_columns))
+
+            df_ml = pd.DataFrame(df_selected, columns=kept_columns)
+
+            ml_report["feature_selection_removed"] = removed
+
+            self.log_transformation(
+                'ml_preprocessing',
+                'features',
+                'low_variance_removed',
+                {'removed_columns': removed}
+            )
+        except Exception as e:
+            logger.warning(f"Feature selection skipped: {e}")
+
+        # ----------------------------
+        # 4. Class Imbalance Handling (SMOTE)
+        # Only if last column is classification target
+        # ----------------------------
+        try:
+            if df_ml.shape[1] > 2:
+                X = df_ml.iloc[:, :-1]
+                y = df_ml.iloc[:, -1]
+
+                if y.nunique() <= 10 and y.nunique() > 1:
+                    smote = SMOTE()
+                    X_res, y_res = smote.fit_resample(X, y)
+                    df_ml = pd.concat([pd.DataFrame(X_res), pd.DataFrame(y_res)], axis=1)
+                    ml_report["class_imbalance"] = "SMOTE Applied"
+
+                    self.log_transformation(
+                        'ml_preprocessing',
+                        'target',
+                        'smote_balancing',
+                        {'classes_after': int(y_res.nunique())}
+                    )
+        except Exception as e:
+            logger.warning(f"SMOTE skipped: {e}")
+
+        # ----------------------------
+        # 5. Train Test Split (for report only)
+        # ----------------------------
+        try:
+            if df_ml.shape[1] > 2:
+                X = df_ml.iloc[:, :-1]
+                y = df_ml.iloc[:, -1]
+
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y, test_size=0.2, random_state=42
+                )
+
+                ml_report["train_test_split"] = {
+                    "train_rows": len(X_train),
+                    "test_rows": len(X_test),
+                    "test_size": 0.2
+                }
+        except Exception as e:
+            logger.warning(f"Train-test split skipped: {e}")
+
+        # Store report
+        self.cleaning_report['ml_preprocessing'] = ml_report
+
+        print("✅ STEP 11 COMPLETE: ML preprocessing ready")
+
+    
     def generate_cleaning_report(self):
         """Step 10: Generate Comprehensive Report with full traceability"""
         print("🔍 STEP 10: Generating comprehensive cleaning report")
@@ -934,12 +1077,26 @@ def clean_dataset(request, dataset_id):
             return JsonResponse({'error': 'Unsupported file format'}, status=400)
         
         # Initialize and run cleaner
-        cleaner = DataCleaner(df)
+        from .profiler import DataProfiler
+        from .data_cleaner import DataCleaner
+
+# 1️⃣ analyze dataset first
+        profiler = DataProfiler(df)
+        profile_report = profiler.analyze()
+
+# 2️⃣ pass intelligence to cleaner
+        cleaner = DataCleaner(df, profile_report)
+        cleaned_df, cleaning_report = cleaner.clean_dataset()
+
+# 3️⃣ attach profile to report
+        cleaning_report["data_profile"] = profile_report
+
         cleaned_df, cleaning_report = cleaner.clean_dataset()
         
         # Create cleaned file
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-            cleaned_df.to_csv(tmp.name, index=False)
+            cleaned_df.to_csv(tmp.name, index=False, encoding='utf-8-sig')
+
             
             # ✅ Clean data for JSON serialization
             cleaned_preview = cleaned_df.head(10).fillna('').to_dict('records')
@@ -981,31 +1138,36 @@ def download_cleaned_dataset(request, cleaned_dataset_id):
         if "user_id" not in request.session:
             return redirect("login")
         
-        # Get the dataset
+        # Get dataset
         dataset = get_object_or_404(
             Dataset,
             id=cleaned_dataset_id,
             user_id=request.session["user_id"]
         )
-        
-        # Check if cleaning was done
-        if 'cleaned_file_path' not in request.session:
-            messages.error(request, "No cleaned dataset available. Please clean the dataset first.")
-            return redirect('dataset_detail', dataset_id=cleaned_dataset_id)
-        
-        # Read the cleaned file
+
+        # Check if cleaned file exists in session
         cleaned_file_path = request.session.get('cleaned_file_path')
-        
-        if not os.path.exists(cleaned_file_path):
+        if not cleaned_file_path or not os.path.exists(cleaned_file_path):
             messages.error(request, "Cleaned file not found. Please clean the dataset again.")
             return redirect('dataset_detail', dataset_id=cleaned_dataset_id)
-        
-        # Create response
+
+        # Detect file type
+        file_extension = os.path.splitext(cleaned_file_path)[1].lower()
+
+        # Set correct content type
+        if file_extension == ".xlsx":
+            content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            filename = os.path.splitext(dataset.file_name)[0] + "_cleaned.xlsx"
+        else:
+            content_type = "text/csv; charset=utf-8"
+            filename = os.path.splitext(dataset.file_name)[0] + "_cleaned.csv"
+
+        # Send file
         with open(cleaned_file_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='text/csv')
-            response['Content-Disposition'] = f'attachment; filename="cleaned_{dataset.file_name}"'
+            response = HttpResponse(f.read(), content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
-            
+
     except Exception as e:
         logger.error(f"Error downloading cleaned dataset: {str(e)}")
         messages.error(request, f"Error downloading file: {str(e)}")
