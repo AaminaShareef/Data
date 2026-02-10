@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views 
+app_name = "data_preparation"
 urlpatterns = [
     
 
@@ -9,14 +10,10 @@ urlpatterns = [
     path("upload-status/", views.upload_status, name="upload_status"),
     path("datasets/", views.datasets_view, name="datasets"),
     path("dataset/<int:dataset_id>/", views.dataset_detail, name="dataset_detail"),
-    path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
+  
     path("dataset/delete/<int:dataset_id>/", views.delete_dataset, name="delete_dataset"),
     path("profile/", views.profile_view, name="profile"),
-    path('datasets/<int:dataset_id>/clean/', views.clean_dataset, name='clean_dataset'),
-    path('datasets/cleaned/<int:cleaned_dataset_id>/download/', 
-         views.download_cleaned_dataset, name='download_cleaned_dataset'),
-    path('datasets/<int:dataset_id>/clean/result/', views.clean_result, name='clean_result'),
-    path("analysis/<int:dataset_id>/", views.analysis_dashboard, name="analysis_dashboard"),
+   
    
 ]
 

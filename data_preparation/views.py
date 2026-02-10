@@ -179,14 +179,6 @@ def dataset_detail(request, dataset_id):
     return render(request, "data_preparation/dataset_detail.html", context)
 
 
-# ==================================================
-# 📊 ANALYSIS DASHBOARD
-# ==================================================
-
-def analysis_dashboard(request, dataset_id):
-    dataset = get_object_or_404(Dataset, id=dataset_id)
-    return render(request, "data_preparation/data_cleaning.html", {"dataset": dataset})
-
 
 # ==================================================
 # 🧹 DELETE DATASET

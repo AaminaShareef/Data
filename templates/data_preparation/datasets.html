@@ -92,8 +92,8 @@ a {
       {% endif %}
     </td>
     <td>
-      <a href="{% url 'dataset_detail' dataset.id %}">View</a> |
-      <a href="{% url 'delete_dataset' dataset.id %}">Delete</a>
+      <a href="{% url 'data_preparation:dataset_detail' dataset.id %}">View</a> |
+      <a href="{% url 'data_preparation:delete_dataset' dataset.id %}">Delete</a>
     </td>
   </tr>
   {% empty %}

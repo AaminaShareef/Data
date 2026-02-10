@@ -142,3 +142,25 @@ DEFAULT_FROM_EMAIL = "aaminashareef2003@gmail.com"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# -------------------------
+# AUTHENTICATION SESSIONS
+# -------------------------
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+SESSION_COOKIE_NAME = "auralis_sessionid"
+SESSION_COOKIE_AGE = 1209600   # 2 weeks
+SESSION_COOKIE_SECURE = False  # True only in HTTPS production
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = True
+
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"

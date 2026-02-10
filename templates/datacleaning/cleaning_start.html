@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Auralis Insights • Intelligent Cleaning</title>
+
+<style>
+
+/* ===============================
+   ROOT THEME VARIABLES
+=================================*/
+
+:root{
+    --primary:#8BAF9F;
+    --primary-light:#AFC8A9;
+    --primary-soft:#C8D9B0;
+
+    --mint-soft:#E8F3EC;
+    --warm-beige:#F6EFE7;
+    --background:#FAFAF8;
+
+    --text-dark:#2F3E2F;
+    --text-medium:#7A756F;
+
+    --card:#FFFFFF;
+    --border:#E5E4E2;
+
+    --radius-soft:12px;
+    --radius-medium:18px;
+    --radius-large:24px;
+
+    --shadow-subtle:0px 2px 4px rgba(0,0,0,0.04);
+    --shadow-card:0px 4px 12px rgba(0,0,0,0.07);
+    --shadow-deep:0px 10px 30px rgba(0,0,0,0.10);
+
+    --transition:250ms cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ================= GLOBAL ================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+body{
+    background:linear-gradient(180deg,#FAFAF8,#F6EFE7);
+    min-height:100vh;
+    color:var(--text-dark);
+}
+
+/* Ambient glow */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at top left,
+        rgba(139,175,159,0.18), transparent 60%),
+        radial-gradient(circle at bottom right,
+        rgba(246,239,231,0.25), transparent 70%);
+    z-index:-1;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+    max-width:1100px;
+    margin:40px auto 10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 10px;
+}
+
+.brand{
+    font-size:20px;
+    font-weight:600;
+    color:#3E5F4D;
+}
+
+.profile-btn{
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:999px;
+    border:2px solid var(--primary);
+    color:#3E5F4D;
+    font-weight:500;
+    transition:var(--transition);
+}
+
+.profile-btn:hover{
+    background:var(--primary);
+    color:white;
+}
+
+/* ================= PROGRESS BAR ================= */
+
+.steps{
+    max-width:900px;
+    margin:20px auto 40px;
+    display:flex;
+    justify-content:space-between;
+    position:relative;
+}
+
+.steps::before{
+    content:"";
+    position:absolute;
+    top:18px;
+    left:0;
+    right:0;
+    height:3px;
+    background:#DDD;
+    z-index:0;
+}
+
+.step{
+    position:relative;
+    text-align:center;
+    z-index:1;
+    width:25%;
+}
+
+.circle{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:#DDD;
+    margin:auto;
+    line-height:36px;
+    font-size:14px;
+    color:white;
+}
+
+.step.active .circle{
+    background:var(--primary);
+}
+
+.step.done .circle{
+    background:#6F9485;
+}
+
+.step-label{
+    margin-top:8px;
+    font-size:13px;
+    color:var(--text-medium);
+}
+
+/* ================= MAIN WRAPPER ================= */
+
+.wrapper{
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(14px);
+    border-radius:var(--radius-large);
+    padding:36px;
+    box-shadow:var(--shadow-deep);
+}
+
+/* HEADER */
+.header h1{
+    font-size:30px;
+    color:#3E5F4D;
+}
+
+.header p{
+    margin-top:8px;
+    color:var(--text-medium);
+}
+
+/* INFO GRID */
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+    margin-top:28px;
+}
+
+.info-box{
+    background:white;
+    border-radius:var(--radius-medium);
+    padding:18px;
+    border:1px solid var(--border);
+}
+
+.label{
+    font-size:13px;
+    color:var(--text-medium);
+}
+
+.value{
+    margin-top:6px;
+    font-size:18px;
+    font-weight:600;
+}
+
+/* DESCRIPTION */
+
+.description{
+    margin-top:30px;
+    background:var(--mint-soft);
+    padding:22px;
+    border-radius:var(--radius-medium);
+    line-height:1.7;
+}
+
+/* BUTTON */
+
+.button-area{
+    margin-top:40px;
+    text-align:center;
+}
+
+.primary-btn{
+    background:var(--primary);
+    color:white;
+    padding:15px 34px;
+    border:none;
+    border-radius:999px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:var(--transition);
+    box-shadow:var(--shadow-card);
+}
+
+.primary-btn:hover{
+    background:#6F9485;
+    transform:translateY(-2px);
+}
+
+.note{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--text-medium);
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="brand">Auralis Insights</div>
+    <a href="{% url 'data_preparation:profile' %}" class="profile-btn">
+    Back to Profile
+</a>
+
+</div>
+
+<!-- WORKFLOW STEPS -->
+<div class="steps">
+    <div class="step done">
+        <div class="circle">1</div>
+        <div class="step-label">Upload</div>
+    </div>
+
+    <div class="step done">
+        <div class="circle">2</div>
+        <div class="step-label">Payment</div>
+    </div>
+
+    <div class="step active">
+        <div class="circle">3</div>
+        <div class="step-label">Cleaning</div>
+    </div>
+
+    <div class="step">
+        <div class="circle">4</div>
+        <div class="step-label">Report</div>
+    </div>
+</div>
+
+<div class="wrapper">
+
+    <div class="card">
+
+        <div class="header">
+            <h1>🧠 Intelligent Data Preparation</h1>
+            <p>Your dataset will be automatically analyzed, cleaned, and optimized for AI & analytics.</p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="label">Dataset Name</div>
+                <div class="value">{{ dataset.file_name }}</div>
+            </div>
+
+            <div class="info-box">
+                <div class="label">Uploaded On</div>
+                <div class="value">{{ dataset.uploaded_at }}</div>
+            </div>
+        </div>
+
+        <div class="description">
+            The Intelligent Cleaning Engine will:
+            <ul style="margin-top:10px; padding-left:20px;">
+                <li>Detect missing values and repair them automatically</li>
+                <li>Standardize inconsistent data entries</li>
+                <li>Identify abnormal or suspicious records</li>
+                <li>Correct data types and formats</li>
+                <li>Prepare features for Machine Learning models</li>
+            </ul>
+        </div>
+
+        <div class="button-area">
+            <form method="post" action="{% url 'datacleaning:run_cleaning' dataset.id %}">
+                {% csrf_token %}
+                <button type="submit" class="primary-btn">
+                    Run Intelligent Cleaning
+                </button>
+            </form>
+
+            <div class="note">
+                This operation may take a few moments depending on dataset size.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

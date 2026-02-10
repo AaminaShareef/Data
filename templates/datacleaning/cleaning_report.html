@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dataset Report</title>
+
+<style>
+
+/* ================= GLOBAL THEME ================= */
+
+body{
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background:#F6EFE7; /* Warm beige background (from your theme) */
+    padding:40px;
+    color:#2F3E2F;
+}
+
+/* HEADER BAR */
+.topbar{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.page-title{
+    font-size:32px;
+    font-weight:700;
+    color:#3E5F4D;
+    letter-spacing:0.5px;
+}
+
+/* Back Button */
+.back-btn{
+    background:#E8F3EC;
+    color:#3E5F4D;
+    padding:10px 18px;
+    border-radius:25px;
+    text-decoration:none;
+    font-weight:600;
+    border:2px solid #8BAF9F;
+    transition:0.25s;
+}
+.back-btn:hover{
+    background:#8BAF9F;
+    color:white;
+}
+
+
+/* ================= MAIN REPORT CARD ================= */
+
+.card{
+    max-width:1100px;
+    margin:auto;
+    background:white;
+    padding:35px;
+    border-radius:22px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.08);
+}
+
+/* Dataset header */
+.dataset-name{
+    font-size:18px;
+    margin-top:8px;
+    color:#6B7F71;
+}
+
+/* section containers */
+.section{
+    margin-top:30px;
+    padding:20px 22px;
+    background:#FAFAF8;
+    border-radius:16px;
+    border:1px solid #E6E2DA;
+}
+
+/* headings */
+h2{
+    color:#3E5F4D;
+    margin-bottom:5px;
+}
+
+h3{
+    color:#5B7F69;
+    margin-bottom:10px;
+}
+
+h4{
+    margin-top:10px;
+    color:#4A6654;
+}
+
+/* badges (column tags) */
+.badge{
+    display:inline-block;
+    background:#E8F3EC;
+    color:#355E4A;
+    padding:7px 14px;
+    border-radius:14px;
+    margin:6px 6px 0 0;
+    font-size:14px;
+    font-weight:600;
+}
+
+/* stats boxes */
+.stats{
+    display:flex;
+    gap:20px;
+    margin-top:10px;
+    flex-wrap:wrap;
+}
+
+.stat-box{
+    flex:1;
+    min-width:150px;
+    background:#E8F3EC;
+    padding:15px;
+    border-radius:14px;
+    text-align:center;
+}
+
+.stat-number{
+    font-size:22px;
+    font-weight:700;
+    color:#2F5D4E;
+}
+
+.stat-label{
+    font-size:14px;
+    color:#5F7D6E;
+}
+
+/* warnings and success */
+.warning{
+    color:#C0392B;
+    font-weight:600;
+}
+
+.success{
+    color:#2E7D32;
+    font-weight:600;
+}
+
+/* download buttons */
+.download-section{
+    margin-top:40px;
+    text-align:center;
+}
+
+.btn{
+    display:inline-block;
+    padding:13px 24px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:600;
+    transition:0.25s;
+    margin:10px;
+}
+
+/* primary button */
+.btn-primary{
+    background:#8BAF9F;
+    color:white;
+}
+.btn-primary:hover{
+    background:#6F9485;
+}
+
+/* secondary button */
+.btn-secondary{
+    background:#AFC8A9;
+    color:#2F3E2F;
+}
+.btn-secondary:hover{
+    background:#9FB99A;
+}
+
+/* list style */
+ul{
+    margin-top:10px;
+    line-height:1.9;
+    padding-left:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOP HEADER -->
+<div class="topbar">
+    <div class="page-title">🧠 Dataset Analysis Report</div>
+
+    <!-- NEW PROFILE BUTTON -->
+    <a href="{% url 'data_preparation:profile' %}" class="profile-btn">Back to Profile</a>
+
+</div>
+
+<div class="card">
+
+<p class="dataset-name"><strong>Dataset:</strong> {{ dataset.file_name }}</p>
+
+<!-- BASIC INFO -->
+<div class="section">
+<h3>Basic Information</h3>
+
+<div class="stats">
+    <div class="stat-box">
+        <div class="stat-number">{{ report.rows }}</div>
+        <div class="stat-label">Rows</div>
+    </div>
+
+    <div class="stat-box">
+        <div class="stat-number">{{ report.columns }}</div>
+        <div class="stat-label">Columns</div>
+    </div>
+</div>
+</div>
+
+<!-- COLUMN TYPES -->
+<div class="section">
+<h3>Detected Column Types</h3>
+
+<p><strong>Numeric:</strong></p>
+{% for col in report.numeric_columns %}
+<span class="badge">{{ col }}</span>
+{% endfor %}
+
+<p><strong>Categorical:</strong></p>
+{% for col in report.categorical_columns %}
+<span class="badge">{{ col }}</span>
+{% endfor %}
+
+<p><strong>Boolean:</strong></p>
+{% for col in report.boolean_columns %}
+<span class="badge">{{ col }}</span>
+{% empty %}
+<span>No boolean columns</span>
+{% endfor %}
+
+<p><strong>Date Columns:</strong></p>
+{% for col in report.datetime_columns %}
+<span class="badge">{{ col }}</span>
+{% empty %}
+<span>No date columns detected</span>
+{% endfor %}
+</div>
+
+<!-- DATA QUALITY -->
+<div class="section">
+<h3>Data Quality</h3>
+
+<p class="warning">Duplicate Rows Found: {{ report.duplicate_rows }}</p>
+
+<h4>Missing Values</h4>
+{% if report.missing_values %}
+<ul>
+{% for col, val in report.missing_values.items %}
+<li><strong>{{ col }}</strong> — {{ val.count }} missing ({{ val.percent }}%)</li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="success">No missing values 🎉</p>
+{% endif %}
+</div>
+
+<!-- AI TRANSFORMATION -->
+<div class="section">
+<h3>AI Transformation Results</h3>
+
+<p><strong>Outliers Detected:</strong> {{ report.transformation_summary.outliers_detected }}</p>
+
+<p><strong>Encoded Columns:</strong></p>
+{% for col in report.transformation_summary.encoded_columns %}
+<span class="badge">{{ col }}</span>
+{% empty %}
+<span>No categorical encoding applied</span>
+{% endfor %}
+
+<p><strong>Date Features Created:</strong></p>
+{% for col in report.transformation_summary.date_features_created %}
+<span class="badge">{{ col }}</span>
+{% empty %}
+<span>No date features created</span>
+{% endfor %}
+</div>
+
+<!-- DOWNLOAD BUTTONS -->
+<div class="download-section">
+
+<a href="{% url 'datacleaning:download_cleaned_dataset' dataset.id %}"
+   class="btn btn-primary">
+   ⬇ Download Cleaned Dataset
+</a>
+
+<a href="{% url 'datacleaning:download_cleaning_report' dataset.id %}"
+   class="btn btn-secondary">
+   📄 Download Cleaning Report
+</a>
+
+</div>
+
+</div>
+</body>
+</html>

@@ -7,6 +7,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("Authentication.urls")),
     path("", include('data_preparation.urls')),
+    path("cleaning/", include('datacleaning.urls')),
+
 ]
 
 # ✅ MEDIA FILES (ONLY HERE)
