@@ -4,7 +4,21 @@
 <title>Dataset Report</title>
 
 <style>
+* ===============================
+   ROOT THEME VARIABLES
+=================================*/
 
+:root {
+  --primary: #3c583c;
+  --primary-light: #4e7050;
+  --background-main: #F2EFEA;
+  --background-soft: #ECE7E0;
+  --card-bg: #ffffff;
+  --text-dark: #2B2B2B;
+  --text-muted: #667969ff;
+  --border-soft: rgba(0,0,0,0.08);
+  --shadow: 0 24px 60px rgba(0,0,0,0.08);
+}
 /* ================= GLOBAL THEME ================= */
 
 body{
@@ -182,6 +196,43 @@ ul{
     line-height:1.9;
     padding-left:20px;
 }
+/* Back to profile button */
+
+.back-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:12px 22px;
+    border-radius:12px;
+
+    background:#5F8773;        /* darker sage green */
+    color:#ffffff;
+
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.3px;
+
+    text-decoration:none;
+    border:2px solid #5F8773;
+
+    box-shadow:0 4px 12px rgba(95,135,115,0.25);
+    transition:all 0.25s ease;
+}
+
+/* hover */
+.back-button:hover{
+    background:#4C6F5F;
+    border-color:#4C6F5F;
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(95,135,115,0.35);
+}
+
+/* click effect */
+.back-button:active{
+    transform:translateY(0px) scale(0.97);
+    box-shadow:0 3px 8px rgba(95,135,115,0.25);
+}
 
 </style>
 </head>
@@ -190,10 +241,12 @@ ul{
 
 <!-- TOP HEADER -->
 <div class="topbar">
-    <div class="page-title">🧠 Dataset Analysis Report</div>
+    <div class="page-title">Dataset Analysis Report</div>
 
-    <!-- NEW PROFILE BUTTON -->
-    <a href="{% url 'data_preparation:profile' %}" class="profile-btn">Back to Profile</a>
+    <a href="{% url 'profile' %}" class="back-button">
+    Back to Profile
+</a>
+
 
 </div>
 
@@ -261,13 +314,13 @@ ul{
 {% endfor %}
 </ul>
 {% else %}
-<p class="success">No missing values 🎉</p>
+<p class="success">No missing values</p>
 {% endif %}
 </div>
 
 <!-- AI TRANSFORMATION -->
 <div class="section">
-<h3>AI Transformation Results</h3>
+<h3>Transformation Results</h3>
 
 <p><strong>Outliers Detected:</strong> {{ report.transformation_summary.outliers_detected }}</p>
 
@@ -289,15 +342,12 @@ ul{
 <!-- DOWNLOAD BUTTONS -->
 <div class="download-section">
 
-<a href="{% url 'datacleaning:download_cleaned_dataset' dataset.id %}"
+<a href="{% url 'download_cleaned_dataset' dataset.id %}"
    class="btn btn-primary">
-   ⬇ Download Cleaned Dataset
+   Download Cleaned Dataset
 </a>
 
-<a href="{% url 'datacleaning:download_cleaning_report' dataset.id %}"
-   class="btn btn-secondary">
-   📄 Download Cleaning Report
-</a>
+
 
 </div>
 

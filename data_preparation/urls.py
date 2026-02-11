@@ -1,6 +1,7 @@
+#D:\S10\PROJECT\Data\data_preparation\urls.py
 from django.urls import path
 from . import views 
-app_name = "data_preparation"
+
 urlpatterns = [
     
 

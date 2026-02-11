@@ -137,7 +137,7 @@ def resend_otp_page(request):
 # ==================================================
 # 🔑 LOGIN WITH SESSION CREATION
 # ==================================================
-
+#D:\S10\PROJECT\Data\Authentication\views.py
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email", "").strip().lower()

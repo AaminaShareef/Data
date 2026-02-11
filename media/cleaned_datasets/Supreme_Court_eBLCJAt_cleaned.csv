@@ -1,0 +1,3 @@
+Case_ID,Term,Case_Name,Petitioner,Hearing_Date,Issue_Area,Decision_Type,Direction,Majority_Votes,Minority_Votes,Chief_Justice,Case_Status,Courtroom,Duration_Days,Victim  Count,State,District,outlier_flag,Hearing_Date_year,Hearing_Date_month,Hearing_Date_day
+0,-1.0,1,1,2015-01-01,0,1,1,0.0,1.0,1,1,-1.0,1.0,-1.0,1,0,0.0,2015,1,1
+1,1.0,0,0,2015-01-01,1,0,0,0.0,-1.0,0,0,1.0,-1.0,1.0,0,1,0.0,2015,1,1

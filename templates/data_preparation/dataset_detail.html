@@ -137,7 +137,7 @@ th {
     {% if dataset.is_processed %}Processed{% else %}Pending{% endif %}
   </p>
 
-  <h3>Preview (First 10 rows)</h3>
+  <h3>{{ preview_title }} (First 10 rows)</h3>
 
   <!-- ✅ FIXED SCROLLABLE TABLE -->
   <div class="table-wrapper">
@@ -160,15 +160,33 @@ th {
 
   <!-- ACTIONS -->
   <div class="actions">
-    <a href="{% url 'profile' %}" class="btn btn-outline">Go Back</a>
-    <form method="post" action="{% url 'datacleaning:cleaning_start' dataset.id %}">
 
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary">
-        Proceed to Cleaning
-    </button>
-</form>
-  </div>
+    <a href="{% url 'profile' %}" class="btn btn-outline">
+        Back to Profile
+    </a>
+
+    {% if not is_processed %}
+
+        <!-- PENDING DATASET -->
+        <form method="post" action="{% url 'cleaning_start' dataset.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+                Proceed to Cleaning
+            </button>
+        </form>
+
+    {% else %}
+
+        <!-- PROCESSED DATASET -->
+        <a href="{% url 'download_cleaned_dataset' dataset.id %}" 
+           class="btn btn-primary">
+            Download Cleaned Dataset
+        </a>
+
+    {% endif %}
+
+</div>
+
 
 </div>
 

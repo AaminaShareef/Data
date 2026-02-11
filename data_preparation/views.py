@@ -21,13 +21,14 @@ from django.core.files.base import ContentFile
 
 from data_preparation.models import Dataset, Report
 from Authentication.models import CustomUser
+from datacleaning.models import CleanedDataset
 
 logger = logging.getLogger(__name__)
 
 # ==================================================
 # 🏠 USER HOME
 # ==================================================
-
+#D:\S10\PROJECT\Data\data_preparation\views.py
 def home(request):
     if "user_id" not in request.session:
         return redirect("login")
@@ -152,7 +153,7 @@ def datasets_view(request):
 
 
 # ==================================================
-# 🔍 DATASET DETAIL
+# 🔍 DATASET DETAIL (SMART PREVIEW)
 # ==================================================
 
 def dataset_detail(request, dataset_id):
@@ -165,15 +166,51 @@ def dataset_detail(request, dataset_id):
         user_id=request.session["user_id"]
     )
 
-    if dataset.file.name.endswith(".csv"):
-        df = pd.read_csv(dataset.file.path)
+    # ---------------------------------------------
+    # Decide which dataset to preview
+    # ---------------------------------------------
+    preview_title = "Original Dataset Preview"
+
+    if dataset.is_processed:
+
+        cleaned = CleanedDataset.objects.filter(
+            original_dataset=dataset
+        ).order_by("-cleaned_at").first()
+
+        if cleaned and cleaned.file:
+            file_path = cleaned.file.path
+            preview_title = "Cleaned Dataset Preview"
+        else:
+            file_path = dataset.file.path
     else:
-        df = pd.read_excel(dataset.file.path)
+        file_path = dataset.file.path
+
+    # ---------------------------------------------
+    # Safely read dataset
+    # ---------------------------------------------
+    try:
+        if file_path.endswith(".csv"):
+            df = pd.read_csv(file_path)
+
+        elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+            df = pd.read_excel(file_path)
+
+        else:
+            df = pd.DataFrame()
+
+    except Exception as e:
+        print("Preview read error:", e)
+        df = pd.DataFrame()
+
+    # Only first 10 rows for preview
+    preview_df = df.head(10)
 
     context = {
         "dataset": dataset,
-        "columns": df.columns.tolist(),
-        "rows": df.head(10).values.tolist(),
+        "columns": preview_df.columns.tolist(),
+        "rows": preview_df.values.tolist(),
+        "preview_title": preview_title,
+        "is_processed": dataset.is_processed,
     }
 
     return render(request, "data_preparation/dataset_detail.html", context)

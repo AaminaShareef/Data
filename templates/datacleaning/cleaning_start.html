@@ -10,30 +10,16 @@
    ROOT THEME VARIABLES
 =================================*/
 
-:root{
-    --primary:#8BAF9F;
-    --primary-light:#AFC8A9;
-    --primary-soft:#C8D9B0;
-
-    --mint-soft:#E8F3EC;
-    --warm-beige:#F6EFE7;
-    --background:#FAFAF8;
-
-    --text-dark:#2F3E2F;
-    --text-medium:#7A756F;
-
-    --card:#FFFFFF;
-    --border:#E5E4E2;
-
-    --radius-soft:12px;
-    --radius-medium:18px;
-    --radius-large:24px;
-
-    --shadow-subtle:0px 2px 4px rgba(0,0,0,0.04);
-    --shadow-card:0px 4px 12px rgba(0,0,0,0.07);
-    --shadow-deep:0px 10px 30px rgba(0,0,0,0.10);
-
-    --transition:250ms cubic-bezier(0.4,0,0.2,1);
+:root {
+  --primary: #3c583c;
+  --primary-light: #4e7050;
+  --background-main: #F2EFEA;
+  --background-soft: #ECE7E0;
+  --card-bg: #ffffff;
+  --text-dark: #2B2B2B;
+  --text-muted: #667969ff;
+  --border-soft: rgba(0,0,0,0.08);
+  --shadow: 0 24px 60px rgba(0,0,0,0.08);
 }
 
 /* ================= GLOBAL ================= */
@@ -58,9 +44,9 @@ body::before{
     inset:0;
     background:
         radial-gradient(circle at top left,
-        rgba(139,175,159,0.18), transparent 60%),
+        rgba(149, 161, 153, 0.18), transparent 60%),
         radial-gradient(circle at bottom right,
-        rgba(246,239,231,0.25), transparent 70%);
+        rgba(156, 168, 154, 0.25), transparent 70%);
     z-index:-1;
 }
 
@@ -76,7 +62,7 @@ body::before{
 }
 
 .brand{
-    font-size:20px;
+    font-size:42px;
     font-weight:600;
     color:#3E5F4D;
 }
@@ -88,7 +74,7 @@ body::before{
     border:2px solid var(--primary);
     color:#3E5F4D;
     font-weight:500;
-    transition:var(--transition);
+    
 }
 
 .profile-btn:hover{
@@ -160,7 +146,7 @@ body::before{
 /* ================= CARD ================= */
 
 .card{
-    background:rgba(255,255,255,0.65);
+    background:rgba(207, 219, 206, 0.65);
     backdrop-filter:blur(14px);
     border-radius:var(--radius-large);
     padding:36px;
@@ -254,42 +240,21 @@ body::before{
 <!-- NAVBAR -->
 <div class="navbar">
     <div class="brand">Auralis Insights</div>
-    <a href="{% url 'data_preparation:profile' %}" class="profile-btn">
+    <a href="{% url 'profile' %}" class="profile-btn">
     Back to Profile
 </a>
 
 </div>
 
-<!-- WORKFLOW STEPS -->
-<div class="steps">
-    <div class="step done">
-        <div class="circle">1</div>
-        <div class="step-label">Upload</div>
-    </div>
 
-    <div class="step done">
-        <div class="circle">2</div>
-        <div class="step-label">Payment</div>
-    </div>
-
-    <div class="step active">
-        <div class="circle">3</div>
-        <div class="step-label">Cleaning</div>
-    </div>
-
-    <div class="step">
-        <div class="circle">4</div>
-        <div class="step-label">Report</div>
-    </div>
-</div>
 
 <div class="wrapper">
 
     <div class="card">
 
         <div class="header">
-            <h1>🧠 Intelligent Data Preparation</h1>
-            <p>Your dataset will be automatically analyzed, cleaned, and optimized for AI & analytics.</p>
+            <h1>Data Preparation</h1>
+            <p>Your dataset will be automatically analyzed, cleaned, and optimized for analytics.</p>
         </div>
 
         <div class="info-grid">
@@ -304,22 +269,13 @@ body::before{
             </div>
         </div>
 
-        <div class="description">
-            The Intelligent Cleaning Engine will:
-            <ul style="margin-top:10px; padding-left:20px;">
-                <li>Detect missing values and repair them automatically</li>
-                <li>Standardize inconsistent data entries</li>
-                <li>Identify abnormal or suspicious records</li>
-                <li>Correct data types and formats</li>
-                <li>Prepare features for Machine Learning models</li>
-            </ul>
-        </div>
+       
 
         <div class="button-area">
-            <form method="post" action="{% url 'datacleaning:run_cleaning' dataset.id %}">
+            <form method="post" action="{% url 'run_cleaning' dataset.id %}">
                 {% csrf_token %}
                 <button type="submit" class="primary-btn">
-                    Run Intelligent Cleaning
+                     Preprocess Data
                 </button>
             </form>
 

@@ -22,6 +22,8 @@ class DataProfiler:
         self.missing_values()
         self.duplicate_info()
         self.detect_datetime_columns()
+        self.numeric_statistics()
+        self.category_statistics()
 
         return self.report
 
@@ -71,7 +73,7 @@ class DataProfiler:
         self.report["duplicate_rows"] = int(duplicates)
 
     # ---------------------------------------------------
-    # 5. DATE COLUMN DETECTION (SMART FEATURE - FIXED)
+    # 5. DATE COLUMN DETECTION
     # ---------------------------------------------------
     def detect_datetime_columns(self):
         """
@@ -83,14 +85,14 @@ class DataProfiler:
 
         for col in self.df.columns:
 
-            # Only check text columns (realistic candidates for dates)
+            # Only check text columns
             if self.df[col].dtype != "object":
                 continue
 
             try:
                 converted = pd.to_datetime(self.df[col], errors="coerce")
 
-                # If at least 70% values became valid dates → it's a date column
+                # If at least 70% values are valid dates
                 valid_ratio = converted.notnull().sum() / len(self.df[col])
 
                 if valid_ratio > 0.7:
@@ -100,3 +102,34 @@ class DataProfiler:
                 continue
 
         self.report["datetime_columns"] = datetime_cols
+
+    # ---------------------------------------------------
+    # 6. NUMERIC STATISTICS
+    # ---------------------------------------------------
+    def numeric_statistics(self):
+
+        stats = {}
+        numeric_cols = self.df.select_dtypes(include=["int64", "float64"]).columns
+
+        for col in numeric_cols:
+            stats[col] = {
+                "min": float(self.df[col].min()),
+                "max": float(self.df[col].max()),
+                "mean": float(self.df[col].mean()),
+                "std_dev": float(self.df[col].std())
+            }
+
+        self.report["numeric_statistics"] = stats
+
+    # ---------------------------------------------------
+    # 7. CATEGORY STATISTICS
+    # ---------------------------------------------------
+    def category_statistics(self):
+
+        category_info = {}
+        cat_cols = self.df.select_dtypes(include=["object"]).columns
+
+        for col in cat_cols:
+            category_info[col] = int(self.df[col].nunique())
+
+        self.report["category_counts"] = category_info
