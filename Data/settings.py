@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'Authentication',
     'data_preparation',
     'datacleaning',
+    'kpi_engine',
+
+    
 ]
 
 MIDDLEWARE = [

@@ -233,6 +233,20 @@ ul{
     transform:translateY(0px) scale(0.97);
     box-shadow:0 3px 8px rgba(95,135,115,0.25);
 }
+/* AI Analysis Button */
+.btn-analysis{
+    background:#3E5F4D;   /* main sage green */
+    color:white;
+    border:2px solid #3E5F4D;
+}
+
+.btn-analysis:hover{
+    background:#2f4b3d;
+    border-color:#2f4b3d;
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
 
 </style>
 </head>
@@ -342,10 +356,24 @@ ul{
 <!-- DOWNLOAD BUTTONS -->
 <div class="download-section">
 
+<div class="download-section">
+
+
+<!-- Download cleaned dataset -->
 <a href="{% url 'download_cleaned_dataset' dataset.id %}"
    class="btn btn-primary">
    Download Cleaned Dataset
 </a>
+
+<!-- NEW BUTTON → GO TO AI ANALYSIS DASHBOARD -->
+<a href="{% url 'generate_kpis' dataset.id %}"
+class="btn btn-analysis">
+Proceed to AI Analysis</a>
+
+
+
+</div>
+
 
 
 

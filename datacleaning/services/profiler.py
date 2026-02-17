@@ -72,34 +72,43 @@ class DataProfiler:
         duplicates = self.df.duplicated().sum()
         self.report["duplicate_rows"] = int(duplicates)
 
-    # ---------------------------------------------------
-    # 5. DATE COLUMN DETECTION
-    # ---------------------------------------------------
     def detect_datetime_columns(self):
         """
-        Detects real date columns intelligently.
-        Only object/string columns will be tested.
+        Detects real date columns intelligently without pandas warnings.
         """
 
         datetime_cols = []
 
         for col in self.df.columns:
 
-            # Only check text columns
+            # Only object/string columns can be dates
             if self.df[col].dtype != "object":
                 continue
 
-            try:
-                converted = pd.to_datetime(self.df[col], errors="coerce")
+            series = self.df[col].dropna().astype(str)
 
-                # If at least 70% values are valid dates
-                valid_ratio = converted.notnull().sum() / len(self.df[col])
-
-                if valid_ratio > 0.7:
-                    datetime_cols.append(col)
-
-            except Exception:
+            # Skip very small columns
+            if len(series) < 5:
                 continue
+
+            # sample only 50 values (faster + safer)
+            sample = series.sample(min(50, len(series)), random_state=42)
+
+            success_count = 0
+
+            for value in sample:
+                try:
+                    # Try strict ISO first (fast)
+                    pd.Timestamp(value)
+                    success_count += 1
+                except Exception:
+                    continue
+
+            ratio = success_count / len(sample)
+
+            # If most sampled values behave like dates → it's a date column
+            if ratio > 0.6:
+                datetime_cols.append(col)
 
         self.report["datetime_columns"] = datetime_cols
 

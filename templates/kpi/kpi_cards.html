@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Decision Intelligence Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--primary:#8BAF9F;
+--primary-light:#AFC8A9;
+--primary-soft:#C8D9B0;
+--mint:#E8F3EC;
+--beige:#F6EFE7;
+--bg:#FAFAF8;
+--card:#FFFFFF;
+--text-dark:#3A3A3A;
+--text-medium:#7A756F;
+--border:#E5E4E2;
+}
+
+body{
+    font-family: 'Inter', sans-serif;
+    margin:0;
+    background: linear-gradient(180deg,#FAFAF8,#F6EFE7);
+    color:var(--text-dark);
+}
+
+/* Header */
+
+.header{
+    padding:28px 48px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.title{
+    font-size:26px;
+    font-weight:600;
+}
+
+.subtitle{
+    color:var(--text-medium);
+    margin-top:6px;
+}
+
+/* Layout */
+
+.container{
+    max-width:1280px;
+    margin:auto;
+    padding:24px 40px 60px;
+}
+
+/* Glass Card */
+
+.card{
+    background:rgba(255,255,255,0.55);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0px 6px 18px rgba(0,0,0,0.06);
+    transition:all .25s ease;
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    box-shadow:0px 10px 26px rgba(0,0,0,0.08);
+}
+
+/* KPI Grid */
+
+.kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:22px;
+    margin-top:28px;
+}
+
+.kpi-title{
+    font-size:14px;
+    color:var(--text-medium);
+    margin-bottom:12px;
+}
+
+.kpi-value{
+    font-size:32px;
+    font-weight:600;
+    color:var(--primary);
+}
+
+/* Health Score */
+
+.health{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.health-bar{
+    height:10px;
+    width:100%;
+    background:#eee;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.health-fill{
+    height:100%;
+    background:linear-gradient(90deg,#8BAF9F,#C8D9B0);
+}
+
+/* Summary Box */
+
+.summary{
+    margin-top:32px;
+    padding:28px;
+    border-radius:24px;
+    background:linear-gradient(160deg,#FFFFFF,#FAFAF8,#F6EFE7);
+    box-shadow:0px 8px 24px rgba(0,0,0,0.08);
+}
+
+.summary h3{
+    margin:0 0 12px;
+}
+
+.summary p{
+    color:var(--text-medium);
+    line-height:1.6;
+}
+
+/* Back Button */
+
+.back-btn{
+    display:inline-block;
+    margin-top:30px;
+    padding:12px 22px;
+    border-radius:999px;
+    background:var(--primary);
+    color:white;
+    text-decoration:none;
+    transition:.25s;
+}
+
+.back-btn:hover{
+    background:var(--primary-light);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div>
+        <div class="title">AI Decision Intelligence Dashboard</div>
+        <div class="subtitle">Automatic KPI & Predictive Insights</div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+
+        <div class="card">
+            <div class="kpi-title">Total Records</div>
+            <div class="kpi-value">{{ dataset.total_records }}</div>
+        </div>
+
+        <div class="card">
+            <div class="kpi-title">Number of Features</div>
+            <div class="kpi-value">{{ dataset.total_features }}</div>
+        </div>
+
+        <div class="card">
+            <div class="kpi-title">Anomaly Count</div>
+            <div class="kpi-value">{{ dataset.anomaly_count }}</div>
+        </div>
+
+        <div class="card">
+            <div class="kpi-title">Predicted Next Value</div>
+            <div class="kpi-value">
+                {% if dataset.predicted_next_value %}
+                    {{ dataset.predicted_next_value|floatformat:2 }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="kpi-title">Missing Data %</div>
+            <div class="kpi-value">{{ dataset.missing_percentage|floatformat:2 }}%</div>
+        </div>
+
+        <div class="card">
+            <div class="kpi-title">Duplicate %</div>
+            <div class="kpi-value">{{ dataset.duplicate_percentage|floatformat:2 }}%</div>
+        </div>
+
+    </div>
+
+    <!-- DATA HEALTH SCORE -->
+    <div class="summary">
+        <h3>Data Health Score: {{ dataset.data_health_score|floatformat:1 }}/100</h3>
+
+        <div class="health">
+            <div class="health-bar">
+                <div class="health-fill" style="width:{{ dataset.data_health_score }}%"></div>
+            </div>
+        </div>
+
+        <p style="margin-top:18px;">
+            {{ dataset.business_summary }}
+        </p>
+    </div>
+
+    <a href="{% url 'profile' %}" class="back-btn">Back to Profile</a>
+
+
+</div>
+
+</body>
+</html>

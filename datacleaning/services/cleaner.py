@@ -46,39 +46,42 @@ class DataCleaner:
 
         self.cleaning_summary["duplicates_removed"] = before - after
 
-    # ---------------------------------------------------
-    # 2. FUZZY DUPLICATE REMOVAL
+        # ---------------------------------------------------
+    # 2. SAFE FUZZY DUPLICATE STANDARDIZATION
+    # (NO ROW DELETION — ONLY VALUE NORMALIZATION)
     # ---------------------------------------------------
     def fuzzy_duplicate_removal(self):
 
         text_cols = self.df.select_dtypes(include=["object"]).columns
-        removed = 0
+        replacements = 0
 
         for col in text_cols:
 
-            seen = {}
-            drop_index = []
+            values = self.df[col].dropna().astype(str).unique().tolist()
+            canonical_map = {}
 
-            for i, val in self.df[col].items():
+            for i in range(len(values)):
+                base = values[i].strip()
 
-                if pd.isna(val):
+                if base in canonical_map:
                     continue
 
-                val = str(val)
+                canonical_map[base] = base
 
-                for s in seen:
-                    similarity = SequenceMatcher(None, val, s).ratio()
+                for j in range(i + 1, len(values)):
+                    compare = values[j].strip()
 
-                    if similarity > 0.90:
-                        drop_index.append(i)
-                        removed += 1
-                        break
+                    similarity = SequenceMatcher(None, base.lower(), compare.lower()).ratio()
 
-                seen[val] = True
+                    # treat as same category if extremely similar
+                    if similarity > 0.92:
+                        canonical_map[compare] = base
+                        replacements += 1
 
-            self.df.drop(index=drop_index, inplace=True)
+            # Apply replacements safely
+            self.df[col] = self.df[col].astype(str).map(lambda x: canonical_map.get(x.strip(), x))
 
-        self.cleaning_summary["fuzzy_duplicates_removed"] = removed
+        self.cleaning_summary["fuzzy_duplicates_removed"] = replacements
 
     # ---------------------------------------------------
     # 3. BOOLEAN CONVERSION

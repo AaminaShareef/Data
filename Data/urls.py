@@ -8,9 +8,11 @@ urlpatterns = [
     path("", include("Authentication.urls")),
     path("", include('data_preparation.urls')),
     path("cleaning/", include('datacleaning.urls')),
+    path('kpi/', include('kpi_engine.urls')),
+
 
 ]
-
+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # ✅ MEDIA FILES (ONLY HERE)
 if settings.DEBUG:
     urlpatterns += static(
