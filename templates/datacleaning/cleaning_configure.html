@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis Insights · Data Cleaning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:       #2E4D31;
+  --primary-mid:   #3d6641;
+  --primary-light: #557A59;
+  --primary-pale:  #EAF2EB;
+  --primary-glow:  rgba(46,77,49,0.12);
+  --accent:        #7FB069;
+  --bg:            #F5EEE6;
+  --bg2:           #EDE6DC;
+  --card:          #FFFFFF;
+  --text:          #1E1E1E;
+  --text-soft:     #4A5568;
+  --muted:         #8A9E8D;
+  --border:        rgba(46,77,49,0.10);
+  --border-strong: rgba(46,77,49,0.18);
+  --shadow-sm:     0 2px 8px rgba(46,77,49,0.07);
+  --shadow-md:     0 6px 24px rgba(46,77,49,0.10);
+  --shadow-lg:     0 16px 48px rgba(46,77,49,0.13);
+  --radius-sm:     8px;
+  --radius:        14px;
+  --radius-lg:     20px;
+  --transition:    all 0.20s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 5% 10%, rgba(127,176,105,0.13), transparent),
+    radial-gradient(ellipse 50% 60% at 95% 85%, rgba(46,77,49,0.10), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(14px);
+  background: rgba(245,238,230,0.85);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-logo svg { width: 18px; height: 18px; fill: #fff; }
+.brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+.back-btn {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-light);
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-strong);
+  transition: var(--transition);
+  background: transparent;
+}
+.back-btn:hover {
+  background: var(--primary-pale);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ── Progress ── */
+.progress-wrap {
+  max-width: 560px;
+  margin: 28px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+.progress-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+.p-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.p-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #D9D9D9;
+  z-index: 0;
+}
+.p-step.done:not(:last-child)::after { background: var(--accent); }
+.p-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #D9D9D9;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  transition: var(--transition);
+}
+.p-step.done .p-circle { background: var(--accent); color: #fff; }
+.p-step.active .p-circle {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--primary-pale), 0 0 0 6px rgba(46,77,49,0.15);
+}
+.p-label {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 0.3px;
+}
+.p-step.active .p-label { color: var(--primary); font-weight: 700; }
+.p-step.done .p-label { color: var(--primary-light); }
+
+/* ── Page header ── */
+.page-header {
+  max-width: 1100px;
+  margin: 28px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+.page-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+.page-header p {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin-top: 4px;
+}
+
+/* ── Main grid ── */
+.main-grid {
+  max-width: 1100px;
+  margin: 22px auto 60px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  grid-template-rows: auto auto;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+@media(max-width:860px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.card-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-icon svg { width: 18px; height: 18px; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--primary); }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.card-body { padding: 18px 22px; }
+
+/* ── Dataset overview (left column) ── */
+.dataset-col {
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+@media(max-width:860px) { .dataset-col { grid-row: auto; } }
+
+/* file chip */
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--primary-pale);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+.file-chip-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.file-chip-icon svg { width: 16px; height: 16px; fill: #fff; }
+.file-chip-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-chip-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+/* warn banner */
+.warn-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 13px;
+  background: #FDF3E3;
+  border: 1px solid #F5CBA7;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #784212;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.warn-banner svg { flex-shrink: 0; margin-top: 1px; }
+
+/* mini stats grid */
+.mini-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.mstat {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 11px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+.mstat:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.mstat-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+.mstat-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.mstat.danger { background: #FEF2F2; border-color: #FECACA; }
+.mstat.danger .mstat-num { color: #C0392B; }
+
+/* column breakdown */
+.col-breakdown {
+  margin-top: 14px;
+}
+.breakdown-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 9px;
+}
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.breakdown-row:last-child { border-bottom: none; }
+.breakdown-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btype-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.btype-label { font-size: 12px; color: var(--text-soft); font-weight: 500; }
+.btype-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'DM Mono', monospace;
+  background: var(--primary-pale);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.btype-bar-wrap { flex: 1; margin: 0 10px; height: 4px; background: var(--bg2); border-radius: 99px; overflow: hidden; }
+.btype-bar { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+
+/* duplicate preview card */
+.dup-card { }
+.dup-trigger {
+  width: 100%;
+  background: none;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+}
+.dup-trigger:hover {
+  background: var(--primary-pale);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.dup-result { margin-top: 14px; display: none; }
+.dup-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.dup-count-badge.ok { background: #EDFAF0; color: #276749; }
+.dup-count-badge.warn { background: #FDF3E3; color: #784212; }
+.dup-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  max-height: 220px;
+  overflow-y: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+thead th {
+  background: var(--primary-pale);
+  color: var(--primary);
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 700;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+td { padding: 6px 10px; border-top: 1px solid var(--border); color: var(--text-soft); }
+tr:hover td { background: var(--primary-pale); }
+
+/* ── Right column – options ── */
+.options-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* section divider label */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 12px;
+}
+
+/* radio cards */
+.radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.rcard {
+  flex: 1;
+  min-width: 80px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 11px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--bg);
+  position: relative;
+}
+.rcard input[type=radio] { display: none; }
+.rcard:hover { border-color: var(--primary-light); background: var(--primary-pale); }
+.rcard.selected {
+  border-color: var(--primary);
+  background: var(--primary-pale);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.rcard-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+.rcard.selected .rcard-check {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.rcard.selected .rcard-check::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+.rcard-emoji { font-size: 18px; display: block; margin-bottom: 6px; line-height: 1; }
+.rcard-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.rcard-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+/* tooltip */
+.tip-wrap { position: relative; display: inline-flex; margin-left: 5px; }
+.tip-icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #C8D9CA;
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+}
+.tip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 210px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11.5px;
+  border-radius: 9px;
+  padding: 9px 12px;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  line-height: 1.5;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+.tip-box::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--primary);
+}
+.tip-wrap:hover .tip-box { visibility: visible; opacity: 1; }
+
+.opt-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-soft);
+  margin-bottom: 9px;
+  display: flex;
+  align-items: center;
+}
+
+/* alert info */
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 13px;
+  background: #EAF4FF;
+  border: 1px solid #90C8EF;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #1A5276;
+  line-height: 1.5;
+}
+
+/* ── Full-width submit row ── */
+.submit-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 20px 28px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.submit-meta {
+  flex: 1;
+  min-width: 180px;
+}
+.submit-meta-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.submit-meta-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.run-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: var(--transition);
+  box-shadow: 0 4px 18px rgba(46,77,49,0.28);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.run-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+}
+.run-btn:hover {
+  background: var(--primary-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(46,77,49,0.35);
+}
+.run-btn:active { transform: translateY(0); }
+.run-btn.loading .btn-text { opacity: 0.6; }
+.run-btn.loading .spinner { display: block; }
+.spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Animations ── */
+.card, .submit-row {
+  animation: fadeUp 0.35s ease both;
+}
+.dataset-col .card:nth-child(1) { animation-delay: 0.05s; }
+.dataset-col .card:nth-child(2) { animation-delay: 0.10s; }
+.options-col .card:nth-child(1) { animation-delay: 0.12s; }
+.options-col .card:nth-child(2) { animation-delay: 0.17s; }
+.submit-row { animation-delay: 0.22s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </div>
+    <a href="{% url 'profile' %}" class="back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Profile
+    </a>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="progress-track">
+    <div class="p-step done">
+      <div class="p-circle">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="p-label">Upload</div>
+    </div>
+    <div class="p-step active">
+      <div class="p-circle">2</div>
+      <div class="p-label">Clean</div>
+    </div>
+    <div class="p-step">
+      <div class="p-circle">3</div>
+      <div class="p-label">Report</div>
+    </div>
+    <div class="p-step">
+      <div class="p-circle">4</div>
+      <div class="p-label">Analyse</div>
+    </div>
+  </div>
+</div>
+
+<!-- Page header -->
+<div class="page-header">
+  <h1>Configure Cleaning</h1>
+  <p>Review dataset insights and choose how the engine should process your data.</p>
+</div>
+
+<form method="post" action="{% url 'run_cleaning' dataset.id %}" id="cleanForm">
+{% csrf_token %}
+
+<div class="main-grid">
+
+  <!-- ── LEFT COLUMN: Dataset ── -->
+  <div class="dataset-col">
+
+    <!-- Overview card -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18M3 9h18"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Dataset Overview</div>
+          <div class="card-sub">Shape, quality & composition</div>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <!-- File chip -->
+        <div class="file-chip">
+          <div class="file-chip-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="file-chip-name">{{ dataset.file_name }}</div>
+            <div class="file-chip-date">Uploaded {{ dataset.uploaded_at|date:"d M Y, H:i" }}</div>
+          </div>
+        </div>
+
+        {% if already_cleaned %}
+        <div class="warn-banner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Already cleaned once — re-running will overwrite the previous result.
+        </div>
+        {% endif %}
+
+        <!-- Mini stats -->
+        <div class="mini-stats">
+          <div class="mstat">
+            <div class="mstat-num">{{ quick_stats.rows|default:"—" }}</div>
+            <div class="mstat-label">Rows</div>
+          </div>
+          <div class="mstat">
+            <div class="mstat-num">{{ quick_stats.columns|default:"—" }}</div>
+            <div class="mstat-label">Cols</div>
+          </div>
+          <div class="mstat {% if quick_stats.missing_cells > 0 %}danger{% endif %}">
+            <div class="mstat-num">{{ quick_stats.missing_cells|default:"0" }}</div>
+            <div class="mstat-label">Missing</div>
+          </div>
+          <div class="mstat {% if quick_stats.duplicate_rows > 0 %}danger{% endif %}">
+            <div class="mstat-num">{{ quick_stats.duplicate_rows|default:"0" }}</div>
+            <div class="mstat-label">Dupes</div>
+          </div>
+          <div class="mstat">
+            <div class="mstat-num">{{ quick_stats.numeric_columns|default:"—" }}</div>
+            <div class="mstat-label">Numeric</div>
+          </div>
+          <div class="mstat">
+            <div class="mstat-num">{{ quick_stats.categorical_cols|default:"—" }}</div>
+            <div class="mstat-label">Text</div>
+          </div>
+        </div>
+
+        <!-- Column breakdown bar -->
+        <div class="col-breakdown">
+          <div class="breakdown-title">Column types</div>
+
+          {% with total=quick_stats.columns|default:1 %}
+          <div class="breakdown-row">
+            <div class="breakdown-left">
+              <div class="btype-dot" style="background:#2E4D31"></div>
+              <div class="btype-label">Numeric</div>
+            </div>
+            <div class="btype-bar-wrap">
+              <div class="btype-bar" style="background:var(--primary);width:{% widthratio quick_stats.numeric_columns total 100 %}%"></div>
+            </div>
+            <div class="btype-count">{{ quick_stats.numeric_columns|default:"0" }}</div>
+          </div>
+
+          <div class="breakdown-row">
+            <div class="breakdown-left">
+              <div class="btype-dot" style="background:#7FB069"></div>
+              <div class="btype-label">Text / Category</div>
+            </div>
+            <div class="btype-bar-wrap">
+              <div class="btype-bar" style="background:var(--accent);width:{% widthratio quick_stats.categorical_cols total 100 %}%"></div>
+            </div>
+            <div class="btype-count">{{ quick_stats.categorical_cols|default:"0" }}</div>
+          </div>
+          {% endwith %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Duplicate preview card -->
+    <div class="card dup-card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><rect x="8" y="8" width="12" height="12" rx="2"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Duplicate Preview</div>
+          <div class="card-sub">Rows flagged for removal</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-banner" style="margin-bottom:12px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Detects exact, case-insensitive, and partial key duplicates.
+        </div>
+        <button type="button" class="dup-trigger" id="previewDupBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Preview Duplicate Rows
+        </button>
+        <div class="dup-result" id="dupResult">
+          <div id="dupBadge" class="dup-count-badge"></div>
+          <div class="dup-table-wrap" id="dupTableWrap"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /dataset-col -->
+
+  <!-- ── RIGHT COLUMN: Options ── -->
+  <div class="options-col">
+
+    <!-- Outlier card -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Outlier Handling</div>
+          <div class="card-sub">What to do with extreme values</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="opt-label">
+          Strategy
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box">Flag: adds a marker column — no data changed. Cap: clamps extreme values to the IQR fence. Remove: deletes entire outlier rows.</span>
+          </span>
+        </div>
+        <div class="radio-group">
+          <label class="rcard selected" id="lbl-flag">
+            <input type="radio" name="outlier_action" value="flag" checked onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">🚩</span>
+            <div class="rcard-name">Flag Only</div>
+            <div class="rcard-desc">Mark, don't change</div>
+          </label>
+          <label class="rcard" id="lbl-cap">
+            <input type="radio" name="outlier_action" value="cap" onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">📌</span>
+            <div class="rcard-name">Cap Values</div>
+            <div class="rcard-desc">Winsorise to fence</div>
+          </label>
+          <label class="rcard" id="lbl-remove">
+            <input type="radio" name="outlier_action" value="remove" onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">🗑️</span>
+            <div class="rcard-name">Remove Rows</div>
+            <div class="rcard-desc">Delete outlier rows</div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Encoding & Scaling card -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Encoding & Scaling</div>
+          <div class="card-sub">Prepare columns for analysis</div>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="opt-label" style="margin-bottom:9px">
+          Categorical Encoding
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box">Label: assigns each category a number (1,2,3…). One-Hot: creates a binary yes/no column per category — better for ML.</span>
+          </span>
+        </div>
+        <div class="radio-group" style="margin-bottom:18px">
+          <label class="rcard selected" id="lbl-label">
+            <input type="radio" name="encoding" value="label" checked onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">🏷️</span>
+            <div class="rcard-name">Label</div>
+            <div class="rcard-desc">Compact, ordered</div>
+          </label>
+          <label class="rcard" id="lbl-onehot">
+            <input type="radio" name="encoding" value="onehot" onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">1️⃣</span>
+            <div class="rcard-name">One-Hot</div>
+            <div class="rcard-desc">Binary columns</div>
+          </label>
+        </div>
+
+        <div class="opt-label">
+          Numeric Scaling
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box">Standard: Z-score normalisation (mean=0, std=1). MinMax: scales to 0–1 range. None: keep original values.</span>
+          </span>
+        </div>
+        <div class="radio-group">
+          <label class="rcard selected" id="lbl-standard">
+            <input type="radio" name="scaling" value="standard" checked onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">📊</span>
+            <div class="rcard-name">Standard</div>
+            <div class="rcard-desc">Z-score, mean=0</div>
+          </label>
+          <label class="rcard" id="lbl-minmax">
+            <input type="radio" name="scaling" value="minmax" onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">📏</span>
+            <div class="rcard-name">Min-Max</div>
+            <div class="rcard-desc">Scale to 0–1</div>
+          </label>
+          <label class="rcard" id="lbl-none">
+            <input type="radio" name="scaling" value="none" onchange="selectRadio(this)">
+            <div class="rcard-check"></div>
+            <span class="rcard-emoji">🔢</span>
+            <div class="rcard-name">None</div>
+            <div class="rcard-desc">Keep as-is</div>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /options-col -->
+
+  <!-- ── Submit row ── -->
+  <div class="submit-row">
+    <div class="submit-meta">
+      <div class="submit-meta-title">Ready to clean?</div>
+      <div class="submit-meta-desc">The engine will impute, deduplicate, encode, and transform your dataset automatically. Large files may take a few moments.</div>
+    </div>
+    <button type="submit" class="run-btn" id="runBtn">
+      <div class="spinner"></div>
+      <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span class="btn-text">Run Intelligent Cleaning</span>
+    </button>
+  </div>
+
+</div><!-- /main-grid -->
+</form>
+
+<script>
+function selectRadio(input) {
+  const group = input.closest('.radio-group');
+  group.querySelectorAll('.rcard').forEach(c => c.classList.remove('selected'));
+  input.closest('.rcard').classList.add('selected');
+}
+
+document.getElementById('cleanForm').addEventListener('submit', function() {
+  const btn = document.getElementById('runBtn');
+  btn.classList.add('loading');
+  btn.querySelector('.btn-text').textContent = 'Processing…';
+  btn.querySelector('.btn-icon').style.display = 'none';
+  btn.disabled = true;
+});
+
+document.getElementById('previewDupBtn').addEventListener('click', function() {
+  const btn = this;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading…`;
+  btn.disabled = true;
+
+  fetch("{% url 'preview_duplicates_view' dataset.id %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+  })
+  .then(r => r.json())
+  .then(data => {
+    const result = document.getElementById('dupResult');
+    const badge  = document.getElementById('dupBadge');
+    const wrap   = document.getElementById('dupTableWrap');
+    result.style.display = 'block';
+
+    if (data.count === 0) {
+      badge.className = 'dup-count-badge ok';
+      badge.textContent = '✓ No duplicate rows detected';
+      wrap.innerHTML = '';
+    } else {
+      badge.className = 'dup-count-badge warn';
+      badge.textContent = `⚠ ${data.count} duplicate row(s) found — showing first 10`;
+      const cols = Object.keys(data.preview[0] || {});
+      let html = '<table><thead><tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+      data.preview.forEach(row => {
+        html += '<tr>' + cols.map(c=>`<td>${row[c] !== null ? row[c] : '<em style="color:#aaa">null</em>'}</td>`).join('') + '</tr>';
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg> Refresh Preview`;
+    btn.disabled = false;
+  })
+  .catch(() => {
+    btn.innerHTML = '✗ Preview failed — try again';
+    btn.disabled = false;
+  });
+});
+</script>
+</body>
+</html>
