@@ -1,60 +1,82 @@
 """
-quality_scorer.py
------------------
-Stand-alone Data Quality Scoring module for Auralis Insights.
+quality_scorer.py  –  Advanced Data Quality Scoring  (Production v2)
+=====================================================================
+Six quality dimensions:
+  1. Completeness  – proportion of non-missing cells
+  2. Uniqueness    – proportion of non-duplicate rows
+  3. Consistency   – domain constraint adherence
+  4. Validity      – dtype & value-format correctness
+  5. Conformity    – categorical values within known sets
+  6. Overall Score – weighted average
 
-Produces four metrics:
-  - Completeness  : how full the data is (no missing values)
-  - Uniqueness    : how non-duplicated the data is
-  - Consistency   : how well data respects known domain constraints
-  - Overall Score : weighted average (40% completeness, 30% uniqueness, 30% consistency)
+Weights: completeness 0.30 | uniqueness 0.20 | consistency 0.20
+         validity 0.15 | conformity 0.15
 """
 
+from __future__ import annotations
 import pandas as pd
+import numpy as np
 
 
 class DataQualityScorer:
     """
-    Compute a structured data quality score for a DataFrame.
+    Compute a structured, multi-dimensional data quality score.
 
     Usage
     -----
         scorer = DataQualityScorer(df)
         report = scorer.compute()
-        # report = {
-        #   "completeness":  95.3,
-        #   "uniqueness":    98.7,
-        #   "consistency":   87.5,
-        #   "overall":       94.2,
-        #   "grade":         "A",
-        #   "summary":       "Data quality is high ..."
-        # }
     """
 
-    # Weights must sum to 1.0
     WEIGHTS = {
-        "completeness": 0.40,
-        "uniqueness":   0.30,
-        "consistency":  0.30,
+        "completeness": 0.30,
+        "uniqueness":   0.20,
+        "consistency":  0.20,
+        "validity":     0.15,
+        "conformity":   0.15,
     }
 
-    def __init__(self, dataframe: pd.DataFrame):
+    # Domain rules: keyword → bounds
+    _DOMAIN_RULES: list[tuple[tuple[str, ...], dict]] = [
+        (("age",),                                      {"min": 0, "max": 120}),
+        (("percent", "pct", "rate", "ratio",
+          "attendance", "score", "completion"),          {"min": 0, "max": 100}),
+        (("salary", "wage", "income", "revenue",
+          "profit", "price", "cost", "budget",
+          "expense", "amount", "payment"),              {"min": 0}),
+        (("quantity", "qty", "count", "units",
+          "stock", "inventory", "items"),               {"min": 0}),
+        (("latitude", "lat"),                           {"min": -90, "max": 90}),
+        (("longitude", "lon", "lng"),                   {"min": -180, "max": 180}),
+        (("year",),                                     {"min": 1800, "max": 2100}),
+        (("month",),                                    {"min": 1, "max": 12}),
+        (("day",),                                      {"min": 1, "max": 31}),
+        (("hour",),                                     {"min": 0, "max": 23}),
+        (("probability", "prob", "confidence"),         {"min": 0.0, "max": 1.0}),
+    ]
+
+    def __init__(self, dataframe: pd.DataFrame) -> None:
         self.df = dataframe
 
-    # ------------------------------------------------------------------
+    # ──────────────────────────────────────────────────────────────────────
     # PUBLIC API
-    # ------------------------------------------------------------------
+    # ──────────────────────────────────────────────────────────────────────
+
     def compute(self) -> dict:
         completeness = self.completeness_score()
         uniqueness   = self.uniqueness_score()
         consistency  = self.consistency_score()
+        validity     = self.validity_score()
+        conformity   = self.conformity_score()
 
-        overall = (
+        overall = round(
             completeness * self.WEIGHTS["completeness"]
-            + uniqueness * self.WEIGHTS["uniqueness"]
-            + consistency * self.WEIGHTS["consistency"]
+            + uniqueness   * self.WEIGHTS["uniqueness"]
+            + consistency  * self.WEIGHTS["consistency"]
+            + validity     * self.WEIGHTS["validity"]
+            + conformity   * self.WEIGHTS["conformity"],
+            2,
         )
-        overall = round(overall, 2)
 
         grade   = self._grade(overall)
         summary = self._summary(overall)
@@ -63,129 +85,145 @@ class DataQualityScorer:
             "completeness": round(completeness, 2),
             "uniqueness":   round(uniqueness,   2),
             "consistency":  round(consistency,  2),
+            "validity":     round(validity,     2),
+            "conformity":   round(conformity,   2),
             "overall":      overall,
             "grade":        grade,
             "summary":      summary,
+            "breakdown": {
+                "total_cells":    int(self.df.shape[0] * self.df.shape[1]),
+                "missing_cells":  int(self.df.isnull().sum().sum()),
+                "duplicate_rows": int(self.df.duplicated().sum()),
+                "total_rows":     int(self.df.shape[0]),
+            },
         }
 
-    # ------------------------------------------------------------------
-    # 1. COMPLETENESS — measures non-missing data
-    # ------------------------------------------------------------------
+    # ──────────────────────────────────────────────────────────────────────
+    # DIMENSIONS
+    # ──────────────────────────────────────────────────────────────────────
+
     def completeness_score(self) -> float:
-        """
-        100 % = no missing values anywhere.
-        Score = (1 - missing_cell_ratio) * 100
-        """
-        total_cells  = self.df.shape[0] * self.df.shape[1]
-        if total_cells == 0:
+        total = self.df.shape[0] * self.df.shape[1]
+        if total == 0:
             return 100.0
-        missing_cells = int(self.df.isnull().sum().sum())
-        score = (1 - missing_cells / total_cells) * 100
-        return max(0.0, min(100.0, score))
+        missing = int(self.df.isnull().sum().sum())
+        return max(0.0, min(100.0, (1 - missing / total) * 100))
 
-    # ------------------------------------------------------------------
-    # 2. UNIQUENESS — measures non-duplicated rows
-    # ------------------------------------------------------------------
     def uniqueness_score(self) -> float:
-        """
-        100 % = every row is unique.
-        Score = (1 - duplicate_ratio) * 100
-        """
-        n_rows = len(self.df)
-        if n_rows == 0:
+        n = len(self.df)
+        if n == 0:
             return 100.0
-        dup_count = int(self.df.duplicated().sum())
-        score = (1 - dup_count / n_rows) * 100
-        return max(0.0, min(100.0, score))
+        dups = int(self.df.duplicated().sum())
+        return max(0.0, min(100.0, (1 - dups / n) * 100))
 
-    # ------------------------------------------------------------------
-    # 3. CONSISTENCY — measures domain constraint adherence
-    # ------------------------------------------------------------------
     def consistency_score(self) -> float:
-        """
-        Checks known domain rules:
-          - age       → must be 0–120
-          - percent / attendance → must be 0–100
-          - salary / amount / revenue / price → must be >= 0
-          - quantity / units / count → must be >= 0
-
-        Score = (valid_values / total_checked_values) * 100
-        """
-        total_checked   = 0
-        total_violations = 0
-
-        rules = {
-            ("age",):                              {"min": 0, "max": 120},
-            ("percent", "attendance", "rate"):     {"min": 0, "max": 100},
-            ("salary", "amount", "revenue",
-             "price", "profit", "income",
-             "budget", "cost", "expense"):         {"min": 0},
-            ("quantity", "units", "count",
-             "stock", "qty"):                      {"min": 0},
-        }
-
+        """Domain constraint validation across numeric columns."""
+        total_checked, violations = 0, 0
         numeric_cols = self.df.select_dtypes(include=["int64", "float64"]).columns
 
         for col in numeric_cols:
             col_lower = col.lower()
-
-            for keywords, bounds in rules.items():
+            for keywords, bounds in self._DOMAIN_RULES:
                 if any(kw in col_lower for kw in keywords):
                     series = self.df[col].dropna()
                     total_checked += len(series)
-
                     if "min" in bounds:
-                        total_violations += int((series < bounds["min"]).sum())
+                        violations += int((series < bounds["min"]).sum())
                     if "max" in bounds:
-                        total_violations += int((series > bounds["max"]).sum())
-                    break  # only apply one rule per column
+                        violations += int((series > bounds["max"]).sum())
+                    break
 
         if total_checked == 0:
-            return 100.0   # no constrained columns → assume consistent
+            return 100.0
+        return max(0.0, min(100.0, (1 - violations / total_checked) * 100))
 
-        score = (1 - total_violations / total_checked) * 100
+    def validity_score(self) -> float:
+        """
+        Measures how well column dtypes match their apparent content.
+        Penalises object columns that are actually numeric (not yet converted).
+        """
+        issues = 0
+        total  = len(self.df.columns)
+        if total == 0:
+            return 100.0
+
+        for col in self.df.select_dtypes(include="object").columns:
+            series = self.df[col].dropna().astype(str)
+            if series.empty:
+                continue
+            sample = series.sample(min(30, len(series)), random_state=0)
+            numeric_hits = pd.to_numeric(sample, errors="coerce").notna().mean()
+            if numeric_hits >= 0.85:
+                issues += 1  # numeric data stored as object
+
+        score = (1 - issues / total) * 100
         return max(0.0, min(100.0, score))
 
-    # ------------------------------------------------------------------
+    def conformity_score(self) -> float:
+        """
+        For categorical columns with low cardinality (≤ 30 unique values),
+        checks that the proportion of valid values is high.
+        Penalises columns that look like they should be categorical but have
+        many near-duplicate entries (e.g. "Male", "male", "M" all meaning same).
+        """
+        cat_cols = self.df.select_dtypes(include="object").columns
+        if len(cat_cols) == 0:
+            return 100.0
+
+        total_penalty = 0.0
+        checked_cols  = 0
+
+        for col in cat_cols:
+            series = self.df[col].dropna()
+            if series.empty:
+                continue
+            n_unique = series.nunique()
+            if n_unique > 50:           # free-text column – skip
+                continue
+            checked_cols += 1
+            # Normalise: strip + lower
+            normalised = series.str.strip().str.lower()
+            n_unique_normalised = normalised.nunique()
+            if n_unique_normalised == 0:
+                continue
+            # If normalising reduces unique count, there are case/spacing variants
+            redundancy_ratio = 1 - (n_unique_normalised / n_unique)
+            total_penalty += redundancy_ratio
+
+        if checked_cols == 0:
+            return 100.0
+        avg_penalty = total_penalty / checked_cols
+        return max(0.0, min(100.0, (1 - avg_penalty) * 100))
+
+    # ──────────────────────────────────────────────────────────────────────
     # HELPERS
-    # ------------------------------------------------------------------
+    # ──────────────────────────────────────────────────────────────────────
+
     @staticmethod
     def _grade(score: float) -> str:
-        if score >= 90:
-            return "A"
-        elif score >= 75:
-            return "B"
-        elif score >= 60:
-            return "C"
-        elif score >= 40:
-            return "D"
-        else:
-            return "F"
+        if score >= 90:  return "A"
+        if score >= 75:  return "B"
+        if score >= 60:  return "C"
+        if score >= 40:  return "D"
+        return "F"
 
     @staticmethod
     def _summary(score: float) -> str:
         if score >= 90:
-            return (
-                "Excellent data quality. The dataset is highly reliable "
-                "and suitable for decision-making and analytics."
-            )
-        elif score >= 75:
-            return (
-                "Good data quality. Minor issues may exist but the dataset "
-                "is generally suitable for analysis."
-            )
-        elif score >= 60:
-            return (
-                "Fair data quality. Notable issues detected—review flagged "
-                "records before making critical decisions."
-            )
-        elif score >= 40:
-            return (
-                "Poor data quality. Significant gaps, duplicates, or "
-                "constraint violations found. Data needs attention."
-            )
-        else:
-            return (
-                "Very poor data quality. The dataset has severe issues "
-                "that may produce unreliable results."
-            )
+            return "Excellent quality. The dataset is reliable and ready for analytics."
+        if score >= 75:
+            return "Good quality. Minor issues exist but the dataset is suitable for analysis."
+        if score >= 60:
+            return "Fair quality. Notable issues detected — review flagged records before use."
+        if score >= 40:
+            return "Poor quality. Significant gaps or violations found. Data needs attention."
+        return "Very poor quality. Severe issues may produce unreliable analytical results."
+
+    @staticmethod
+    def _color(score: float) -> str:
+        """Helper for UI: returns a CSS-friendly colour name."""
+        if score >= 90:  return "#2E7D32"   # green
+        if score >= 75:  return "#5F8773"   # sage
+        if score >= 60:  return "#F9A825"   # amber
+        if score >= 40:  return "#E65100"   # orange
+        return "#C62828"                    # red

@@ -1,22 +1,54 @@
+"""
+profiler.py  –  Advanced Dataset Profiler  (Production v2)
+===========================================================
+Generates a comprehensive, JSON-serialisable profile report covering:
+  - Basic info
+  - Column type detection
+  - Missing value analysis
+  - Duplicate detection
+  - Datetime column detection
+  - Numeric statistics (min/max/mean/std/median/skewness/kurtosis)
+  - Category statistics (unique count, top values, frequency distribution)
+  - Correlation matrix (numeric columns, Pearson)
+  - Before-vs-after comparison helper
+"""
+
+from __future__ import annotations
+import json
 import pandas as pd
+import numpy as np
+
+
+def _safe_float(v) -> float | None:
+    """Convert numpy floats to Python float; return None for NaN/Inf."""
+    try:
+        f = float(v)
+        return None if (np.isnan(f) or np.isinf(f)) else round(f, 4)
+    except Exception:
+        return None
 
 
 class DataProfiler:
     """
-    Analyzes dataset and generates a human-readable profile report.
+    Analyses a DataFrame and produces a rich, serialisable profile dict.
+
+    Usage
+    -----
+        profiler = DataProfiler(df)
+        report   = profiler.generate_report()
+        print(json.dumps(report, indent=2))
     """
 
-    def __init__(self, dataframe: pd.DataFrame):
+    def __init__(self, dataframe: pd.DataFrame) -> None:
         self.df = dataframe
-        self.report = {}
+        self.report: dict = {}
 
-    # ---------------------------------------------------
-    # MAIN FUNCTION
-    # ---------------------------------------------------
-    def generate_report(self):
-        """
-        Runs all profiling steps.
-        """
+    # ──────────────────────────────────────────────────────────────────────
+    # PUBLIC
+    # ──────────────────────────────────────────────────────────────────────
+
+    def generate_report(self) -> dict:
+        """Run all profiling passes and return the complete report dict."""
         self.basic_info()
         self.column_types()
         self.missing_values()
@@ -24,121 +56,171 @@ class DataProfiler:
         self.detect_datetime_columns()
         self.numeric_statistics()
         self.category_statistics()
-
+        self.correlation_matrix()
         return self.report
 
-    # ---------------------------------------------------
-    # 1. BASIC DATASET INFO
-    # ---------------------------------------------------
-    def basic_info(self):
-        self.report["rows"] = int(self.df.shape[0])
-        self.report["columns"] = int(self.df.shape[1])
+    def to_json(self) -> str:
+        """Return the report as a JSON string."""
+        return json.dumps(self.report, default=str, indent=2)
+
+    @staticmethod
+    def compare(before_report: dict, after_report: dict) -> dict:
+        """
+        Produce a diff summary between two profile reports.
+        Useful for the 'before vs after' dashboard panel.
+        """
+        def _get(r, key, default=None):
+            """Safely get a top-level key from a report dict."""
+            if not isinstance(r, dict):
+                return default
+            return r.get(key, default)
+
+        def _sum_missing(report) -> int:
+            """
+            Sum all missing value counts from the missing_values section.
+            Structure: {"col_name": {"count": N, "percent": P}, ...}
+            Falls back gracefully if structure differs.
+            """
+            missing = _get(report, "missing_values", {})
+            if not isinstance(missing, dict):
+                return 0
+            total = 0
+            for v in missing.values():
+                if isinstance(v, dict):
+                    # Expected structure: {"count": N, "percent": P}
+                    total += int(v.get("count", 0))
+                elif isinstance(v, (int, float)):
+                    # Flat structure fallback: {"col": count}
+                    total += int(v)
+            return total
+
+        return {
+            "rows": {
+                "before": _get(before_report, "rows"),
+                "after":  _get(after_report,  "rows"),
+            },
+            "columns": {
+                "before": _get(before_report, "columns"),
+                "after":  _get(after_report,  "columns"),
+            },
+            "missing_cells": {
+                "before": _sum_missing(before_report),
+                "after":  _sum_missing(after_report),
+            },
+            "duplicate_rows": {
+                "before": _get(before_report, "duplicate_rows"),
+                "after":  _get(after_report,  "duplicate_rows"),
+            },
+            "numeric_columns": {
+                "before": len(_get(before_report, "numeric_columns") or []),
+                "after":  len(_get(after_report,  "numeric_columns") or []),
+            },
+            "datetime_columns": {
+                "before": len(_get(before_report, "datetime_columns") or []),
+                "after":  len(_get(after_report,  "datetime_columns") or []),
+            },
+        }
+
+    # ──────────────────────────────────────────────────────────────────────
+    # PROFILING PASSES
+    # ──────────────────────────────────────────────────────────────────────
+
+    def basic_info(self) -> None:
+        self.report["rows"]         = int(self.df.shape[0])
+        self.report["columns"]      = int(self.df.shape[1])
         self.report["column_names"] = list(self.df.columns)
+        self.report["memory_mb"]    = round(self.df.memory_usage(deep=True).sum() / 1_048_576, 3)
 
-    # ---------------------------------------------------
-    # 2. COLUMN TYPE DETECTION
-    # ---------------------------------------------------
-    def column_types(self):
-        numeric_cols = list(self.df.select_dtypes(include=["int64", "float64"]).columns)
-        categorical_cols = list(self.df.select_dtypes(include=["object"]).columns)
-        boolean_cols = list(self.df.select_dtypes(include=["bool"]).columns)
+    def column_types(self) -> None:
+        self.report["numeric_columns"]     = list(self.df.select_dtypes(include=["int64", "float64"]).columns)
+        self.report["categorical_columns"] = list(self.df.select_dtypes(include="object").columns)
+        self.report["boolean_columns"]     = list(self.df.select_dtypes(include="bool").columns)
+        self.report["datetime_col_types"]  = list(self.df.select_dtypes(include=["datetime64[ns]", "datetimetz"]).columns)
+        self.report["dtypes"]              = {c: str(t) for c, t in self.df.dtypes.items()}
 
-        self.report["numeric_columns"] = numeric_cols
-        self.report["categorical_columns"] = categorical_cols
-        self.report["boolean_columns"] = boolean_cols
-
-    # ---------------------------------------------------
-    # 3. MISSING VALUE ANALYSIS
-    # ---------------------------------------------------
-    def missing_values(self):
-        missing_count = self.df.isnull().sum()
-        missing_percent = (missing_count / len(self.df)) * 100
-
-        missing_report = {}
-
+    def missing_values(self) -> None:
+        counts = self.df.isnull().sum()
+        pct    = counts / max(len(self.df), 1) * 100
+        result = {}
         for col in self.df.columns:
-            if missing_count[col] > 0:
-                missing_report[col] = {
-                    "count": int(missing_count[col]),
-                    "percent": round(float(missing_percent[col]), 2)
+            if counts[col] > 0:
+                result[col] = {
+                    "count":   int(counts[col]),
+                    "percent": round(float(pct[col]), 2),
                 }
+        self.report["missing_values"]       = result
+        self.report["total_missing_cells"]  = int(counts.sum())
 
-        self.report["missing_values"] = missing_report
+    def duplicate_info(self) -> None:
+        self.report["duplicate_rows"] = int(self.df.duplicated().sum())
 
-    # ---------------------------------------------------
-    # 4. DUPLICATE DETECTION
-    # ---------------------------------------------------
-    def duplicate_info(self):
-        duplicates = self.df.duplicated().sum()
-        self.report["duplicate_rows"] = int(duplicates)
-
-    def detect_datetime_columns(self):
-        """
-        Detects real date columns intelligently without pandas warnings.
-        """
-
-        datetime_cols = []
-
-        for col in self.df.columns:
-
-            # Only object/string columns can be dates
-            if self.df[col].dtype != "object":
-                continue
-
+    def detect_datetime_columns(self) -> None:
+        detected = []
+        for col in self.df.select_dtypes(include="object").columns:
             series = self.df[col].dropna().astype(str)
-
-            # Skip very small columns
             if len(series) < 5:
                 continue
-
-            # sample only 50 values (faster + safer)
             sample = series.sample(min(50, len(series)), random_state=42)
+            hits = sum(1 for v in sample if self._is_date(v))
+            if hits / len(sample) > 0.60:
+                detected.append(col)
+        # Also include already-converted datetime columns
+        already = list(self.df.select_dtypes(include=["datetime64[ns]", "datetimetz"]).columns)
+        self.report["datetime_columns"] = list(set(detected + already))
 
-            success_count = 0
-
-            for value in sample:
-                try:
-                    # Try strict ISO first (fast)
-                    pd.Timestamp(value)
-                    success_count += 1
-                except Exception:
-                    continue
-
-            ratio = success_count / len(sample)
-
-            # If most sampled values behave like dates → it's a date column
-            if ratio > 0.6:
-                datetime_cols.append(col)
-
-        self.report["datetime_columns"] = datetime_cols
-
-    # ---------------------------------------------------
-    # 6. NUMERIC STATISTICS
-    # ---------------------------------------------------
-    def numeric_statistics(self):
-
+    def numeric_statistics(self) -> None:
         stats = {}
-        numeric_cols = self.df.select_dtypes(include=["int64", "float64"]).columns
-
-        for col in numeric_cols:
+        for col in self.df.select_dtypes(include=["int64", "float64"]).columns:
+            s = self.df[col].dropna()
+            if s.empty:
+                continue
             stats[col] = {
-                "min": float(self.df[col].min()),
-                "max": float(self.df[col].max()),
-                "mean": float(self.df[col].mean()),
-                "std_dev": float(self.df[col].std())
+                "min":      _safe_float(s.min()),
+                "max":      _safe_float(s.max()),
+                "mean":     _safe_float(s.mean()),
+                "median":   _safe_float(s.median()),
+                "std_dev":  _safe_float(s.std()),
+                "skewness": _safe_float(s.skew()),
+                "kurtosis": _safe_float(s.kurtosis()),
+                "q1":       _safe_float(s.quantile(0.25)),
+                "q3":       _safe_float(s.quantile(0.75)),
+                "iqr":      _safe_float(s.quantile(0.75) - s.quantile(0.25)),
             }
-
         self.report["numeric_statistics"] = stats
 
-    # ---------------------------------------------------
-    # 7. CATEGORY STATISTICS
-    # ---------------------------------------------------
-    def category_statistics(self):
+    def category_statistics(self) -> None:
+        info = {}
+        for col in self.df.select_dtypes(include="object").columns:
+            vc = self.df[col].value_counts(dropna=True)
+            info[col] = {
+                "unique_count": int(self.df[col].nunique()),
+                "top_values":   {str(k): int(v) for k, v in vc.head(10).items()},
+            }
+        self.report["category_counts"] = info
 
-        category_info = {}
-        cat_cols = self.df.select_dtypes(include=["object"]).columns
+    def correlation_matrix(self) -> None:
+        numeric_cols = self.df.select_dtypes(include=["int64", "float64"]).columns
+        if len(numeric_cols) < 2:
+            self.report["correlation"] = {}
+            return
+        try:
+            corr = self.df[numeric_cols].corr(method="pearson")
+            # Serialise: replace NaN with None
+            self.report["correlation"] = {
+                c: {r: _safe_float(v) for r, v in row.items()}
+                for c, row in corr.to_dict().items()
+            }
+        except Exception:
+            self.report["correlation"] = {}
 
-        for col in cat_cols:
-            category_info[col] = int(self.df[col].nunique())
+    # ──────────────────────────────────────────────────────────────────────
+    # HELPERS
+    # ──────────────────────────────────────────────────────────────────────
 
-        self.report["category_counts"] = category_info
+    @staticmethod
+    def _is_date(value: str) -> bool:
+        try:
+            pd.Timestamp(value)
+            return True
+        except Exception:
+            return False
