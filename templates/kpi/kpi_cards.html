@@ -1,230 +1,960 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>AI Decision Intelligence Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KPI Dashboard — Auralis Insights</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1c2433;
+      --border: #1e2d40;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --radius: 14px;
+    }
 
-<style>
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
 
-:root{
---primary:#8BAF9F;
---primary-light:#AFC8A9;
---primary-soft:#C8D9B0;
---mint:#E8F3EC;
---beige:#F6EFE7;
---bg:#FAFAF8;
---card:#FFFFFF;
---text-dark:#3A3A3A;
---text-medium:#7A756F;
---border:#E5E4E2;
-}
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-body{
-    font-family: 'Inter', sans-serif;
-    margin:0;
-    background: linear-gradient(180deg,#FAFAF8,#F6EFE7);
-    color:var(--text-dark);
-}
+    /* ── Layout helpers ────────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
 
-/* Header */
+    .section-gap {
+      margin-top: 44px;
+    }
 
-.header{
-    padding:28px 48px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-.title{
-    font-size:26px;
-    font-weight:600;
-}
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-.subtitle{
-    color:var(--text-medium);
-    margin-top:6px;
-}
+    .grid-auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+    }
 
-/* Layout */
+    .grid-wide {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
 
-.container{
-    max-width:1280px;
-    margin:auto;
-    padding:24px 40px 60px;
-}
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
 
-/* Glass Card */
+    /* ── Domain Banner ─────────────────────────────────────────────── */
+    .domain-banner {
+      border-radius: 18px;
+      padding: 32px 36px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      position: relative;
+      overflow: hidden;
+    }
 
-.card{
-    background:rgba(255,255,255,0.55);
-    backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,0.4);
-    border-radius:18px;
-    padding:22px;
-    box-shadow:0px 6px 18px rgba(0,0,0,0.06);
-    transition:all .25s ease;
-}
+    .domain-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--banner-bg, linear-gradient(135deg, #1d4ed8, #7c3aed));
+      opacity: .9;
+    }
 
-.card:hover{
-    transform:translateY(-2px);
-    box-shadow:0px 10px 26px rgba(0,0,0,0.08);
-}
+    .domain-banner>* {
+      position: relative;
+      z-index: 1;
+    }
 
-/* KPI Grid */
+    .db-icon {
+      font-size: 52px;
+      flex-shrink: 0;
+    }
 
-.kpi-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:22px;
-    margin-top:28px;
-}
+    .db-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
 
-.kpi-title{
-    font-size:14px;
-    color:var(--text-medium);
-    margin-bottom:12px;
-}
+    .db-desc {
+      color: rgba(255, 255, 255, .75);
+      font-size: 14px;
+      margin-top: 6px;
+      max-width: 600px;
+    }
 
-.kpi-value{
-    font-size:32px;
-    font-weight:600;
-    color:var(--primary);
-}
+    .db-badge {
+      margin-left: auto;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
-/* Health Score */
+    /* ── Overview strip ─────────────────────────────────────────────── */
+    .overview-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
 
-.health{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
+    .ov-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      text-align: center;
+    }
 
-.health-bar{
-    height:10px;
-    width:100%;
-    background:#eee;
-    border-radius:999px;
-    overflow:hidden;
-}
+    .ov-tile .ov-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+    }
 
-.health-fill{
-    height:100%;
-    background:linear-gradient(90deg,#8BAF9F,#C8D9B0);
-}
+    .ov-tile .ov-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
 
-/* Summary Box */
+    /* ── Quality Gauge block ────────────────────────────────────────── */
+    .quality-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+    }
 
-.summary{
-    margin-top:32px;
-    padding:28px;
-    border-radius:24px;
-    background:linear-gradient(160deg,#FFFFFF,#FAFAF8,#F6EFE7);
-    box-shadow:0px 8px 24px rgba(0,0,0,0.08);
-}
+    .quality-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
 
-.summary h3{
-    margin:0 0 12px;
-}
+    .quality-metric {}
 
-.summary p{
-    color:var(--text-medium);
-    line-height:1.6;
-}
+    .qm-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
 
-/* Back Button */
+    .qm-label span:last-child {
+      font-weight: 700;
+      color: var(--text);
+    }
 
-.back-btn{
-    display:inline-block;
-    margin-top:30px;
-    padding:12px 22px;
-    border-radius:999px;
-    background:var(--primary);
-    color:white;
-    text-decoration:none;
-    transition:.25s;
-}
+    .qm-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
 
-.back-btn:hover{
-    background:var(--primary-light);
-}
+    .qm-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .6s ease;
+    }
 
-</style>
+    .quality-grade {
+      text-align: center;
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 0 20px;
+    }
+
+    .quality-summary {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+      max-width: 500px;
+    }
+
+    /* ── KPI Card ───────────────────────────────────────────────────── */
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform .15s, box-shadow .15s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .4);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent));
+      border-radius: 2px 2px 0 0;
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .kpi-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .kpi-trend {
+      font-size: 18px;
+    }
+
+    .kpi-name {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .kpi-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Insight Card (correlation / distribution / alert) ──────────── */
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: transform .15s;
+    }
+
+    .insight-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .insight-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .insight-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .insight-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .insight-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .insight-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Strength colours */
+    .strength-sp {
+      border-left: 3px solid var(--green);
+    }
+
+    .strength-mp {
+      border-left: 3px solid var(--accent);
+    }
+
+    .strength-wp {
+      border-left: 3px solid var(--muted);
+    }
+
+    .strength-sn {
+      border-left: 3px solid var(--red);
+    }
+
+    .strength-mn {
+      border-left: 3px solid var(--yellow);
+    }
+
+    .badge-sp {
+      background: rgba(16, 185, 129, .15);
+      color: #10b981;
+    }
+
+    .badge-mp {
+      background: rgba(59, 130, 246, .15);
+      color: #3b82f6;
+    }
+
+    .badge-wp {
+      background: rgba(148, 163, 184, .15);
+      color: #94a3b8;
+    }
+
+    .badge-sn {
+      background: rgba(239, 68, 68, .15);
+      color: #ef4444;
+    }
+
+    .badge-mn {
+      background: rgba(245, 158, 11, .15);
+      color: #f59e0b;
+    }
+
+    /* ── Distribution Strip ─────────────────────────────────────────── */
+    .dist-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .dist-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .dist-strip-wrap {
+      display: flex;
+      gap: 3px;
+      align-items: stretch;
+      height: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .dist-seg {
+      flex: 1;
+    }
+
+    .dist-s1 {
+      background: #ef4444;
+    }
+
+    .dist-s2 {
+      background: #f59e0b;
+    }
+
+    .dist-s3 {
+      background: #10b981;
+    }
+
+    .dist-s4 {
+      background: #3b82f6;
+    }
+
+    .dist-s5 {
+      background: #8b5cf6;
+    }
+
+    .dist-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .dist-stats {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .dist-stat {}
+
+    .dist-stat .ds-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .dist-stat .ds-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── Flag tiles ─────────────────────────────────────────────────── */
+    .flag-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .flag-icon {
+      font-size: 32px;
+    }
+
+    .flag-num {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .flag-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Tab nav ────────────────────────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover,
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ── Top nav ────────────────────────────────────────────────────── */
+    .top-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-nav .logo {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -.5px;
+    }
+
+    .top-nav nav {
+      margin-left: auto;
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .top-nav nav a:hover {
+      color: var(--text);
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────────── */
+    @media(max-width:700px) {
+
+      .db-badge,
+      .db-desc {
+        display: none;
+      }
+
+      .page-wrap {
+        padding: 18px 14px;
+      }
+    }
+
+    /* ── Scroll animations ──────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .4s, transform .4s;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
-    <div>
-        <div class="title">AI Decision Intelligence Dashboard</div>
-        <div class="subtitle">Automatic KPI & Predictive Insights</div>
-    </div>
-</div>
+  <header class="top-nav">
+    <span class="logo">⚡ Auralis Insights</span>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/datasets/">Datasets</a>
+    </nav>
+  </header>
 
-<div class="container">
+  <div class="page-wrap">
 
-    <!-- KPI CARDS -->
-    <div class="kpi-grid">
-
-        <div class="card">
-            <div class="kpi-title">Total Records</div>
-            <div class="kpi-value">{{ dataset.total_records }}</div>
-        </div>
-
-        <div class="card">
-            <div class="kpi-title">Number of Features</div>
-            <div class="kpi-value">{{ dataset.total_features }}</div>
-        </div>
-
-        <div class="card">
-            <div class="kpi-title">Anomaly Count</div>
-            <div class="kpi-value">{{ dataset.anomaly_count }}</div>
-        </div>
-
-        <div class="card">
-            <div class="kpi-title">Predicted Next Value</div>
-            <div class="kpi-value">
-                {% if dataset.predicted_next_value %}
-                    {{ dataset.predicted_next_value|floatformat:2 }}
-                {% else %}
-                    N/A
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="kpi-title">Missing Data %</div>
-            <div class="kpi-value">{{ dataset.missing_percentage|floatformat:2 }}%</div>
-        </div>
-
-        <div class="card">
-            <div class="kpi-title">Duplicate %</div>
-            <div class="kpi-value">{{ dataset.duplicate_percentage|floatformat:2 }}%</div>
-        </div>
-
+    <!-- ── ① Domain Banner ──────────────────────────────────────────── -->
+    <div id="domain-banner" class="domain-banner fade-in">
+      <div class="db-icon" id="db-icon">📊</div>
+      <div>
+        <div class="db-name" id="db-name">Loading…</div>
+        <div class="db-desc" id="db-desc"></div>
+      </div>
+      <div class="db-badge" id="db-badge">— records</div>
     </div>
 
-    <!-- DATA HEALTH SCORE -->
-    <div class="summary">
-        <h3>Data Health Score: {{ dataset.data_health_score|floatformat:1 }}/100</h3>
-
-        <div class="health">
-            <div class="health-bar">
-                <div class="health-fill" style="width:{{ dataset.data_health_score }}%"></div>
-            </div>
-        </div>
-
-        <p style="margin-top:18px;">
-            {{ dataset.business_summary }}
-        </p>
+    <!-- ── ② Dataset Overview ──────────────────────────────────────── -->
+    <div class="section-gap">
+      <div class="section-title">📋 Dataset Overview</div>
+      <div class="overview-strip fade-in" id="overview-strip"></div>
     </div>
 
-    <a href="{% url 'profile' %}" class="back-btn">Back to Profile</a>
+    <!-- ── ③ Data Quality ──────────────────────────────────────────── -->
+    <div class="section-gap">
+      <div class="section-title">🎯 Data Quality Score</div>
+      <div class="quality-block fade-in" id="quality-block">
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+          <div class="quality-grade" id="quality-grade">—</div>
+          <div style="flex:1;min-width:200px">
+            <div class="quality-row" id="quality-row"></div>
+            <div class="quality-summary" id="quality-summary"></div>
+          </div>
+          <div id="flag-tiles" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+    </div>
 
+    <!-- ── ④ Domain KPIs ─────────────────────────────────────────────── -->
+    <div class="section-gap">
+      <div class="section-title" id="kpi-section-title">📊 Domain KPIs</div>
 
-</div>
+      <!-- Tab buttons -->
+      <div class="tab-nav" id="kpi-tabs">
+        <button class="tab-btn active" data-tab="all" onclick="filterKPIs('all',this)">All KPIs</button>
+        <button class="tab-btn" data-tab="number" onclick="filterKPIs('number',this)">Counts</button>
+        <button class="tab-btn" data-tab="currency" onclick="filterKPIs('currency',this)">Currency</button>
+        <button class="tab-btn" data-tab="percent" onclick="filterKPIs('percent',this)">Percentages</button>
+      </div>
 
+      <div class="grid-auto fade-in" id="kpi-grid"></div>
+    </div>
+
+    <!-- ── ⑤ Analytical Insights ─────────────────────────────────────── -->
+    <div class="section-gap">
+      <div class="section-title">🔍 Analytical Insights</div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="filterInsights('all',this)">All</button>
+        <button class="tab-btn" onclick="filterInsights('correlation',this)">Correlations</button>
+        <button class="tab-btn" onclick="filterInsights('distribution',this)">Distributions</button>
+        <button class="tab-btn" onclick="filterInsights('alert',this)">Alerts</button>
+      </div>
+
+      <div class="grid-wide fade-in" id="insight-grid"></div>
+      <p id="insight-empty" style="display:none;color:var(--muted);font-size:13px;text-align:center;padding:40px">
+        No significant insights found for this dataset.
+      </p>
+    </div>
+
+    <!-- ── ⑥ Distribution Analysis ───────────────────────────────────── -->
+    <div class="section-gap" id="dist-section">
+      <div class="section-title">📐 Column Distributions</div>
+      <div class="grid-3col fade-in" id="dist-grid"></div>
+    </div>
+
+  </div><!-- /page-wrap -->
+
+  <!-- ── DATA FROM DJANGO ─────────────────────────────────────────────── -->
+  <script>
+    const RAW = {{ kpi_result_json| safe }};
+
+    /* ──────────────────────────────────────── helpers ─────────────────── */
+    function fmt(v, format) {
+      if (v === null || v === undefined) return '—';
+      const n = parseFloat(v);
+      if (isNaN(n)) return String(v);
+      switch (format) {
+        case 'currency':
+          return n >= 1_000_000 ? '₹' + (n / 1_000_000).toFixed(2) + 'M'
+            : n >= 1_000 ? '₹' + (n / 1_000).toFixed(1) + 'K'
+              : '₹' + n.toFixed(2);
+        case 'percent': return n.toFixed(2) + '%';
+        default:
+          return n >= 1_000_000 ? (n / 1_000_000).toFixed(2) + 'M'
+            : n >= 1_000 ? (n / 1_000).toFixed(1) + 'K'
+              : Number.isInteger(n) ? n.toString()
+                : n.toFixed(2);
+      }
+    }
+
+    function trendIcon(trend) {
+      return trend === 'up' ? '↑' : trend === 'down' ? '↓' : '';
+    }
+
+    const DOMAIN_GRADIENTS = {
+      sales: 'linear-gradient(135deg,#1d4ed8,#0ea5e9)',
+      hr: 'linear-gradient(135deg,#7c3aed,#db2777)',
+      finance: 'linear-gradient(135deg,#059669,#0d9488)',
+      risk: 'linear-gradient(135deg,#dc2626,#d97706)',
+      education: 'linear-gradient(135deg,#2563eb,#7c3aed)',
+      generic: 'linear-gradient(135deg,#4f46e5,#0891b2)',
+    };
+    const CARD_ACCENTS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#d946ef'];
+
+    const STRENGTH_CLASS = {
+      strong_positive: 'sp', moderate_positive: 'mp', weak_positive: 'wp',
+      strong_negative: 'sn', moderate_negative: 'mn',
+    };
+    const STRENGTH_LABEL = {
+      strong_positive: 'Strong Positive Correlation',
+      moderate_positive: 'Moderate Positive Correlation',
+      weak_positive: 'Weak Positive Correlation',
+      strong_negative: 'Strong Negative Correlation',
+      moderate_negative: 'Moderate Negative Correlation',
+    };
+    const TYPE_ICON = { correlation: '🔗', distribution: '📊', alert: '🚨', performance: '📉' };
+
+    /* ──────────────────────────────────────── scroll reveal ─────────────── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    /* ──────────────────────────────────────── BANNER ────────────────────── */
+    (function buildBanner() {
+      const d = RAW.domain;
+      const sum = RAW.dataset_summary;
+      const banner = document.getElementById('domain-banner');
+      banner.style.setProperty('--banner-bg', DOMAIN_GRADIENTS[d] || DOMAIN_GRADIENTS.generic);
+
+      const iconMap = { sales: '💰', hr: '👥', finance: '📈', risk: '⚠️', education: '🎓', generic: '📊' };
+      document.getElementById('db-icon').textContent = iconMap[d] || '📊';
+      document.getElementById('db-name').textContent = RAW.domain_display || d.toUpperCase();
+      document.getElementById('db-desc').textContent = RAW.domain_description || '';
+      document.getElementById('db-badge').textContent = (sum.total_records || '—') + ' records · ' + (sum.total_columns || '—') + ' columns';
+    })();
+
+    /* ──────────────────────────────────────── OVERVIEW ─────────────────── */
+    (function buildOverview() {
+      const sum = RAW.dataset_summary;
+      const tiles = [
+        ['Total Records', sum.total_records, '🗂️'],
+        ['Columns', sum.total_columns, '📋'],
+        ['Numeric Cols', sum.numeric_columns, '🔢'],
+        ['Category Cols', sum.categorical_columns, '🔤'],
+        ['Datetime Cols', sum.datetime_columns, '📅'],
+        ['Dups Removed', sum.duplicates_removed, '🔁'],
+        ['Missing Filled', sum.missing_values_filled, '🩹'],
+        ['IQR Outliers', sum.iqr_outliers_flagged, '📐'],
+        ['Z-score Outliers', sum.zscore_outliers_flagged, '📊'],
+        ['Anomalies', sum.anomalies_detected, '🤖'],
+      ];
+      const strip = document.getElementById('overview-strip');
+      strip.innerHTML = tiles.map(([lbl, val, ico]) =>
+        `<div class="ov-tile">
+       <div class="ov-val">${ico} ${val ?? '—'}</div>
+       <div class="ov-lbl">${lbl}</div>
+     </div>`
+      ).join('');
+    })();
+
+    /* ──────────────────────────────────────── QUALITY ───────────────────── */
+    (function buildQuality() {
+      const qs = (RAW.dataset_summary || {}).quality_score || {};
+
+      const gradeEl = document.getElementById('quality-grade');
+      const grade = qs.grade || '—';
+      const gradeColors = { A: '#10b981', B: '#3b82f6', C: '#f59e0b', D: '#ef4444', F: '#dc2626' };
+      gradeEl.textContent = grade;
+      gradeEl.style.color = gradeColors[grade] || '#94a3b8';
+
+      const metrics = [
+        ['Completeness', qs.completeness, '#10b981'],
+        ['Uniqueness', qs.uniqueness, '#3b82f6'],
+        ['Consistency', qs.consistency, '#8b5cf6'],
+      ];
+      document.getElementById('quality-row').innerHTML = metrics.map(([lbl, val, color]) => {
+        const pct = val != null ? Number(val).toFixed(1) : '—';
+        const w = val != null ? Math.min(Math.round(val), 100) : 0;
+        return `<div class="quality-metric">
+      <div class="qm-label"><span>${lbl}</span><span>${pct}%</span></div>
+      <div class="qm-track"><div class="qm-fill" style="width:${w}%;background:${color}"></div></div>
+    </div>`;
+      }).join('');
+
+      document.getElementById('quality-summary').textContent = qs.summary || '';
+
+      // Overall score badge
+      const ovr = qs.overall != null ? Number(qs.overall).toFixed(1) : null;
+      if (ovr) {
+        const badge = document.createElement('div');
+        badge.style.cssText = 'text-align:center;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 24px;min-width:100px';
+        badge.innerHTML = `<div style="font-size:30px;font-weight:900;color:${gradeColors[grade] || '#3b82f6'}">${ovr}</div>
+                       <div style="font-size:11px;color:var(--muted);margin-top:4px">OVERALL SCORE</div>`;
+        document.getElementById('quality-block').appendChild(badge);
+      }
+
+      // Flag tiles
+      const sum = RAW.dataset_summary || {};
+      const flags = [
+        ['IQR Outliers', sum.iqr_outliers_flagged, '📐', '#f59e0b'],
+        ['Z-score Outliers', sum.zscore_outliers_flagged, '📊', '#f59e0b'],
+        ['Anomalies', sum.anomalies_detected, '🤖', '#ef4444'],
+      ];
+      document.getElementById('flag-tiles').innerHTML = flags.map(([lbl, val, ico, color]) =>
+        `<div class="flag-tile">
+       <div class="flag-icon">${ico}</div>
+       <div>
+         <div class="flag-num" style="color:${color}">${val ?? 0}</div>
+         <div class="flag-label">${lbl}</div>
+       </div>
+     </div>`
+      ).join('');
+    })();
+
+    /* ──────────────────────────────────────── KPI CARDS ───────────────────── */
+    let ALL_KPIS = [];
+    (function buildKPIs() {
+      ALL_KPIS = RAW.kpis || [];
+      const d = RAW.domain;
+
+      const titleEl = document.getElementById('kpi-section-title');
+      const iconMap = { sales: '💰 Sales KPIs', hr: '👥 HR KPIs', finance: '📈 Finance KPIs', risk: '⚠️ Risk KPIs', education: '🎓 Academic KPIs', generic: '📊 Dataset KPIs' };
+      titleEl.childNodes[0].textContent = (iconMap[d] || '📊 KPIs') + ' ';
+
+      // Detect which format tabs to show
+      const formats = new Set(ALL_KPIS.map(k => k.format));
+      document.querySelectorAll('#kpi-tabs .tab-btn[data-tab]').forEach(btn => {
+        if (btn.dataset.tab !== 'all' && !formats.has(btn.dataset.tab)) btn.style.display = 'none';
+      });
+
+      renderKPIs(ALL_KPIS);
+    })();
+
+    function renderKPIs(list) {
+      const grid = document.getElementById('kpi-grid');
+      if (!list.length) { grid.innerHTML = '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">No KPIs available.</p>'; return; }
+
+      const TREND_COLORS = { up: '#10b981', down: '#ef4444' };
+
+      grid.innerHTML = list.map((k, i) => {
+        const accent = CARD_ACCENTS[i % CARD_ACCENTS.length];
+        const trendClr = TREND_COLORS[k.trend] || '';
+        const trendHtml = k.trend ? `<span style="font-size:16px;color:${trendClr};font-weight:800">${trendIcon(k.trend)}</span>` : '';
+        return `<div class="kpi-card fade-in" data-format="${k.format || 'number'}" style="--card-accent:${accent}">
+      <div class="kpi-header">
+        <span class="kpi-icon">${k.icon || '📌'}</span>
+        ${trendHtml}
+      </div>
+      <div class="kpi-name">${k.name}</div>
+      <div class="kpi-value">${fmt(k.value, k.format)}</div>
+      ${k.subtitle ? `<div class="kpi-subtitle">${k.subtitle}</div>` : ''}
+    </div>`;
+      }).join('');
+
+      document.querySelectorAll('.kpi-card.fade-in').forEach(el => observer.observe(el));
+    }
+
+    function filterKPIs(tab, btn) {
+      document.querySelectorAll('#kpi-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filtered = tab === 'all' ? ALL_KPIS : ALL_KPIS.filter(k => k.format === tab);
+      renderKPIs(filtered);
+    }
+
+    /* ──────────────────────────────────────── INSIGHTS ────────────────────── */
+    let ALL_INSIGHTS = [];
+    (function buildInsights() {
+      ALL_INSIGHTS = RAW.insights || [];
+      renderInsights(ALL_INSIGHTS);
+    })();
+
+    function renderInsights(list) {
+      const grid = document.getElementById('insight-grid');
+      const empty = document.getElementById('insight-empty');
+
+      if (!list.length) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      grid.innerHTML = list.map(ins => {
+        const sc = STRENGTH_CLASS[ins.strength] || 'wp';
+        return `<div class="insight-card strength-${sc} fade-in">
+      <div class="insight-icon">${ins.icon || TYPE_ICON[ins.type] || '💡'}</div>
+      <div class="insight-body">
+        <div class="insight-title">${ins.title}</div>
+        <div class="insight-desc">${ins.description}</div>
+        ${ins.strength && STRENGTH_LABEL[ins.strength]
+            ? `<span class="insight-badge badge-${sc}">${STRENGTH_LABEL[ins.strength] || ins.type.toUpperCase()}</span>`
+            : `<span class="insight-badge badge-wp">${ins.type.toUpperCase()}</span>`
+          }
+        ${ins.r_value != null ? `<span class="insight-badge badge-${sc}" style="margin-left:6px">r = ${ins.r_value}</span>` : ''}
+      </div>
+    </div>`;
+      }).join('');
+
+      document.querySelectorAll('.insight-card.fade-in').forEach(el => observer.observe(el));
+    }
+
+    function filterInsights(tab, btn) {
+      document.querySelectorAll('[onclick^="filterInsights"]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderInsights(tab === 'all' ? ALL_INSIGHTS : ALL_INSIGHTS.filter(i => i.type === tab));
+    }
+
+    /* ──────────────────────────────────────── DISTRIBUTIONS ─────────────── */
+    (function buildDistributions() {
+      const dists = RAW.distributions || {};
+      const grid = document.getElementById('dist-grid');
+      const keys = Object.keys(dists);
+
+      if (!keys.length) {
+        document.getElementById('dist-section').style.display = 'none';
+        return;
+      }
+
+      grid.innerHTML = keys.map(col => {
+        const d = dists[col];
+        const lbl = col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        // Build 5 segments: min→P10, P10→P25, P25→P75, P75→P90, P90→max
+        const range = d.max - d.min || 1;
+        const widths = [
+          ((d.p10 - d.min) / range * 100).toFixed(1),
+          ((d.p25 - d.p10) / range * 100).toFixed(1),
+          ((d.p75 - d.p25) / range * 100).toFixed(1),
+          ((d.p90 - d.p75) / range * 100).toFixed(1),
+          ((d.max - d.p90) / range * 100).toFixed(1),
+        ];
+
+        return `<div class="dist-card fade-in">
+      <div class="dist-name">${lbl}</div>
+      <div class="dist-strip-wrap">
+        <div class="dist-seg dist-s1" style="flex:${widths[0]}" title="Min→P10"></div>
+        <div class="dist-seg dist-s2" style="flex:${widths[1]}" title="P10→P25"></div>
+        <div class="dist-seg dist-s3" style="flex:${widths[2]}" title="P25→P75 (IQR)"></div>
+        <div class="dist-seg dist-s4" style="flex:${widths[3]}" title="P75→P90"></div>
+        <div class="dist-seg dist-s5" style="flex:${widths[4]}" title="P90→Max"></div>
+      </div>
+      <div class="dist-labels">
+        <span>${d.min}</span>
+        <span>P25: ${d.p25}</span>
+        <span>Median: ${d.p50}</span>
+        <span>P75: ${d.p75}</span>
+        <span>${d.max}</span>
+      </div>
+      <div class="dist-stats">
+        <div class="dist-stat"><div class="ds-lbl">Mean</div><div class="ds-val">${d.mean}</div></div>
+        <div class="dist-stat"><div class="ds-lbl">Std Dev</div><div class="ds-val">${d.std}</div></div>
+        <div class="dist-stat"><div class="ds-lbl">Skew</div><div class="ds-val">${d.skew}</div></div>
+      </div>
+    </div>`;
+      }).join('');
+
+      document.querySelectorAll('.dist-card.fade-in').forEach(el => observer.observe(el));
+    })();
+  </script>
 </body>
+
 </html>
