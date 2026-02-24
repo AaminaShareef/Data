@@ -1,22 +1,38 @@
 import pandas as pd
-from pathlib import Path
+import os
 
-class DatasetLoader:
 
-    @staticmethod
-    def load_dataset(file_path):
-        """
-        Automatically loads CSV or Excel dataset
-        """
-        path = Path(file_path)
+def load_file(file_path: str) -> pd.DataFrame:
+    """
+    Load a CSV or Excel file into a pandas DataFrame.
 
-        if path.suffix.lower() == ".csv":
-            df = pd.read_csv(file_path)
+    Args:
+        file_path: absolute path to the uploaded file
 
-        elif path.suffix.lower() in [".xls", ".xlsx"]:
-            df = pd.read_excel(file_path, engine="openpyxl")
+    Returns:
+        pandas DataFrame
 
-        else:
-            raise ValueError("Unsupported file format")
+    Raises:
+        ValueError: if file format is not supported
+        FileNotFoundError: if file does not exist
+    """
 
-        return df
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == '.csv':
+        # try UTF-8 first, fall back to latin-1 for encoding issues
+        try:
+            df = pd.read_csv(file_path, encoding='utf-8')
+        except UnicodeDecodeError:
+            df = pd.read_csv(file_path, encoding='latin-1')
+
+    elif ext in ('.xlsx', '.xls'):
+        df = pd.read_excel(file_path, engine='openpyxl')
+
+    else:
+        raise ValueError(f"Unsupported file format: {ext}. Only CSV and Excel files are supported.")
+
+    return df

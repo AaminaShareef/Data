@@ -18,12 +18,52 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
-
+from datacleaning.models import CleaningReport
 from data_preparation.models import Dataset, Report
 from Authentication.models import CustomUser
-from datacleaning.models import CleanedDataset
+
 
 logger = logging.getLogger(__name__)
+
+# ==================================================
+# 📄 SMART DATASET READER (AUTO HEADER + TYPE FIX)
+# ==================================================
+
+def smart_read(file_path_or_file):
+    """
+    Automatically:
+    1. Detects header row
+    2. Fixes unnamed columns
+    3. Converts numeric-looking strings to numbers
+    """
+
+    # ---------- READ WITHOUT HEADER ----------
+    if str(file_path_or_file).endswith(".csv"):
+        df = pd.read_csv(file_path_or_file, header=None)
+    else:
+        df = pd.read_excel(file_path_or_file, header=None)
+
+    # ---------- DETECT HEADER ROW ----------
+    header_row = None
+
+    for i in range(min(5, len(df))):
+        row = df.iloc[i]
+        text_cells = sum(isinstance(x, str) for x in row)
+        if text_cells >= len(row) * 0.5:
+            header_row = i
+            break
+
+    # ---------- APPLY HEADER ----------
+    if header_row is not None:
+        df.columns = df.iloc[header_row]
+        df = df.drop(index=list(range(header_row + 1)))
+        df = df.reset_index(drop=True)
+
+    # ---------- CONVERT NUMERIC ----------
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="ignore")
+
+    return df
 
 # ==================================================
 # 🏠 USER HOME
@@ -77,11 +117,7 @@ def upload_data(request):
 
         try:
             # 2️⃣ Read file
-            if file.name.endswith(".csv"):
-                df = pd.read_csv(file)
-            else:
-                df = pd.read_excel(file)
-
+            df = smart_read(file)
         except Exception:
             messages.error(
                 request,
@@ -97,14 +133,7 @@ def upload_data(request):
             )
             return render(request, "data_preparation/upload_data.html")
 
-        # 4️⃣ Column validation
-        if df.columns.isnull().any():
-            messages.error(
-                request,
-                "Some columns are missing names. Please check your dataset."
-            )
-            return render(request, "data_preparation/upload_data.html")
-
+        
         # 🔹 Save dataset record
         dataset = Dataset.objects.create(
             user_id=request.session["user_id"],
@@ -125,21 +154,14 @@ def upload_data(request):
             "dataset_status": "Uploaded successfully",
         }
 
-        return redirect("upload_status")
+        
+
+
+        return redirect("dataset_detail", dataset_id=dataset.id)
 
     return render(request, "data_preparation/upload_data.html")
 
 
-# ==================================================
-# 📄 UPLOAD STATUS
-# ==================================================
-
-def upload_status(request):
-    if "upload_summary" not in request.session:
-        return redirect("upload_data")
-
-    context = request.session.get("upload_summary")
-    return render(request, "data_preparation/upload_status.html", context)
 
 
 # ==================================================
@@ -166,57 +188,82 @@ def dataset_detail(request, dataset_id):
         user_id=request.session["user_id"]
     )
 
-    # ---------------------------------------------
-    # Decide which dataset to preview
-    # ---------------------------------------------
-    preview_title = "Original Dataset Preview"
+    file_path = dataset.file.path
 
-    if dataset.is_processed:
-
-        cleaned = CleanedDataset.objects.filter(
-            original_dataset=dataset
-        ).order_by("-cleaned_at").first()
-
-        if cleaned and cleaned.file:
-            file_path = cleaned.file.path
-            preview_title = "Cleaned Dataset Preview"
-        else:
-            file_path = dataset.file.path
-    else:
-        file_path = dataset.file.path
-
-    # ---------------------------------------------
-    # Safely read dataset
-    # ---------------------------------------------
+    # -------- READ DATASET USING SMART READER --------
     try:
-        if file_path.endswith(".csv"):
-            df = pd.read_csv(file_path)
-
-        elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-            df = pd.read_excel(file_path)
-
-        else:
-            df = pd.DataFrame()
-
+        df = smart_read(file_path)
     except Exception as e:
-        print("Preview read error:", e)
-        df = pd.DataFrame()
+        messages.error(request, f"Error reading dataset: {str(e)}")
+        return redirect("profile")
 
-    # Only first 10 rows for preview
+    # ===============================
+    # 📊 DATASET OVERVIEW
+    # ===============================
+    row_count = df.shape[0]
+    column_count = df.shape[1]
+
+    memory_usage = round(df.memory_usage(deep=True).sum() / (1024*1024), 2)
+
+    # Missing values
+    missing_values = int(df.isnull().sum().sum())
+
+    # Duplicates
+    duplicate_rows = int(df.duplicated().sum())
+
+    # Column types
+    numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
+    categorical_cols = df.select_dtypes(exclude=np.number).columns.tolist()
+
+    # Constant columns
+    constant_columns = [col for col in df.columns if df[col].nunique() <= 1]
+
+    # ===============================
+    # 📑 COLUMN PROFILE
+    # ===============================
+    column_profile = []
+
+    for col in df.columns:
+        col_data = df[col]
+        missing = col_data.isnull().sum()
+        missing_percent = round((missing / len(df)) * 100, 2)
+
+        unique_values = col_data.nunique()
+
+        sample_values = col_data.dropna().astype(str).head(3).tolist()
+
+        column_profile.append({
+            "name": col,
+            "dtype": str(col_data.dtype),
+            "missing": missing,
+            "missing_percent": missing_percent,
+            "unique": unique_values,
+            "sample": ", ".join(sample_values)
+        })
+
+    # Preview
     preview_df = df.head(10)
-
+    
+    cleaning_report = CleaningReport.objects.filter(dataset=dataset).last()
     context = {
         "dataset": dataset,
+        "row_count": row_count,
+        "column_count": column_count,
+        "memory_usage": memory_usage,
+        "missing_values": missing_values,
+        "duplicate_rows": duplicate_rows,
+        "numeric_count": len(numeric_cols),
+        "categorical_count": len(categorical_cols),
+        "constant_columns": constant_columns,
+        "column_profile": column_profile,
         "columns": preview_df.columns.tolist(),
         "rows": preview_df.values.tolist(),
-        "preview_title": preview_title,
-        "is_processed": dataset.is_processed,
+        "cleaning_report_id": cleaning_report.id if cleaning_report else None,
     }
 
     return render(request, "data_preparation/dataset_detail.html", context)
 
-
-
+    
 # ==================================================
 # 🧹 DELETE DATASET
 # ==================================================
@@ -271,6 +318,9 @@ def profile_view(request):
 
     return render(request, "data_preparation/profile.html", context)
 
+def preprocess_dataset(request, dataset_id):
+    messages.success(request, "Preprocessing pipeline will start here.")
+    return redirect("dataset_detail", dataset_id=dataset_id)
 
 # ==================================================
 # 🚪 LOGOUT

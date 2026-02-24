@@ -1,193 +1,575 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Dataset Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Dashboard · Auralis Insights</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-:root {
-  --primary: #3c583c;
-  --background: #F2EFEA;
-  --card-bg: #ffffff;
-  --text-dark: #2B2B2B;
-  --text-muted: #6A6A6A;
-  --shadow: 0 20px 50px rgba(0,0,0,0.08);
+       :root {
+    --primary-dark: #0B3B4B;
+    --primary-soft: #1D5A6D;
+    --primary-light: #E3F0F5;
+    --background: #F8F9FC;
+    --card-bg: #FFFFFF;
+    --text-dark: #1A2B3C;
+    --text-muted: #5E6F88;
+    --border-light: #E2E8F0;
+    --shadow-card: 0 20px 35px -10px rgba(11,59,75,0.12);
+    --shadow-hover: 0 24px 42px -12px rgba(11,59,75,0.18);
+    --accent-gold: #E6B17E;  /* warm apricot to complement navy/teal */
+    --gradient-bg: linear-gradient(145deg, #ffffff 0%, #F8F9FC 100%);
 }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
 
-body {
-  font-family: "Segoe UI", sans-serif;
-  background: var(--background);
-  padding: 60px;
-  color: var(--text-dark);
-}
+        /* ===== TOP NAVBAR (consistent with all other pages) ===== */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-card);
+        }
+        .topbar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2;
+        }
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.3px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .nav-link {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .nav-link:hover { color: var(--primary-dark); }
+        .nav-link i { margin-right: 6px; font-size: 13px; }
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .tbtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 999px;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            background: transparent;
+            text-decoration: none;
+        }
+        .tbtn-outline {
+            border-color: var(--border-light);
+            color: var(--text-muted);
+        }
+        .tbtn-outline:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-soft);
+        }
+        .tbtn-primary {
+            background: var(--primary-dark);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(44,74,62,0.2);
+        }
+        .tbtn-primary:hover {
+            background: #1D3D31;
+            transform: translateY(-2px);
+        }
 
-/* CARD */
-.card {
-  background: var(--card-bg);
-  padding: 40px;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  max-width: 1100px;
-  margin: auto;
-}
+        /* ===== DASHBOARD LAYOUT ===== */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 32px 56px;
+        }
 
-/* HEADINGS */
-h2 {
-  font-family: "Times New Roman", serif;
-  color: var(--primary);
-  margin-bottom: 10px;
-}
+        /* header section (refined) */
+        .dashboard-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-h3 {
-  margin-top: 30px;
-  color: var(--primary);
-}
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.2rem;
+        }
 
-/* META INFO */
-.meta {
-  color: var(--text-muted);
-  font-size: 14px;
-  margin-bottom: 8px;
-}
+        .header-left .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-/* TABLE WRAPPER (IMPORTANT FIX) */
-.table-wrapper {
-  margin-top: 20px;
-  max-height: 320px;          /* 👈 prevents overflow */
-  overflow-y: auto;           /* 👈 vertical scroll */
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-}
+        .header-left .breadcrumb a {
+            color: var(--primary-soft);
+            text-decoration: none;
+        }
 
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;           /* 👈 horizontal safety */
-}
+        .header-left .breadcrumb a:hover {
+            text-decoration: underline;
+        }
 
-th, td {
-  padding: 10px 14px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  white-space: nowrap;
-}
+        .status-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #C0D6CC;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-th {
-  background: #f7f7f7;
-  position: sticky;           /* 👈 keeps header visible */
-  top: 0;
-  z-index: 1;
-}
+        .status-badge.pending {
+            background: #FFF2DE;
+            color: #A86B3A;
+            border-color: #FFE4C0;
+        }
 
-/* ACTION BUTTONS */
-.actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 35px;
-  flex-wrap: wrap;
-  gap: 15px;
-}
+        /* metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
 
-.btn {
-  padding: 12px 28px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s ease;
-}
+        .metric-card {
+            background: var(--card-bg);
+            background: var(--gradient-bg);
+            padding: 1.2rem 1rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
 
-.btn:hover {
-  transform: translateY(-2px);
-}
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  border: none;
-}
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
 
-.btn-outline {
-  border: 2px solid var(--primary);
-  color: var(--primary);
-  background: transparent;
-}
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  body {
-    padding: 30px;
-  }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+        }
 
-  .table-wrapper {
-    max-height: 260px;
-  }
-}
-</style>
+        .metric-unit {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .metric-trend {
+            font-size: 0.7rem;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        /* preview card */
+        .preview-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: var(--shadow-card);
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .preview-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .preview-header h2 span {
+            font-size: 0.75rem;
+            background: var(--primary-light);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .badge-light {
+            background: #F0F3F1;
+            color: var(--text-muted);
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* table wrapper - scrollable, smaller fonts */
+        .table-wrapper {
+            border: 1px solid var(--border-light);
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+            max-height: 360px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+            font-size: 0.8rem; /* reduced */
+        }
+
+        th {
+            background: #F8FAF8;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 0.7rem; /* smaller */
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.7rem 1rem;
+            border-bottom: 2px solid #D0DAD2;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(248, 250, 248, 0.97);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #EDF1EE;
+            white-space: nowrap;
+            color: #2A3F38;
+            font-size: 0.75rem; /* smaller */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background-color: #F6FBF8;
+        }
+
+        /* action buttons */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1.5px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(44, 74, 62, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #2e4357;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px -8px rgba(44, 74, 62, 0.35);
+        }
+
+        .btn-outline {
+            border: 1.5px solid var(--primary-soft);
+            color: var(--primary-soft);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: rgba(63, 106, 90, 0.04);
+            border-color: var(--primary-dark);
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .file-chip {
+            display: inline-flex;
+            align-items: center;
+            background: white;
+            border: 1px solid var(--border-light);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .dashboard { padding: 16px 20px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .preview-card { padding: 1rem; }
+            .action-bar { flex-direction: column-reverse; }
+            .action-bar .btn { width: 100%; justify-content: center; }
+            .topbar-inner { padding: 0 20px; }
+            .nav-links { gap: 16px; }
+        }
+        @media (max-width: 500px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="card">
-
-  <h2>{{ dataset.file_name }}</h2>
-
-  <p class="meta"><strong>Uploaded:</strong> {{ dataset.uploaded_at }}</p>
-  <p class="meta">
-    <strong>Status:</strong>
-    {% if dataset.is_processed %}Processed{% else %}Pending{% endif %}
-  </p>
-
-  <h3>{{ preview_title }} (First 10 rows)</h3>
-
-  <!-- ✅ FIXED SCROLLABLE TABLE -->
-  <div class="table-wrapper">
-    <table>
-      <tr>
-        {% for col in columns %}
-        <th>{{ col }}</th>
-        {% endfor %}
-      </tr>
-
-      {% for row in rows %}
-      <tr>
-        {% for cell in row %}
-        <td>{{ cell }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="actions">
-
-    <a href="{% url 'profile' %}" class="btn btn-outline">
-        Back to Profile
-    </a>
-
-    {% if not is_processed %}
-
-        <!-- PENDING DATASET -->
-        <form method="post" action="{% url 'cleaning_start' dataset.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
-                Proceed to Cleaning
-            </button>
-        </form>
-
-    {% else %}
-
-        <!-- PROCESSED DATASET -->
-        <a href="{% url 'download_cleaned_dataset' dataset.id %}" 
-           class="btn btn-primary">
-            Download Cleaned Dataset
-        </a>
-
-    {% endif %}
-
+<!-- ===== TOP NAVBAR (unified with all other pages) ===== -->
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="brand-name">Auralis Insights</span>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+            <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+            
+        </div>
+        
+    </div>
 </div>
 
+<div class="dashboard">
+    <!-- Header with navigation -->
+    <div class="dashboard-header">
+        <div class="header-left">
+            <h1>{{ dataset.file_name }}</h1>
+            <div class="breadcrumb">
+                <a href="{% url 'upload_data' %}">Data Upload</a>
+                <span>›</span>
+                <span>Dataset details</span>
+            </div>
+        </div>
+        <div class="file-chip">
+            <span>📁</span>
+            <span>Uploaded {{ dataset.uploaded_at }}</span>
+        </div>
+    </div>
 
+    <!-- Status row -->
+    <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        {% if dataset.is_processed %}
+            <div class="status-badge">
+                <span>✓</span> Processed
+            </div>
+        {% else %}
+            <div class="status-badge pending">
+                <span>⏳</span> Pending
+            </div>
+        {% endif %}
+        <div class="badge-light">
+            <span>🔢</span> {{ column_count }} columns · {{ row_count }} rows
+        </div>
+    </div>
+
+    <!-- METRICS GRID - all parameters in cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Total rows</div>
+            <div class="metric-value">{{ row_count }}</div>
+            <div class="metric-trend">📊 observations</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Columns</div>
+            <div class="metric-value">{{ column_count }}</div>
+            <div class="metric-trend">📋 features</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Missing values</div>
+            <div class="metric-value">{{ missing_values }}</div>
+            <div class="metric-trend">⚠️ total empty cells</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Duplicate rows</div>
+            <div class="metric-value">{{ duplicate_rows }}</div>
+            <div class="metric-trend">🔄 exact copies</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Numeric columns</div>
+            <div class="metric-value">{{ numeric_count }}</div>
+            <div class="metric-trend">📈 quantitative</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Categorical</div>
+            <div class="metric-value">{{ categorical_count }}</div>
+            <div class="metric-trend">🏷️ qualitative</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Memory usage</div>
+            <div class="metric-value">{{ memory_usage }} <span class="metric-unit">MB</span></div>
+            <div class="metric-trend">💾 RAM footprint</div>
+        </div>
+    </div>
+
+    <!-- Data preview section with reduced font sizes -->
+    <div class="preview-card">
+        <div class="preview-header">
+            <h2>
+                {{ preview_title }}
+                <span>first 10 rows</span>
+            </h2>
+            
+        </div>
+
+        <!-- Scrollable table wrapper (smaller fonts) -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        {% for cell in row %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+           <!-- Action buttons (functionality unchanged) -->
+        <div class="action-bar">
+            
+            <div style="display: flex; gap: 1rem;">
+                {% if dataset.is_processed and cleaning_report_id %}
+                    <a href="{% url 'download_cleaned' cleaning_report_id %}" class="btn btn-outline">
+                        <i class="fas fa-download"></i> Download Cleaned File
+                    </a>
+                    <a href="{% url 'run_analysis' cleaning_report_id %}" class="btn btn-primary">
+                        <i class="fas fa-chart-bar"></i> Analysis
+                    </a>
+                {% else %}
+                    <a href="{% url 'configure' dataset.id %}" class="btn btn-primary">
+                        <i class="fas fa-cog"></i> Preprocess Data
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

@@ -5,198 +5,286 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — Auralis Insights</title>
 
+  <!-- Fonts & Icons (consistent with signup/OTP) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-:root {
-  --primary: #7b9768ff;
-  --primary-light: #A8BE9E;
-  --primary-dark: #5F7E57;
+    :root {
+      --primary: #0B3B4B;
+      --primary-mid: #1D5A6D;
+      --primary-light: #2C6F84;
+      --primary-pale: #E3F0F5;
+      --accent: #4A9B8D;
+      --bg: #F8F9FC;
+      --bg2: #EDF2F7;
+      --card-bg: rgba(255,255,255,0.92);
+      --text-dark: #1A2B3C;
+      --text-soft: #3A4A5E;
+      --text-muted: #5E6F88;
+      --border: rgba(11,59,75,0.10);
+      --border-strong: rgba(11,59,75,0.18);
+      --shadow-sm: 0 2px 8px rgba(11,59,75,0.07);
+      --shadow-md: 0 6px 24px rgba(11,59,75,0.10);
+      --shadow-lg: 0 16px 48px rgba(11,59,75,0.13);
+      --radius: 14px;
+      --radius-lg: 20px;
+      --transition: all 0.20s cubic-bezier(0.4,0,0.2,1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  --mint-soft: #EDF6F1;
-  --warm-beige: #F4EFE7;
-  --background-base: #f5ead7ff;
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 60% 50% at 5% 10%, rgba(127,176,105,0.13), transparent),
+        radial-gradient(ellipse 50% 60% at 95% 85%, rgba(46,77,49,0.10), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  --card-surface: rgba(255,255,255,0.78);
-  --border-light: rgba(0,0,0,0.05);
+    .card {
+      background: var(--card-bg);
+      border-radius: 32px;
+      padding: 48px 44px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.5);
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 400ms ease-out;
+    }
 
-  --text-dark: #2F2F2F;
-  --text-medium: #6F6F6F;
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  --success-soft: #7FAF9A;
-  --error-soft: #E7CFCF;
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
 
-  --shadow-card: 0px 10px 28px rgba(0,0,0,0.08);
-  --focus-ring: 0 0 0 3px rgba(139,175,159,0.28);
-}
+    .logo h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    .logo span {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, var(--background-base), var(--warm-beige));
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-}
+    /* message styles (consistent with signup) */
+    .message-container {
+      margin-bottom: 24px;
+    }
+    .message {
+      padding: 12px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .message.error { 
+      color: #B91C1C; 
+      background: rgba(185,28,28,0.08); 
+      border-left: 4px solid #B91C1C;
+    }
+    .message.success { 
+      color: var(--primary); 
+      background: var(--primary-pale); 
+      border-left: 4px solid var(--primary);
+    }
+    .message i { font-size: 14px; }
 
-.card {
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,0.4);
-  box-shadow: var(--shadow-card);
-  border-radius: 18px;
-  padding: 40px;
-  width: 100%;
-  max-width: 440px;
-  animation: fadeInUp 400ms ease-out;
-}
+    .form-group { margin-bottom: 24px; }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+      display: block;
+      letter-spacing: 0.3px;
+    }
 
-.logo {
-  text-align: center;
-  margin-bottom: 28px;
-}
+    .input-wrapper {
+      position: relative;
+      transition: var(--transition);
+    }
 
-.logo h1 {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--primary);
-  font-style: italic;
-}
+    input {
+      width: 100%;
+      padding: 14px 16px 14px 48px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 16px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.9);
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+    }
 
-.form-group { margin-bottom: 20px; }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46,77,49,0.12);
+    }
 
-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-medium);
-  margin-bottom: 6px;
-  display: block;
-}
+    .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
 
-.input-wrapper {
-  position: relative;
-}
+    .toggle-visibility {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
 
-input {
-  width: 100%;
-  padding: 12px 16px 12px 44px;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  font-size: 15px;
-  background: var(--card-surface);
-}
+    .toggle-visibility:hover {
+      color: var(--primary);
+    }
 
-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: var(--focus-ring);
-}
+    .forgot-password {
+      display: block;
+      text-align: right;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .forgot-password:hover {
+      color: var(--primary);
+    }
 
-.input-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-medium);
-}
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      border-radius: 999px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(46,77,49,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
 
-.hint {
-  font-size: 12px;
-  margin-top: 6px;
-  display: none;
-}
+    .btn-primary:hover {
+      background: var(--primary-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46,77,49,0.3);
+    }
 
-.hint.show { display: block; }
-.hint.valid { color: var(--success-soft); }
-.hint.error { color: #D32F2F; }
+    .btn-primary i {
+      font-size: 15px;
+    }
 
-.forgot-password {
-  display: block;
-  text-align: right;
-  font-size: 13px;
-  color: var(--text-medium);
-  margin-top: 6px;
-  text-decoration: none;
-}
+    .signup-link {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
 
-.btn-primary {
-  width: 100%;
-  padding: 14px;
-  border-radius: 999px;
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
+    .signup-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: var(--transition);
+      margin-left: 6px;
+    }
 
-.btn-primary:hover {
-  background: var(--primary-light);
-}
+    .signup-link a:hover {
+      border-bottom-color: var(--primary);
+    }
 
-.signup-link {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 14px;
-}
-
-.signup-link a {
-  color: var(--primary);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.toggle-visibility {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 15px;
-  color: var(--text-medium);
-  cursor: pointer;
-}
-
-.toggle-visibility:hover {
-  color: var(--primary);
-}
-
-
-/* ✅ MESSAGE STYLE */
-.error-message {
-  background: #ffe6e6;
-  color: #a10000;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-}
+    /* optional divider */
+    .divider {
+      margin: 20px 0 10px;
+      position: relative;
+      text-align: center;
+    }
+    .divider span {
+      background: var(--card-bg);
+      padding: 0 10px;
+      color: var(--text-muted);
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
   </style>
 </head>
-
 <body>
 
 <div class="card">
 
   <div class="logo">
     <h1>Auralis Insights</h1>
+    <span>Calm Intelligence · Clear Decisions</span>
   </div>
 
-  <!-- ✅ MESSAGE CONSUMED HERE -->
+  <!-- messages (preserved functionality) -->
   {% if messages %}
-    {% for message in messages %}
-      <div class="error-message">
-        {{ message }}
-      </div>
-    {% endfor %}
+    <div class="message-container">
+      {% for message in messages %}
+        <div class="message {{ message.tags }}">
+          <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
   {% endif %}
 
   <form method="post" action="{% url 'login' %}">
@@ -206,37 +294,47 @@ input:focus {
       <label>Email</label>
       <div class="input-wrapper">
         <i class="fas fa-envelope input-icon"></i>
-        <input type="email" name="email" required>
+        <input type="email" name="email" required placeholder="your@email.com">
       </div>
     </div>
 
-   <div class="form-group">
-  <label for="password">Password</label>
-  <div class="input-wrapper">
-    <i class="fas fa-lock input-icon"></i>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      placeholder="••••••••"
-      required
-    >
-    <i class="fas fa-eye toggle-visibility" id="togglePassword"></i>
-  </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-wrapper">
+        <i class="fas fa-lock input-icon"></i>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          required
+        >
+        <i class="fas fa-eye toggle-visibility" id="togglePassword"></i>
+      </div>
 
-  <a href="{% url 'forgot_password' %}" class="forgot-password">
-    Forgot Password?
-  </a>
-</div>
+      <a href="{% url 'forgot_password' %}" class="forgot-password">
+        Forgot password?
+      </a>
+    </div>
 
-    <button type="submit" class="btn-primary">Log In</button>
+    <button type="submit" class="btn-primary">
+      <i class="fas fa-sign-in-alt"></i> Log In
+    </button>
 
     <div class="signup-link">
-      <a href="{% url 'signup' %}">Don't have an account? Sign up</a>
+      Don't have an account?
+      <a href="{% url 'signup' %}">Sign up</a>
+    </div>
+
+    <!-- Optional subtle divider (keeps design light) -->
+    <div class="divider">
+      <span>secure access</span>
     </div>
 
   </form>
 </div>
+
+<!-- JavaScript (preserved functionality) -->
 <script>
   const passwordInput = document.getElementById("password");
   const togglePassword = document.getElementById("togglePassword");

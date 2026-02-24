@@ -5,216 +5,316 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up — Auralis Insights</title>
 
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-:root {
-  --primary: #6a8e67ff;
-  --primary-light: #A8BE9E;
-  --primary-dark: #5F7E57;
-  --paper-bg: #f5ead7ff;
-  --warm-beige: #EFE8DC;
-  --card-bg: rgba(255,255,255,0.82);
-  --text-dark: #2F2F2F;
-  --text-medium: #5b8160ff;
-  --success: #5F7E57;
-  --error: #D32F2F;
-  --focus-ring: 0 0 0 3px rgba(124,148,107,0.35);
-}
+    :root {
+      --primary: #0B3B4B;
+      --primary-mid: #1D5A6D;
+      --primary-light: #2C6F84;
+      --primary-pale: #E3F0F5;
+      --accent: #4A9B8D;
+      --bg: #F8F9FC;
+      --bg2: #EDF2F7;
+      --card: rgba(255,255,255,0.92);
+      --text-dark: #1A2B3C;
+      --text-soft: #3A4A5E;
+      --text-muted: #5E6F88;
+      --border: rgba(11,59,75,0.10);
+      --border-strong: rgba(11,59,75,0.18);
+      --shadow-sm: 0 2px 8px rgba(11,59,75,0.07);
+      --shadow-md: 0 6px 24px rgba(11,59,75,0.10);
+      --shadow-lg: 0 16px 48px rgba(11,59,75,0.13);
+      --radius: 14px;
+      --radius-lg: 20px;
+      --transition: all 0.20s cubic-bezier(0.4,0,0.2,1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 60% 50% at 5% 10%, rgba(127,176,105,0.13), transparent),
+        radial-gradient(ellipse 50% 60% at 95% 85%, rgba(46,77,49,0.10), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-body {
-  min-height: 100vh;
-  font-family: "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(124,148,107,0.18), transparent 60%),
-    linear-gradient(180deg, var(--paper-bg), var(--warm-beige));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 48px;
-}
+    .auth-wrapper {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 60px;
+      max-width: 1300px;
+      width: 100%;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
 
-.auth-wrapper {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 72px;
-  max-width: 1200px;
-  width: 100%;
-  align-items: stretch;
-}
+    /* ===== LEFT PANEL - refined ===== */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 20px;
+    }
 
-/* ===== LEFT PANEL ===== */
-.welcome {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 28px;
-}
+    .welcome h1 {
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-family: 'DM Sans', serif;
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+    .welcome h1::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--accent);
+      margin-top: 12px;
+      border-radius: 3px;
+    }
 
-.welcome h1 {
-  font-size: 46px;
-  font-weight: 600;
-  color: var(--primary-dark);
-  margin-bottom: 18px;
-  font-family: "Times New Roman", serif;
-}
+    .welcome p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-soft);
+      max-width: 520px;
+      margin-bottom: 24px;
+    }
 
-.welcome p {
-  font-size: 17px;
-  line-height: 1.75;
-  color: var(--text-dark);
-  max-width: 540px;
-  margin-bottom: 18px;
-}
+    .welcome .sub-content {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-soft);
+      max-width: 520px;
+    }
 
-/* NEW EXTRA CONTENT */
-.welcome .sub-content {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--text-dark);
-  max-width: 520px;
-}
+    .welcome .sub-content ul {
+      margin-top: 18px;
+      padding-left: 0;
+      list-style: none;
+    }
 
-.welcome .sub-content ul {
-  margin-top: 14px;
-  padding-left: 18px;
-}
+    .welcome .sub-content li {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+    }
+    .welcome .sub-content li i {
+      color: var(--accent);
+      font-size: 16px;
+      width: 22px;
+    }
 
-.welcome .sub-content li {
-  margin-bottom: 10px;
-}
+    /* ===== RIGHT CARD - elevated ===== */
+    .card {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 44px 46px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
 
-/* ===== CARD ===== */
-.card {
-  background: var(--card-bg);
-  border-radius: 28px;
-  padding: 44px 46px;
-  box-shadow:
-    0 20px 45px rgba(0,0,0,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.6);
-  backdrop-filter: blur(16px);
-}
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-.logo {
-  text-align: center;
-  margin-bottom: 26px;
-}
+    .logo h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+    }
 
-.logo h2 {
-  font-size: 26px;
-  color: var(--primary-dark);
-}
+    .logo span {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-.logo span {
-  font-size: 13px;
-  color: var(--text-medium);
-}
+    /* server messages */
+    .server-message {
+      margin-bottom: 20px;
+      padding: 12px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .server-message.error { 
+      color: #B91C1C; 
+      background: rgba(185,28,28,0.08); 
+      border-left: 4px solid #B91C1C;
+    }
+    .server-message.success { 
+      color: var(--primary); 
+      background: var(--primary-pale); 
+      border-left: 4px solid var(--primary);
+    }
 
-/* SERVER MESSAGE */
-.server-message {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-}
-.server-message.error { color: var(--error); background: rgba(211,47,47,.12); }
-.server-message.success { color: var(--success); background: rgba(95,126,87,.14); }
+    /* form */
+    .form-group { margin-bottom: 24px; }
 
-/* FORM */
-.form-group { margin-bottom: 22px; }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+      display: block;
+      letter-spacing: 0.3px;
+    }
 
-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-dark);
-  margin-bottom: 6px;
-  display: block;
-}
+    .input-wrapper { 
+      position: relative;
+      transition: var(--transition);
+    }
 
-.input-wrapper { position: relative; }
+    input {
+      width: 100%;
+      padding: 14px 48px;
+      border-radius: 16px;
+      border: 1.5px solid var(--border-strong);
+      font-size: 15px;
+      background: rgba(255,255,255,0.9);
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+    }
 
-input {
-  width: 100%;
-  padding: 15px 54px;
-  border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.08);
-  font-size: 15px;
-  background: rgba(255,255,255,0.9);
-}
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46,77,49,0.12);
+    }
 
-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: var(--focus-ring);
-}
+    .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
 
-.input-icon {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-medium);
-}
+    .toggle-password {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .toggle-password:hover { color: var(--primary); }
 
-.toggle-password {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
+    /* field hints */
+    .field-hint {
+      font-size: 12px;
+      margin-top: 6px;
+      padding-left: 12px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-hint.error { 
+      color: #B91C1C; 
+      display: flex; 
+    }
+    .field-hint.success { 
+      color: var(--primary); 
+      display: flex; 
+    }
+    .field-hint i { font-size: 12px; }
 
-/* INLINE HINTS */
-.field-hint {
-  font-size: 12px;
-  margin-top: 6px;
-  display: none;
-}
-.field-hint.error { color: var(--error); display: block; }
-.field-hint.success { color: var(--success); display: block; }
+    /* button */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      border-radius: 999px;
+      border: none;
+      margin-top: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(46,77,49,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-/* BUTTON */
-.btn-primary {
-  width: 100%;
-  padding: 16px;
-  border-radius: 999px;
-  border: none;
-  margin-top: 6px;
-  background: linear-gradient(180deg, var(--primary-light), var(--primary));
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
+    .btn-primary:hover {
+      background: var(--primary-mid);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46,77,49,0.3);
+    }
 
-/* LOGIN REDIRECT (NO UNDERLINE) */
-.login-redirect {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-medium);
-}
+    /* login redirect */
+    .login-redirect {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
 
-.login-redirect a {
-  color: var(--primary-dark);
-  font-weight: 600;
-  text-decoration: none;   /* ❌ no underline */
-}
+    .login-redirect a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: var(--transition);
+    }
 
-.login-redirect a:hover {
-  text-decoration: none;   /* ❌ still no underline */
-  opacity: 0.85;
-}
+    .login-redirect a:hover {
+      border-bottom-color: var(--primary);
+    }
+
+    /* responsive */
+    @media (max-width: 950px) {
+      .auth-wrapper {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        max-width: 500px;
+      }
+      .welcome { padding-left: 0; }
+      body { padding: 20px; }
+      .card { padding: 36px 32px; }
+    }
   </style>
 </head>
-
 <body>
 
 <div class="auth-wrapper">
 
-  <!-- LEFT -->
+  <!-- LEFT PANEL - enhanced with icons -->
   <div class="welcome">
     <h1>Welcome to Auralis</h1>
 
@@ -223,7 +323,6 @@ input:focus {
       and intuitive visual experiences that support clarity and focus.
     </p>
 
-    <!-- ✅ EXTRA CONTENT ADDED -->
     <div class="sub-content">
       <p>
         Whether you are analyzing datasets, generating reports, or exploring trends,
@@ -231,15 +330,15 @@ input:focus {
       </p>
 
       <ul>
-        <li>Upload and manage datasets securely</li>
-        <li>Explore insights through visual dashboards</li>
-        <li>Generate structured analytical reports</li>
-        <li>Maintain clarity with a calm, human-centered interface</li>
+        <li><i class="fas fa-lock"></i> Upload and manage datasets securely</li>
+        <li><i class="fas fa-chart-pie"></i> Explore insights through visual dashboards</li>
+        <li><i class="fas fa-file-alt"></i> Generate structured analytical reports</li>
+        <li><i class="fas fa-brain"></i> Maintain clarity with a calm, human-centered interface</li>
       </ul>
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT PANEL - refined card -->
   <div class="card">
 
     <div class="logo">
@@ -249,7 +348,10 @@ input:focus {
 
     {% if messages %}
       {% for message in messages %}
-        <div class="server-message {{ message.tags }}">{{ message }}</div>
+        <div class="server-message {{ message.tags }}">
+          <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+          {{ message }}
+        </div>
       {% endfor %}
     {% endif %}
 
@@ -263,7 +365,9 @@ input:focus {
           <i class="fas fa-user input-icon"></i>
           <input type="text" id="username" name="username" required>
         </div>
-        <div class="field-hint" id="usernameHint"></div>
+        <div class="field-hint" id="usernameHint">
+          <i class="fas"></i> <span></span>
+        </div>
       </div>
 
       <div class="form-group">
@@ -272,7 +376,9 @@ input:focus {
           <i class="fas fa-envelope input-icon"></i>
           <input type="email" id="email" name="email" required>
         </div>
-        <div class="field-hint" id="emailHint"></div>
+        <div class="field-hint" id="emailHint">
+          <i class="fas"></i> <span></span>
+        </div>
       </div>
 
       <div class="form-group">
@@ -282,10 +388,14 @@ input:focus {
           <input type="password" id="password" name="password" required>
           <i class="fas fa-eye toggle-password" id="togglePwd"></i>
         </div>
-        <div class="field-hint" id="passwordHint"></div>
+        <div class="field-hint" id="passwordHint">
+          <i class="fas"></i> <span></span>
+        </div>
       </div>
 
-      <button type="submit" class="btn-primary">Sign Up</button>
+      <button type="submit" class="btn-primary">
+        <i class="fas fa-user-plus"></i> Sign Up
+      </button>
 
       <div class="login-redirect">
         Already have an account?
@@ -296,30 +406,44 @@ input:focus {
   </div>
 </div>
 
+<!-- JavaScript (preserved exactly) -->
 <script>
 document.getElementById("togglePwd").onclick = () => {
+  const password = document.getElementById("password");
   password.type = password.type === "password" ? "text" : "password";
 };
+
+const username = document.getElementById("username");
+const backendName = document.getElementById("backendName");
+const usernameHint = document.getElementById("usernameHint");
+const email = document.getElementById("email");
+const emailHint = document.getElementById("emailHint");
+const password = document.getElementById("password");
+const passwordHint = document.getElementById("passwordHint");
 
 username.oninput = () => {
   backendName.value = username.value.trim();
   const ok = /^[a-zA-Z0-9_]{3,}$/.test(username.value.trim());
-  usernameHint.textContent = ok ? "Valid username" : "Min 3 chars, letters/numbers/_ only";
+  usernameHint.innerHTML = ok 
+    ? '<i class="fas fa-check-circle"></i> <span>Valid username</span>' 
+    : '<i class="fas fa-exclamation-circle"></i> <span>Min 3 chars, letters/numbers/_ only</span>';
   usernameHint.className = "field-hint " + (ok ? "success" : "error");
 };
 
 email.oninput = () => {
   const ok = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email.value);
-  emailHint.textContent = ok ? "Valid email" : "Use lowercase & valid format";
+  emailHint.innerHTML = ok 
+    ? '<i class="fas fa-check-circle"></i> <span>Valid email</span>' 
+    : '<i class="fas fa-exclamation-circle"></i> <span>Use lowercase & valid format</span>';
   emailHint.className = "field-hint " + (ok ? "success" : "error");
 };
 
 password.oninput = () => {
   const rules = [/.{8,}/, /[A-Z]/, /[a-z]/, /\d/, /[^A-Za-z0-9]/];
   const ok = rules.every(r => r.test(password.value));
-  passwordHint.textContent = ok
-    ? "Strong password"
-    : "8+ chars, upper, lower, number & symbol required";
+  passwordHint.innerHTML = ok
+    ? '<i class="fas fa-check-circle"></i> <span>Strong password</span>'
+    : '<i class="fas fa-exclamation-circle"></i> <span>8+ chars, upper, lower, number & symbol required</span>';
   passwordHint.className = "field-hint " + (ok ? "success" : "error");
 };
 </script>

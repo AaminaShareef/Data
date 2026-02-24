@@ -1,41 +1,21 @@
-
 from django.db import models
+from datacleaning.models import CleaningReport
 
-class DatasetKPISummary(models.Model):
-    dataset_name = models.CharField(max_length=255)
-    total_records = models.IntegerField()
-    total_features = models.IntegerField()
-    missing_percentage = models.FloatField()
-    duplicate_percentage = models.FloatField()
-    data_health_score = models.FloatField()
-    anomaly_count = models.IntegerField()
-    predicted_next_value = models.FloatField(null=True, blank=True)
-    business_summary = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+
+class AnalysisResult(models.Model):
+
+    # OneToOne — one result per cleaning report, overwritten on re-run
+    cleaning_report = models.OneToOneField(
+        CleaningReport,
+        on_delete=models.CASCADE,
+        related_name='analysis_result',
+    )
+    result_json  = models.JSONField(default=dict)
+    domain       = models.CharField(max_length=50, default='generic')
+    created_at   = models.DateTimeField(auto_now=True)  # updates on every save
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.dataset_name
-
-
-class ColumnKPI(models.Model):
-    dataset = models.ForeignKey(DatasetKPISummary, on_delete=models.CASCADE, related_name="columns")
-    column_name = models.CharField(max_length=255)
-    mean = models.FloatField(null=True, blank=True)
-    median = models.FloatField(null=True, blank=True)
-    minimum = models.FloatField(null=True, blank=True)
-    maximum = models.FloatField(null=True, blank=True)
-    std_dev = models.FloatField(null=True, blank=True)
-    value_range = models.FloatField(null=True, blank=True)
-
-
-class AnomalyRecord(models.Model):
-    dataset = models.ForeignKey(DatasetKPISummary, on_delete=models.CASCADE)
-    row_index = models.IntegerField()
-    anomaly_score = models.FloatField()
-
-
-class PredictionResult(models.Model):
-    dataset = models.ForeignKey(DatasetKPISummary, on_delete=models.CASCADE)
-    column_name = models.CharField(max_length=255)
-    predicted_value = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True)
+        return f"Analysis — {self.cleaning_report.dataset.file_name} ({self.domain})"

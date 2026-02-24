@@ -1,3 +1,0 @@
-Supplier_ID,Year,Financial_Stability_Score,Delivery_Performance_Score,Quality_Compliance_Score,Regulatory_Adherence_Score,Sustainability_Score,Past_Risk_Level,ERP_Transactions,Incidents_Count,MCDM_Score,Risk_Category,anomaly_flag,outlier_flag
-1.0,1.0,-1.0000000000000002,1.000000000000001,-1.0,1.0000000000000009,-1.0000000000000009,1.0,1.0,-1.0,-0.9999999999999992,1.0,1,1
--1.0,-1.0,1.0,-0.999999999999999,1.0,-0.9999999999999992,0.9999999999999992,-1.0,-1.0,1.0,1.0000000000000009,-1.0,1,1

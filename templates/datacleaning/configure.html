@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Configure Cleaning · {{ dataset.file_name }} · Auralis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --primary: #0B3B4B;       /* deep navy - authority, stability */
+  --primary-mid: #1D5A6D;    /* rich teal - analytical depth */
+  --primary-light: #2C6F84;  /* lighter teal for hover states */
+  --primary-pale: #E3F0F5;   /* ice blue - clean, precise */
+  --accent: #4A9B8D;         /* muted teal - data points, insights */
+  --bg: #F8F9FC;             /* cool off-white - reduces eye strain */
+  --bg2: #EDF2F7;            /* slightly darker cool gray */
+  --card: #FFFFFF;
+  --text: #1A2B3C;           /* dark navy-blue for main text */
+  --text-soft: #3A4A5E;      /* softer navy for secondary text */
+  --muted: #5E6F88;          /* muted blue-gray */
+  --border: rgba(11,59,75,0.10);
+  --border-strong: rgba(11,59,75,0.18);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.07);
+  --shadow-md: 0 6px 24px rgba(11,59,75,0.10);
+  --shadow-lg: 0 16px 48px rgba(11,59,75,0.13);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.20s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:"";position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 5% 10%,rgba(127,176,105,0.13),transparent),
+  radial-gradient(ellipse 50% 60% at 95% 85%,rgba(46,77,49,0.10),transparent);
+  pointer-events:none;z-index:0;}
+a{text-decoration:none;color:var(--primary);}
+
+/* ── Topbar (redesigned, professional) ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.topbar-inner{max-width:1400px;margin:0 auto;padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{width:38px;height:38px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.brand-logo svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;}
+.brand-name{font-size:18px;font-weight:700;color:var(--primary);letter-spacing:-0.3px;}
+.nav-links{display:flex;align-items:center;gap:24px;}
+.nav-link{font-size:14px;font-weight:500;color:var(--text-soft);transition:var(--transition);}
+.nav-link:hover{color:var(--primary);}
+.nav-link i{margin-right:6px;font-size:13px;}
+.topbar-actions{display:flex;gap:12px;}
+.tbtn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:8px 18px;border-radius:999px;transition:var(--transition);border:1.5px solid transparent;cursor:pointer;background:transparent;}
+.tbtn-outline{border-color:var(--border-strong);color:var(--text-soft);}
+.tbtn-outline:hover{background:var(--primary-pale);color:var(--primary);border-color:var(--primary);}
+.tbtn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 10px rgba(46,77,49,0.2);}
+.tbtn-primary:hover{background:var(--primary-mid);transform:translateY(-2px);}
+
+/* ── Page layout ── */
+.page{max-width:1400px;margin:0 auto;padding:24px 32px 56px;position:relative;z-index:1;}
+
+/* ── Breadcrumb ── */
+.breadcrumb{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:500;}
+.breadcrumb a{color:var(--muted);transition:var(--transition);}
+.breadcrumb a:hover{color:var(--primary);}
+.breadcrumb i{font-size:10px;}
+
+/* ── Page header ── */
+.page-header{margin-bottom:24px;}
+.page-eyebrow{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.page-title{font-size:28px;font-weight:700;color:var(--primary);letter-spacing:-0.5px;margin-bottom:4px;}
+.page-sub{font-size:14px;color:var(--text-soft);}
+
+/* ── Stats strip (horizontal cards) ── */
+.stats-strip{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px;}
+.stat-chip{flex:1 1 120px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 12px;box-shadow:var(--shadow-sm);text-align:center;transition:var(--transition);}
+.stat-chip:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.stat-num{font-size:24px;font-weight:800;color:var(--primary);font-family:'DM Mono',monospace;line-height:1;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── Main grid (2‑column layout) ── */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+
+/* ── Section card ── */
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:24px;margin-bottom:20px;transition:var(--transition);}
+.section-card:hover{box-shadow:var(--shadow-md);}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.section-icon{width:36px;height:36px;background:var(--primary-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-icon i{font-size:16px;color:var(--primary);}
+.section-title{font-size:15px;font-weight:700;color:var(--primary);}
+.section-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+/* ── Option cards (radio) ── */
+.option-group{display:flex;flex-direction:column;gap:10px;}
+.option-card{position:relative;}
+.option-card input[type="radio"]{position:absolute;opacity:0;width:0;height:0;}
+.option-label{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border:1.5px solid var(--border-strong);border-radius:var(--radius);cursor:pointer;transition:var(--transition);background:var(--bg);}
+.option-label:hover{border-color:var(--primary);background:var(--primary-pale);}
+.option-card input:checked + .option-label{border-color:var(--primary);background:var(--primary-pale);box-shadow:0 0 0 3px rgba(46,77,49,0.10);}
+.option-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:var(--transition);}
+.option-card input:checked + .option-label .option-check{background:var(--primary);border-color:var(--primary);}
+.option-card input:checked + .option-label .option-check::after{content:"";width:6px;height:6px;border-radius:50%;background:#fff;}
+.option-name{font-size:14px;font-weight:700;color:var(--text);}
+.option-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+/* ── Toggle switch ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;padding-bottom:0;}
+.toggle-name{font-size:14px;font-weight:600;color:var(--text);}
+.toggle-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--bg2);border-radius:999px;cursor:pointer;transition:var(--transition);border:1.5px solid var(--border-strong);}
+.toggle-slider::before{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:2px;top:1px;transition:var(--transition);box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.toggle-switch input:checked + .toggle-slider{background:var(--primary);border-color:var(--primary);}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(20px);}
+
+/* ── Threshold input ── */
+.threshold-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.threshold-input-wrap{display:flex;align-items:center;gap:8px;}
+.threshold-input{width:70px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:10px;font-size:14px;font-family:'DM Mono',monospace;font-weight:600;color:var(--primary);text-align:center;background:var(--card);transition:var(--transition);}
+.threshold-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,77,49,0.12);}
+.threshold-unit{font-size:12px;color:var(--muted);font-weight:600;}
+
+/* ── Missing value preview table ── */
+.missing-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px;}
+.missing-table th{background:var(--primary-pale);color:var(--primary);padding:10px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.missing-table td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text-soft);}
+.missing-table tr:hover td{background:var(--primary-pale);}
+.pct-bar-wrap{width:80px;height:6px;background:var(--bg2);border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px;}
+.pct-bar{height:100%;border-radius:99px;}
+.pct-low{background:var(--accent);}
+.pct-mid{background:#E67E22;}
+.pct-high{background:#EF4444;}
+
+/* ── Right sidebar (summary + submit) ── */
+.sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:28px;position:sticky;top:88px;}
+.sidebar-title{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.sidebar-title i{font-size:14px;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.summary-row:last-of-type{border-bottom:none;}
+.summary-key{color:var(--muted);font-weight:600;}
+.summary-val{color:var(--text);font-weight:700;font-family:'DM Mono',monospace;}
+.btn-run{width:100%;padding:16px;border:none;border-radius:999px;background:var(--primary);color:#fff;font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:var(--transition);box-shadow:0 4px 14px rgba(46,77,49,0.25);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;}
+.btn-run:hover{background:var(--primary-mid);transform:translateY(-1px);box-shadow:0 6px 20px rgba(46,77,49,0.32);}
+.btn-run:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.run-note{font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5;}
+
+/* ── Column types pills ── */
+.col-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.col-pill{padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;}
+.pill-num{background:#EAF2EB;color:#2E4D31;}
+.pill-cat{background:#FEF3C7;color:#92400E;}
+.pill-dt{background:#EDE9FE;color:#5B21B6;}
+
+/* ── Fade in animation ── */
+.fade-up{opacity:0;transform:translateY(12px);animation:fadeUp 0.4s ease forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.05s;}.d2{animation-delay:0.10s;}.d3{animation-delay:0.15s;}
+.d4{animation-delay:0.20s;}.d5{animation-delay:0.25s;}.d6{animation-delay:0.30s;}
+</style>
+</head>
+<body>
+
+<!-- Redesigned top navbar (horizontal, professional) -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </div>
+    <div class="nav-links">
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+      <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+      
+    </div>
+   
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Breadcrumb (unchanged) -->
+  <div class="breadcrumb fade-up d1">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'profile' %}">Profile</a>
+    <i class="fas fa-chevron-right"></i>
+    <span style="color:var(--primary);font-weight:600">Configure Cleaning</span>
+  </div>
+
+  <!-- Page header -->
+  <div class="page-header fade-up d1">
+    <div class="page-eyebrow">Data Cleaning Pipeline</div>
+    <div class="page-title">{{ dataset.file_name }}</div>
+    <div class="page-sub">Review your dataset and configure cleaning options before running the pipeline.</div>
+  </div>
+
+  <!-- Stats strip (horizontal cards) -->
+  <div class="stats-strip fade-up d2">
+    <div class="stat-chip"><div class="stat-num">{{ preview.row_count }}</div><div class="stat-lbl">Rows</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.col_count }}</div><div class="stat-lbl">Columns</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.total_missing_cells }}</div><div class="stat-lbl">Missing</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.duplicate_rows }}</div><div class="stat-lbl">Duplicates</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.numeric_columns|length }}</div><div class="stat-lbl">Numeric</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.categorical_columns|length }}</div><div class="stat-lbl">Categorical</div></div>
+    <div class="stat-chip"><div class="stat-num">{{ preview.memory_usage_mb }}</div><div class="stat-lbl">Memory (MB)</div></div>
+  </div>
+
+  <form method="POST" action="{% url 'run_cleaning' dataset.id %}" id="cleanForm">
+    {% csrf_token %}
+
+    <div class="main-grid">
+
+      <!-- LEFT COLUMN – options cards -->
+      <div>
+
+        <!-- Missing value strategy -->
+        <div class="section-card fade-up d3">
+          <div class="section-head">
+            <div class="section-icon"><i class="fas fa-fill-drip"></i></div>
+            <div><div class="section-title">Missing Value Strategy</div><div class="section-sub">How should empty cells be handled?</div></div>
+          </div>
+
+          <div class="option-group">
+            <div class="option-card">
+              <input type="radio" name="missing_strategy" id="ms_auto" value="auto" checked/>
+              <label class="option-label" for="ms_auto">
+                <div class="option-check"></div>
+                <div class="option-text">
+                  <div class="option-name">Auto <span style="font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:999px;margin-left:6px;">Recommended</span></div>
+                  <div class="option-desc">Numeric columns filled with median. Categorical columns filled with mode.</div>
+                </div>
+              </label>
+            </div>
+            <div class="option-card">
+              <input type="radio" name="missing_strategy" id="ms_drop" value="drop"/>
+              <label class="option-label" for="ms_drop">
+                <div class="option-check"></div>
+                <div class="option-text">
+                  <div class="option-name">Drop rows with missing values</div>
+                  <div class="option-desc">Any row containing a missing value is removed. Use if dataset is large.</div>
+                </div>
+              </label>
+            </div>
+            <div class="option-card">
+              <input type="radio" name="missing_strategy" id="ms_const" value="fill_constant"/>
+              <label class="option-label" for="ms_const">
+                <div class="option-check"></div>
+                <div class="option-text">
+                  <div class="option-name">Fill with constant (0)</div>
+                  <div class="option-desc">All missing cells are filled with zero. Suitable for count/binary data.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Missing per column preview -->
+          {% if preview.missing %}
+          <div style="margin-top:20px;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">
+              Missing values per column
+            </div>
+            <div style="max-height:200px;overflow-y:auto;border-radius:var(--radius);border:1px solid var(--border);">
+              <table class="missing-table">
+                <thead><tr><th>Column</th><th>Missing</th><th>%</th></tr></thead>
+                <tbody>
+                  {% for col, info in preview.missing.items %}
+                  {% if info.count > 0 %}
+                  <tr>
+                    <td style="font-family:'DM Mono',monospace;">{{ col }}</td>
+                    <td>{{ info.count }}</td>
+                    <td>{{ info.percent }}%<div class="pct-bar-wrap"><div class="pct-bar {% if info.percent < 10 %}pct-low{% elif info.percent < 30 %}pct-mid{% else %}pct-high{% endif %}" style="width:{{ info.percent }}%"></div></div></td>
+                  </tr>
+                  {% endif %}
+                  {% empty %}
+                  <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:16px;"><i class="fas fa-check-circle" style="color:var(--accent)"></i> No missing values</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Additional options card -->
+        <div class="section-card fade-up d4">
+          <div class="section-head">
+            <div class="section-icon"><i class="fas fa-sliders-h"></i></div>
+            <div><div class="section-title">Additional Options</div><div class="section-sub">Control what else the pipeline does</div></div>
+          </div>
+
+          <!-- Missing threshold -->
+          <div class="threshold-row">
+            <div><div class="toggle-name">Drop column if missing exceeds</div><div class="toggle-desc">Columns with more than this % missing will be removed.</div></div>
+            <div class="threshold-input-wrap"><input type="number" name="missing_threshold" class="threshold-input" value="60" min="10" max="100" step="5"/><span class="threshold-unit">%</span></div>
+          </div>
+
+          <!-- Flag outliers toggle -->
+          <div class="toggle-row">
+            <div><div class="toggle-name">Flag outliers <span style="font-size:10px;background:var(--primary-pale);color:var(--primary);padding:2px 7px;border-radius:999px;">IQR</span></div><div class="toggle-desc">Adds a boolean _outlier column for each numeric column.</div></div>
+            <label class="toggle-switch"><input type="checkbox" name="flag_outliers" value="true" checked id="toggleOutlier"/><span class="toggle-slider"></span></label>
+          </div>
+          <input type="hidden" name="flag_outliers" value="false" id="outlierHidden"/>
+
+          <!-- Extract dates toggle -->
+          <div class="toggle-row">
+            <div><div class="toggle-name">Extract date features</div><div class="toggle-desc">Extracts year, month, day from datetime columns.</div></div>
+            <label class="toggle-switch"><input type="checkbox" name="extract_dates" value="true" checked id="toggleDates"/><span class="toggle-slider"></span></label>
+          </div>
+          <input type="hidden" name="extract_dates" value="false" id="datesHidden"/>
+        </div>
+
+        <!-- Column type overview card -->
+        <div class="section-card fade-up d5">
+          <div class="section-head">
+            <div class="section-icon"><i class="fas fa-table"></i></div>
+            <div><div class="section-title">Column Types Detected</div><div class="section-sub">Based on automatic type inference</div></div>
+          </div>
+          {% if preview.numeric_columns %}
+          <div style="margin-bottom:14px;">
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">Numeric ({{ preview.numeric_columns|length }})</div>
+            <div class="col-pills">{% for col in preview.numeric_columns %}<span class="col-pill pill-num">{{ col }}</span>{% endfor %}</div>
+          </div>
+          {% endif %}
+          {% if preview.categorical_columns %}
+          <div style="margin-bottom:14px;">
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">Categorical ({{ preview.categorical_columns|length }})</div>
+            <div class="col-pills">{% for col in preview.categorical_columns %}<span class="col-pill pill-cat">{{ col }}</span>{% endfor %}</div>
+          </div>
+          {% endif %}
+          {% if preview.datetime_columns %}
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">Datetime ({{ preview.datetime_columns|length }})</div>
+            <div class="col-pills">{% for col in preview.datetime_columns %}<span class="col-pill pill-dt">{{ col }}</span>{% endfor %}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN – summary sidebar -->
+      <div class="fade-up d6">
+        <div class="sidebar-card">
+          <div class="sidebar-title"><i class="fas fa-clipboard-list"></i> Cleaning Summary</div>
+          <div class="summary-row"><span class="summary-key">Dataset</span><span class="summary-val" style="font-family:'DM Sans',sans-serif;font-size:12px;text-align:right;">{{ dataset.file_name }}</span></div>
+          <div class="summary-row"><span class="summary-key">Rows</span><span class="summary-val">{{ preview.row_count }}</span></div>
+          <div class="summary-row"><span class="summary-key">Columns</span><span class="summary-val">{{ preview.col_count }}</span></div>
+          <div class="summary-row"><span class="summary-key">Missing cells</span><span class="summary-val" style="{% if preview.total_missing_cells > 0 %}color:#E67E22{% endif %}">{{ preview.total_missing_cells }}</span></div>
+          <div class="summary-row"><span class="summary-key">Duplicates</span><span class="summary-val" style="{% if preview.duplicate_rows > 0 %}color:#E67E22{% endif %}">{{ preview.duplicate_rows }}</span></div>
+          <div class="summary-row"><span class="summary-key">Strategy</span><span class="summary-val" id="strategyDisplay">Auto</span></div>
+          <button type="submit" class="btn-run" id="runBtn"><i class="fas fa-play" style="font-size:14px"></i> Run Cleaning Pipeline</button>
+          <div class="run-note">The pipeline runs automatically. You will be taken to the results page when complete.</div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<script>
+// Update strategy display in sidebar
+document.querySelectorAll('input[name="missing_strategy"]').forEach(radio => {
+  radio.addEventListener('change', function(){
+    const labels = {auto:'Auto (median/mode)', drop:'Drop rows', fill_constant:'Fill with 0'};
+    document.getElementById('strategyDisplay').textContent = labels[this.value] || this.value;
+  });
+});
+
+// Handle checkbox to hidden field for toggles
+const outlierCheck = document.getElementById('toggleOutlier');
+const outlierHidden = document.getElementById('outlierHidden');
+const datesCheck = document.getElementById('toggleDates');
+const datesHidden = document.getElementById('datesHidden');
+
+function syncToggle(checkbox, hidden){
+  hidden.disabled = checkbox.checked;
+}
+outlierCheck.addEventListener('change', () => syncToggle(outlierCheck, outlierHidden));
+datesCheck.addEventListener('change',   () => syncToggle(datesCheck, datesHidden));
+syncToggle(outlierCheck, outlierHidden);
+syncToggle(datesCheck, datesHidden);
+
+// Loading state on submit
+document.getElementById('cleanForm').addEventListener('submit', function(){
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running pipeline…';
+});
+</script>
+
+</body>
+</html>

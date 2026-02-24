@@ -4,281 +4,406 @@
 <meta charset="UTF-8">
 <title>Upload Data — Auralis Insights</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #3c583c;
-  --primary-light: #4e7050;
-  --background-main: #F2EFEA;
-  --background-soft: #ECE7E0;
-  --card-bg: #ffffff;
-  --text-dark: #2B2B2B;
-  --text-muted: #667969ff;
-  --border-soft: rgba(0,0,0,0.08);
-  --shadow: 0 24px 60px rgba(0,0,0,0.08);
+  --primary: #0B3B4B;
+  --primary-mid: #1D5A6D;
+  --primary-light: #2C6F84;
+  --primary-pale: #E3F0F5;
+  --accent: #4A9B8D;
+  --bg: #F8F9FC;
+  --bg2: #EDF2F7;
+  --card: #FFFFFF;
+  --text: #1A2B3C;
+  --text-soft: #3A4A5E;
+  --muted: #5E6F88;
+  --border: rgba(11,59,75,0.10);
+  --border-strong: rgba(11,59,75,0.18);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.07);
+  --shadow-md: 0 6px 24px rgba(11,59,75,0.10);
+  --shadow-lg: 0 16px 48px rgba(11,59,75,0.13);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.20s cubic-bezier(0.4,0,0.2,1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, var(--background-soft), var(--background-main));
-  color: var(--text-dark);
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 5% 10%, rgba(127,176,105,0.13), transparent),
+              radial-gradient(ellipse 50% 60% at 95% 85%, rgba(46,77,49,0.10), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+a { text-decoration: none; color: var(--primary); }
+
+/* ===== TOP NAVBAR (consistent with other pages) ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-logo svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+}
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: var(--transition);
+}
+.nav-link:hover { color: var(--primary); }
+.nav-link i { margin-right: 6px; font-size: 13px; }
+.topbar-actions {
+  display: flex;
+  gap: 12px;
+}
+.tbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 999px;
+  transition: var(--transition);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  background: transparent;
+}
+.tbtn-outline {
+  border-color: var(--border-strong);
+  color: var(--text-soft);
+}
+.tbtn-outline:hover {
+  background: var(--primary-pale);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.tbtn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(46,77,49,0.2);
+}
+.tbtn-primary:hover {
+  background: var(--primary-mid);
+  transform: translateY(-2px);
 }
 
 /* ===== PAGE WRAPPER ===== */
 .page-wrapper {
   max-width: 1400px;
-  margin: auto;
-  padding: 80px 60px;
+  margin: 0 auto;
+  padding: 32px 32px 56px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ===== PAGE HEADER ===== */
+/* ===== BREADCRUMB ===== */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.breadcrumb a { color: var(--muted); transition: var(--transition); }
+.breadcrumb a:hover { color: var(--primary); }
+.breadcrumb i { font-size: 10px; }
+
+/* ===== PAGE HEADER (with back button integrated) ===== */
 .page-header {
-  margin-bottom: 60px;
+  margin-bottom: 32px;
 }
-
-.page-header h1 {
-  font-family: "Times New Roman", serif;
-  font-size: 46px;
+.page-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
   color: var(--primary);
-  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
 }
-
-.page-header p {
-  font-size: 18px;
-  line-height: 1.9;
-  color: var(--text-muted);
-  max-width: 1100px;
+.page-description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-soft);
+  max-width: 900px;
 }
 
 /* ===== CONTENT GRID ===== */
 .content-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 80px;
+  gap: 48px;
   align-items: start;
+  margin-top: 16px;
 }
 
 /* ===== LEFT CONTENT ===== */
 .left-content h2 {
-  font-size: 25px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
   margin-bottom: 16px;
 }
-
 .left-content p {
-  font-size: 16px;
-  line-height: 1.85;
-  color: var(--text-muted);
-  margin-bottom: 22px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-soft);
+  margin-bottom: 24px;
 }
-
-/* ===== INFO LIST ===== */
-.info-list {
-  margin-top: 30px;
-}
-
+.info-list { margin-top: 8px; }
 .info-item {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   margin-bottom: 18px;
+  padding: 8px 0;
 }
-
 .info-item i {
   color: var(--primary);
   font-size: 18px;
-  margin-top: 4px;
+  margin-top: 2px;
+  width: 24px;
 }
-
 .info-item span {
   font-size: 15px;
   line-height: 1.7;
-  color: var(--text-muted);
+  color: var(--text-soft);
 }
 
-/* ===== UPLOAD CARD (UNCHANGED) ===== */
+/* ===== UPLOAD CARD (refined but functionality identical) ===== */
 .card {
-  background: var(--card-bg);
-  padding: 50px;
-  border-radius: 28px;
-  box-shadow: var(--shadow);
+  background: var(--card);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
 }
-
 .card h2 {
-  font-family: "Times New Roman", serif;
-  font-size: 30px;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--primary);
   margin-bottom: 12px;
 }
-
 .card p {
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--text-muted);
-  margin-bottom: 30px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-soft);
+  margin-bottom: 28px;
 }
-
-/* FILE INPUT */
 .file-box {
-  border: 2px dashed var(--border-soft);
+  border: 2px dashed var(--border-strong);
   border-radius: 18px;
-  padding: 34px;
+  padding: 32px 24px;
   text-align: center;
-  margin-bottom: 30px;
-  background: #fafafa;
+  margin-bottom: 28px;
+  background: var(--bg);
+  transition: var(--transition);
 }
-
+.file-box:hover {
+  border-color: var(--primary);
+  background: var(--primary-pale);
+}
 .file-box i {
-  font-size: 34px;
+  font-size: 36px;
   color: var(--primary);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-
+.file-box strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
 .file-box span {
   display: block;
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
 }
-
 input[type="file"] {
-  margin-top: 16px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-soft);
+  width: 100%;
+  padding: 8px 0;
 }
-
-/* BUTTON */
 button {
-  padding: 16px 42px;
+  padding: 14px 36px;
   border-radius: 999px;
   border: none;
   background: var(--primary);
   color: #fff;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(46,77,49,0.2);
+  width: 100%;
 }
-
 button:hover {
+  background: var(--primary-mid);
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46,77,49,0.3);
 }
-
-/* MESSAGES */
 .messages {
   margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--primary-pale);
+  border-radius: var(--radius);
+  color: var(--primary);
   font-size: 14px;
-  color: darkgreen;
+  font-weight: 500;
+  border-left: 4px solid var(--accent);
 }
 
-/* RESPONSIVE */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1000px) {
   .content-grid {
     grid-template-columns: 1fr;
-    gap: 50px;
+    gap: 40px;
   }
-
-  .page-wrapper {
-    padding: 40px 24px;
-  }
+  .page-wrapper { padding: 24px 20px; }
+  .topbar-inner { padding: 0 20px; }
+  .nav-links { gap: 16px; }
 }
-/* HEADER LAYOUT */
-.header-flex {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
+@media (max-width: 700px) {
+  .topbar-inner { flex-wrap: wrap; height: auto; padding: 12px 20px; }
+  .brand { margin-bottom: 8px; }
+  .nav-links { flex-wrap: wrap; }
 }
-
-/* TOP RIGHT BUTTON */
-.header-btn {
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--primary);
-  background: transparent;
-  border: 2px solid var(--primary);
-  white-space: nowrap;
-  transition: all 0.25s ease;
-  margin-top: 8px;
-}
-
-.header-btn:hover {
-  background: var(--primary);
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-/* RESPONSIVE */
-@media (max-width: 800px) {
-  .header-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-btn {
-    margin-top: 16px;
-  }
-}
-
-
 </style>
 </head>
-
 <body>
+
+<!-- Consistent top navbar (matching cleaning, configure, profile pages) -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </div>
+    <div class="nav-links">
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+      <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+      
+    </div>
+    
+  </div>
+</div>
 
 <div class="page-wrapper">
 
-  <div class="page-header header-flex">
-  <div>
-    <h1>Upload Your Dataset</h1>
-    <p>
+  <!-- Breadcrumb (adds context) -->
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span style="color:var(--primary);font-weight:600">Upload Dataset</span>
+  </div>
+
+  <!-- Page header with integrated description (back button now in topbar) -->
+  <div class="page-header">
+    <div class="page-eyebrow"></div>
+    <h1 class="page-title">Upload Your Dataset</h1>
+    <p class="page-description">
       Uploading data is the foundation of your analytical workflow in Auralis Insights.
       This page allows you to securely add datasets to your workspace, where they can
       later be explored through dashboards, reports, and visual analytics.
     </p>
   </div>
 
-  <a href="{% url 'home' %}" class="header-btn">Back to Home</a>
-</div>
-
-
-
-  <!-- CONTENT -->
+  <!-- CONTENT GRID (left/right unchanged) -->
   <div class="content-grid">
 
-    <!-- LEFT SIDE CONTENT -->
+    <!-- LEFT SIDE CONTENT (unchanged) -->
     <div class="left-content">
       <h2>Why Upload Data Here?</h2>
-
       <p>
         Auralis Insights is designed to help you move from raw data to meaningful
         understanding in a structured and intuitive way. Once uploaded, your data
         becomes the backbone of all analytical features available within the platform.
       </p>
-
       <p>
         Each dataset is securely associated with your account and remains private to
         your workspace. The system ensures data integrity, format validation, and
         smooth integration with reporting and visualization modules.
       </p>
-
       <div class="info-list">
         <div class="info-item">
           <i class="fas fa-lock"></i>
           <span>Your data is securely stored and accessible only to you.</span>
         </div>
-
         <div class="info-item">
           <i class="fas fa-layer-group"></i>
           <span>Uploaded datasets can be reused across dashboards and reports.</span>
         </div>
-
         <div class="info-item">
           <i class="fas fa-chart-line"></i>
           <span>Transform raw files into trends, insights, and summaries.</span>
         </div>
-
         <div class="info-item">
           <i class="fas fa-sync-alt"></i>
           <span>You can upload updated versions of datasets anytime.</span>
@@ -286,11 +411,7 @@ button:hover {
       </div>
     </div>
 
-
-
-
-
-    <!-- RIGHT SIDE: UPLOAD CARD (UNCHANGED) -->
+    <!-- RIGHT SIDE: UPLOAD CARD (functionality identical) -->
     <div class="card">
       <h2>Dataset Upload</h2>
       <p>
@@ -317,8 +438,6 @@ button:hover {
         </div>
 
         <button type="submit">Upload Dataset</button>
-        
-
       </form>
     </div>
 

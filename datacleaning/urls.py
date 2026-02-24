@@ -1,12 +1,18 @@
 from django.urls import path
 from . import views
 
+
+
 urlpatterns = [
-    path("<int:dataset_id>/",                      views.cleaning_start,               name="cleaning_start"),
-    path("<int:dataset_id>/run/",                  views.run_cleaning,                 name="run_cleaning"),
-    path("<int:dataset_id>/report/",               views.cleaning_report,              name="cleaning_report"),
-    path("<int:dataset_id>/download-data/",        views.download_cleaned_dataset,     name="download_cleaned_dataset"),
-    path("<int:dataset_id>/download-report/",      views.download_cleaning_report_csv, name="download_cleaning_report_csv"),
-    path("<int:dataset_id>/log/",                  views.cleaning_log_view,            name="cleaning_log_view"),
-    path("<int:dataset_id>/preview-duplicates/",   views.preview_duplicates_view,      name="preview_duplicates_view"),
+    # Step 1 — configure cleaning options
+    path('<int:dataset_id>/configure/', views.configure,    name='configure'),
+
+    # Step 2 — run pipeline (POST)
+    path('<int:dataset_id>/run/',       views.run_cleaning, name='run_cleaning'),
+
+    # Step 3 — view cleaning report
+    path('report/<int:report_id>/',     views.report,       name='report'),
+
+    # Step 4 — download cleaned file
+    path('report/<int:report_id>/download/', views.download_cleaned, name='download_cleaned'),
 ]

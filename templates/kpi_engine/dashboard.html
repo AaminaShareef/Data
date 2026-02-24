@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Analysis Dashboard · {{ dataset.file_name }} · Auralis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --primary:#0B3B4B;
+  --primary-mid:#1D5A6D;
+  --primary-light:#2C6F84;
+  --primary-pale:#E3F0F5;
+  --accent:#4A9B8D;
+  --accent-light:#7BBDB3;
+  --bg:#F8F9FC;
+  --bg2:#EDF2F7;
+  --card:#FFFFFF;
+  --text:#1A2B3C;
+  --text-soft:#3A4A5E;
+  --muted:#5E6F88;
+  --border:rgba(11,59,75,0.10);
+  --border-strong:rgba(11,59,75,0.18);
+  --shadow-sm:0 2px 8px rgba(11,59,75,0.07);
+  --shadow-md:0 6px 24px rgba(11,59,75,0.10);
+  --shadow-lg:0 16px 48px rgba(11,59,75,0.13);
+  --radius:14px;
+  --radius-lg:20px;
+  --transition:all 0.20s cubic-bezier(0.4,0,0.2,1);
+  --red:#DC2626;
+  --amber:#D97706;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:"";position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 5% 10%,rgba(74,155,141,0.08),transparent),
+  radial-gradient(ellipse 50% 60% at 95% 85%,rgba(11,59,75,0.06),transparent);
+  pointer-events:none;z-index:0;}
+a{text-decoration:none;color:var(--primary);}
+
+/* ── Topbar ── */
+.topbar{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
+  background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:0 28px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-logo{width:32px;height:32px;background:var(--primary);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;}
+.brand-logo svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;}
+.brand-name{font-size:17px;font-weight:700;color:var(--primary);letter-spacing:-0.3px;}
+.tbtn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;
+  color:var(--text-soft);padding:7px 14px;border-radius:999px;
+  border:1.5px solid var(--border-strong);transition:var(--transition);
+  background:transparent;text-decoration:none;}
+.tbtn:hover{background:var(--primary-pale);color:var(--primary);border-color:var(--primary);}
+.tbtn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+.tbtn.primary:hover{background:var(--primary-mid);}
+
+/* ── Page ── */
+.page{max-width:1280px;margin:0 auto;padding:28px 28px 72px;position:relative;z-index:1;}
+
+/* ── Breadcrumb ── */
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;
+  color:var(--muted);margin-bottom:18px;font-weight:500;}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--primary);}
+.breadcrumb i{font-size:10px;}
+
+/* ── Domain banner ── */
+.domain-banner{background:var(--primary);border-radius:var(--radius-lg);
+  padding:24px 32px;margin-bottom:20px;position:relative;overflow:hidden;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;
+  justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.domain-banner::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 80% at 80% 50%,rgba(74,155,141,0.20),transparent);
+  pointer-events:none;}
+.domain-banner>*{position:relative;z-index:1;}
+.domain-left{display:flex;align-items:center;gap:16px;}
+.domain-icon-wrap{width:52px;height:52px;border-radius:14px;
+  background:rgba(74,155,141,0.25);border:1px solid rgba(74,155,141,0.35);
+  display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.domain-eyebrow{font-size:10px;font-weight:700;color:rgba(255,255,255,0.55);
+  text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;}
+.domain-title{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;}
+.domain-desc{font-size:12px;color:rgba(255,255,255,0.60);margin-top:3px;}
+.domain-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.banner-badge{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;}
+.badge-records{background:rgba(74,155,141,0.20);color:rgba(255,255,255,0.90);
+  border:1px solid rgba(74,155,141,0.35);}
+.badge-grade{color:#fff;border:none;}
+.grade-A{background:rgba(74,155,141,0.40);}
+.grade-B{background:rgba(74,155,141,0.28);}
+.grade-C{background:rgba(217,119,6,0.40);}
+.grade-D{background:rgba(220,38,38,0.40);}
+.grade-F{background:rgba(220,38,38,0.55);}
+
+/* ── Overview strip ── */
+.overview-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:900px){.overview-strip{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:500px){.overview-strip{grid-template-columns:repeat(2,1fr);}}
+.stat-tile{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;text-align:center;
+  box-shadow:var(--shadow-sm);transition:var(--transition);}
+.stat-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.stat-tile-val{font-size:20px;font-weight:800;color:var(--primary);
+  font-family:'DM Mono',monospace;line-height:1.1;}
+.stat-tile-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ── Section header ── */
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.section-icon{width:32px;height:32px;background:var(--primary-pale);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-icon i{font-size:14px;color:var(--primary);}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);}
+.section-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* ── KPI cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;
+  margin-bottom:28px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);
+  transition:var(--transition);position:relative;overflow:hidden;}
+.kpi-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.kpi-icon{font-size:28px;line-height:1;}
+.kpi-trend{font-size:18px;font-weight:700;line-height:1;}
+.kpi-trend.up{color:var(--accent);}
+.kpi-trend.down{color:var(--red);}
+.kpi-trend.neutral{color:var(--muted);}
+.kpi-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.5px;margin-bottom:6px;}
+.kpi-value{font-size:26px;font-weight:800;color:var(--primary);
+  font-family:'DM Mono',monospace;line-height:1.1;margin-bottom:10px;word-break:break-all;}
+.kpi-explanation{font-size:11px;color:var(--text-soft);line-height:1.6;
+  padding-top:10px;border-top:1px solid var(--border);}
+
+/* ── Insights ── */
+.insights-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.insight-card{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:flex-start;gap:14px;
+  transition:var(--transition);border-left-width:4px;border-left-style:solid;}
+.insight-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.insight-card.strong{border-left-color:var(--primary);}
+.insight-card.moderate{border-left-color:var(--amber);}
+.insight-card.weak{border-left-color:var(--muted);}
+.insight-card.skew{border-left-color:#8B5CF6;}
+.insight-card.outlier{border-left-color:var(--amber);}
+.insight-emoji{font-size:26px;flex-shrink:0;line-height:1;margin-top:2px;}
+.insight-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:5px;}
+.insight-desc{font-size:12px;color:var(--text-soft);line-height:1.7;}
+.insight-badge{display:inline-block;padding:2px 8px;border-radius:999px;
+  font-size:10px;font-weight:700;margin-top:7px;}
+.badge-strong{background:var(--primary-pale);color:var(--primary);}
+.badge-moderate{background:#FEF3C7;color:#92400E;}
+.badge-weak{background:var(--bg2);color:var(--muted);}
+
+/* ── Distributions ── */
+.dist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;margin-bottom:28px;}
+.dist-card{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);
+  transition:var(--transition);}
+.dist-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.dist-col-name{font-size:12px;font-weight:700;color:var(--primary);
+  font-family:'DM Mono',monospace;margin-bottom:12px;}
+.dist-bar-wrap{display:flex;gap:2px;height:40px;margin-bottom:8px;align-items:flex-end;}
+.dist-seg{flex:1;border-radius:3px 3px 0 0;transition:height 0.5s cubic-bezier(0.4,0,0.2,1);min-height:4px;}
+/* teal/navy 5-stop palette */
+.seg-1{background:#B2DFDB;}
+.seg-2{background:#80CBC4;}
+.seg-3{background:#4A9B8D;}
+.seg-4{background:#2C7873;}
+.seg-5{background:#0B3B4B;}
+.dist-labels{display:flex;justify-content:space-between;font-size:9px;
+  color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:10px;}
+.dist-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.dist-stat{background:var(--bg);border-radius:8px;padding:7px;text-align:center;
+  border:1px solid var(--border);}
+.dist-stat-val{font-size:12px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;}
+.dist-stat-lbl{font-size:9px;color:var(--muted);font-weight:700;
+  text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:48px 20px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius-lg);}
+.empty-icon{font-size:36px;margin-bottom:10px;}
+.empty-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:5px;}
+.empty-sub{font-size:12px;color:var(--muted);}
+
+/* ── CTA bar ── */
+.cta-bar{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
+  padding:22px 28px;display:flex;align-items:center;
+  justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.cta-text .cta-title{font-size:15px;font-weight:700;color:var(--primary);}
+.cta-text .cta-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;
+  border-radius:999px;font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;transition:var(--transition);
+  border:1.5px solid transparent;cursor:pointer;text-decoration:none;}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(11,59,75,0.22);}
+.btn-primary:hover{background:var(--primary-mid);transform:translateY(-1px);}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(74,155,141,0.30);}
+.btn-accent:hover{background:#3a8a7d;transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--primary);border-color:var(--border-strong);}
+.btn-outline:hover{background:var(--primary-pale);}
+
+/* ── Fade animations ── */
+.fade-up{opacity:0;transform:translateY(14px);animation:fadeUp 0.4s ease forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.04s;}.d2{animation-delay:0.08s;}
+.d3{animation-delay:0.12s;}.d4{animation-delay:0.16s;}
+.d5{animation-delay:0.20s;}.d8{animation-delay:0.32s;}
+.mb-section{margin-bottom:28px;}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+     
+      <a href="{% url 'profile' %}" class="tbtn primary">
+        <i class="fas fa-user" style="font-size:12px"></i> Profile
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb fade-up d1">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'profile' %}">Profile</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'report' cleaning_report.id %}">Cleaning Report</a>
+    <i class="fas fa-chevron-right"></i>
+    <span style="color:var(--primary);font-weight:600">Analysis Dashboard</span>
+  </div>
+
+  <!-- Domain banner -->
+  <div class="domain-banner fade-up d1">
+    <div class="domain-left">
+      <div class="domain-icon-wrap">
+        {% if domain == 'finance' %}💰
+        {% elif domain == 'sales' %}🛒
+        {% elif domain == 'hr' %}👥
+        {% elif domain == 'education' %}🎓
+        {% elif domain == 'health' %}🏥
+        {% else %}📊{% endif %}
+      </div>
+      <div>
+        <div class="domain-eyebrow">Analysis Dashboard</div>
+        <div class="domain-title">{{ domain_display }}</div>
+        <div class="domain-desc">{{ domain_description }}</div>
+      </div>
+    </div>
+    <div class="domain-right">
+      <span class="banner-badge badge-records">
+        <i class="fas fa-database" style="font-size:10px;margin-right:5px;"></i>
+        {{ dataset_summary.total_records|default:0 }} records
+      </span>
+      <span class="banner-badge badge-grade grade-{{ dataset_summary.quality_grade }}">
+        Grade {{ dataset_summary.quality_grade }} · {{ dataset_summary.quality_score }}%
+      </span>
+    </div>
+  </div>
+
+  <!-- Overview strip -->
+  <div class="overview-strip fade-up d2">
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.total_records|default:0 }}</div>
+      <div class="stat-tile-lbl">Total Records</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.total_columns|default:0 }}</div>
+      <div class="stat-tile-lbl">Columns</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.numeric_columns|default:0 }}</div>
+      <div class="stat-tile-lbl">Numeric</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.categorical_columns|default:0 }}</div>
+      <div class="stat-tile-lbl">Categorical</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.quality_score|default:0 }}%</div>
+      <div class="stat-tile-lbl">Quality Score</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-val">{{ dataset_summary.quality_grade|default:"—" }}</div>
+      <div class="stat-tile-lbl">Grade</div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="mb-section fade-up d3">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-tachometer-alt"></i></div>
+      <div>
+        <div class="section-title">Key Performance Indicators</div>
+        <div class="section-sub">{{ kpis|length }} KPI{{ kpis|length|pluralize }} computed from your dataset</div>
+      </div>
+    </div>
+    {% if kpis %}
+    <div class="kpi-grid">
+      {% for kpi in kpis %}
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <div class="kpi-icon">{{ kpi.icon }}</div>
+          <div class="kpi-trend {{ kpi.trend }}">
+            {% if kpi.trend == 'up' %}↑
+            {% elif kpi.trend == 'down' %}↓
+            {% else %}→{% endif %}
+          </div>
+        </div>
+        <div class="kpi-name">{{ kpi.name }}</div>
+        <div class="kpi-value">{{ kpi.formatted_value }}</div>
+        <div class="kpi-explanation">{{ kpi.explanation }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <div class="empty-title">No KPIs found for this dataset</div>
+      <div class="empty-sub">The column names in your dataset didn't match any known KPI patterns for the {{ domain_display }} domain.</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Insights -->
+  <div class="mb-section fade-up d4">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-lightbulb"></i></div>
+      <div>
+        <div class="section-title">Data Insights</div>
+        <div class="section-sub">Patterns and findings detected automatically in your data</div>
+      </div>
+    </div>
+    {% if insights %}
+    <div class="insights-grid">
+      {% for insight in insights %}
+      <div class="insight-card {% if insight.type == 'correlation' %}{{ insight.strength }}{% else %}{{ insight.type }}{% endif %}">
+        <div class="insight-emoji">{{ insight.icon }}</div>
+        <div class="insight-body">
+          <div class="insight-title">{{ insight.title }}</div>
+          <div class="insight-desc">{{ insight.description }}</div>
+          {% if insight.type == 'correlation' %}
+          <span class="insight-badge badge-{{ insight.strength }}">
+            {{ insight.strength|capfirst }} correlation
+            {% if insight.r_value %} · r = {{ insight.r_value }}{% endif %}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">💡</div>
+      <div class="empty-title">No significant insights found</div>
+      <div class="empty-sub">Your dataset may not have enough numeric columns to detect meaningful patterns.</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Distributions -->
+  {% if distributions %}
+  <div class="mb-section fade-up d5">
+    <div class="section-header">
+      <div class="section-icon"><i class="fas fa-chart-bar"></i></div>
+      <div>
+        <div class="section-title">Column Distributions</div>
+        <div class="section-sub">How values are spread across each numeric column</div>
+      </div>
+    </div>
+    <div class="dist-grid">
+      {% for col, stats in distributions.items %}
+      <div class="dist-card">
+        <div class="dist-col-name">{{ col }}</div>
+        <div class="dist-bar-wrap">
+          <div class="dist-seg seg-1" data-val="{{ stats.p10 }}" data-max="{{ stats.max }}"></div>
+          <div class="dist-seg seg-2" data-val="{{ stats.p25 }}" data-max="{{ stats.max }}"></div>
+          <div class="dist-seg seg-3" data-val="{{ stats.p50 }}" data-max="{{ stats.max }}"></div>
+          <div class="dist-seg seg-4" data-val="{{ stats.p75 }}" data-max="{{ stats.max }}"></div>
+          <div class="dist-seg seg-5" data-val="{{ stats.p90 }}" data-max="{{ stats.max }}"></div>
+        </div>
+        <div class="dist-labels">
+          <span>P10</span><span>P25</span><span>P50</span><span>P75</span><span>P90</span>
+        </div>
+        <div class="dist-stats">
+          <div class="dist-stat">
+            <div class="dist-stat-val">{{ stats.mean|floatformat:2 }}</div>
+            <div class="dist-stat-lbl">Mean</div>
+          </div>
+          <div class="dist-stat">
+            <div class="dist-stat-val">{{ stats.std|floatformat:2 }}</div>
+            <div class="dist-stat-lbl">Std Dev</div>
+          </div>
+          <div class="dist-stat">
+            <div class="dist-stat-val">{{ stats.skew|floatformat:2 }}</div>
+            <div class="dist-stat-lbl">Skew</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- CTA bar -->
+  <div class="cta-bar fade-up d8">
+    <div class="cta-text">
+      <div class="cta-title">Analysis complete for {{ dataset.file_name }}</div>
+      <div class="cta-sub">{{ kpis|length }} KPI{{ kpis|length|pluralize }} · {{ insights|length }} insight{{ insights|length|pluralize }} · {{ distributions|length }} distribution{{ distributions|length|pluralize }}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="{% url 'interactive_dashboard' result_id=result.id %}" class="btn btn-accent">
+  <i class="fas fa-chart-line" style="font-size:12px"></i> Interactive Dashboard
+</a>
+     
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.dist-seg').forEach(seg => {
+    const val = parseFloat(seg.dataset.val) || 0;
+    const max = parseFloat(seg.dataset.max) || 1;
+    const pct = max !== 0 ? Math.max((Math.abs(val) / Math.abs(max)) * 100, 8) : 8;
+    seg.style.height = '0px';
+    setTimeout(() => { seg.style.height = pct + '%'; }, 400);
+  });
+});
+</script>
+
+</body>
+</html>

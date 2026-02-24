@@ -1,3 +1,4 @@
+#D:\S10\PROJECT\Data\data_preparation\models.py
 from django.db import models
 from Authentication.models import CustomUser
 

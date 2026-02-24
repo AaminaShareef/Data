@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cleaning Report · {{ dataset.file_name }} · Auralis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --primary: #0B3B4B;       /* deep navy - authority, stability */
+  --primary-mid: #1D5A6D;    /* rich teal - analytical depth */
+  --primary-light: #2C6F84;  /* lighter teal for hover states */
+  --primary-pale: #E3F0F5;   /* ice blue - clean, precise */
+  --accent: #4A9B8D;         /* muted teal - data points, insights */
+  --bg: #F8F9FC;             /* cool off-white - reduces eye strain */
+  --bg2: #EDF2F7;            /* slightly darker cool gray */
+  --card: #FFFFFF;
+  --text: #1A2B3C;           /* dark navy-blue for main text */
+  --text-soft: #3A4A5E;      /* softer navy for secondary text */
+  --muted: #5E6F88;          /* muted blue-gray */
+  --border: rgba(11,59,75,0.10);
+  --border-strong: rgba(11,59,75,0.18);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.07);
+  --shadow-md: 0 6px 24px rgba(11,59,75,0.10);
+  --shadow-lg: 0 16px 48px rgba(11,59,75,0.13);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.20s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:"";position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 5% 10%,rgba(127,176,105,0.13),transparent),
+  radial-gradient(ellipse 50% 60% at 95% 85%,rgba(46,77,49,0.10),transparent);
+  pointer-events:none;z-index:0;}
+a{text-decoration:none;color:var(--primary);}
+
+/* ── Top navbar (redesigned, cleaner) ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--card);
+  border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.topbar-inner{max-width:1400px;margin:0 auto;padding:0 32px;height:68px;
+  display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{width:38px;height:38px;background:var(--primary);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;}
+.brand-logo svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;}
+.brand-name{font-size:18px;font-weight:700;color:var(--primary);letter-spacing:-0.3px;}
+.nav-links{display:flex;align-items:center;gap:18px;}
+.nav-link{font-size:14px;font-weight:500;color:var(--text-soft);padding:8px 0;
+  border-bottom:2px solid transparent;transition:var(--transition);}
+.nav-link:hover{color:var(--primary);border-bottom-color:var(--primary);}
+.nav-link i{margin-right:6px;font-size:13px;}
+.topbar-actions{display:flex;gap:12px;}
+.tbtn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;
+  padding:8px 18px;border-radius:999px;transition:var(--transition);
+  border:1.5px solid transparent;cursor:pointer;}
+.tbtn-outline{border-color:var(--border-strong);color:var(--text-soft);background:transparent;}
+.tbtn-outline:hover{background:var(--primary-pale);color:var(--primary);border-color:var(--primary);}
+.tbtn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 10px rgba(46,77,49,0.2);}
+.tbtn-primary:hover{background:var(--primary-mid);transform:translateY(-2px);}
+
+/* ── Page layout ── */
+.page{max-width:1400px;margin:0 auto;padding:24px 32px 56px;position:relative;z-index:1;}
+
+/* ── Breadcrumb ── */
+.breadcrumb{display:flex;align-items:center;gap:10px;font-size:13px;
+  color:var(--muted);margin-bottom:20px;font-weight:500;}
+.breadcrumb a{color:var(--muted);}
+.breadcrumb a:hover{color:var(--primary);}
+.breadcrumb i{font-size:10px;}
+
+/* ── Hero banner (horizontal metrics) ── */
+.hero-banner{background:var(--primary);border-radius:var(--radius-lg);
+  padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden;
+  box-shadow:var(--shadow-lg);}
+.hero-banner::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 80% at 80% 50%,rgba(127,176,105,0.15),transparent);}
+.hero-banner>*{position:relative;z-index:1;}
+.hero-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.hero-info{flex:2;min-width:280px;}
+.hero-eyebrow{font-size:12px;font-weight:700;color:rgba(255,255,255,0.55);
+  text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.hero-title{font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.3px;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,0.60);margin-top:4px;}
+.domain-chip{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.20);
+  border-radius:999px;padding:6px 16px;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,0.90);margin-top:10px;}
+.hero-grade{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.grade-ring{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:32px;font-weight:900;border:3px solid rgba(255,255,255,0.25);}
+.grade-A{background:rgba(34,197,94,0.2);color:#86efac;}
+.grade-B{background:rgba(127,176,105,0.2);color:#bbf7d0;}
+.grade-C{background:rgba(245,158,11,0.2);color:#fde68a;}
+.grade-D{background:rgba(239,68,68,0.2);color:#fca5a5;}
+.grade-F{background:rgba(185,28,28,0.2);color:#fca5a5;}
+.grade-label{font-size:11px;color:rgba(255,255,255,0.55);margin-top:6px;font-weight:700;}
+
+/* ── Quality bars (horizontal row) ── */
+.quality-bars{display:flex;flex-wrap:wrap;gap:30px;margin-top:20px;}
+.q-bar-item{flex:1;min-width:140px;}
+.q-bar-head{display:flex;justify-content:space-between;font-size:12px;
+  color:rgba(255,255,255,0.65);margin-bottom:6px;font-weight:600;}
+.q-bar-head span:last-child{color:rgba(255,255,255,0.9);font-family:'DM Mono',monospace;}
+.q-bar-track{height:6px;background:rgba(255,255,255,0.15);border-radius:99px;overflow:hidden;}
+.q-bar-fill{height:100%;border-radius:99px;background:var(--accent);
+  transition:width 0.9s cubic-bezier(0.4,0,0.2,1);}
+
+/* ── Changes row (horizontal cards) ── */
+.changes-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:28px;}
+.change-chip{flex:1;min-width:140px;background:var(--card);border-radius:var(--radius-lg);
+  padding:18px 12px;text-align:center;border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);transition:var(--transition);}
+.change-chip:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.change-num{font-size:28px;font-weight:800;color:var(--primary);
+  font-family:'DM Mono',monospace;line-height:1;}
+.change-lbl{font-size:11px;color:var(--muted);margin-top:5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ── Cards grid – all cards now horizontal (flex row) ── */
+.cards-grid{display:flex;flex-direction:column;gap:20px;}
+.horizontal-card{display:flex;flex-wrap:wrap;align-items:stretch;gap:20px;}
+.horizontal-card .section-card{flex:1 1 300px;min-width:280px;}
+
+.section-card{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:20px;}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.section-icon{width:34px;height:34px;background:var(--primary-pale);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;}
+.section-icon i{font-size:15px;color:var(--primary);}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);}
+.section-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* compare inside horizontal card */
+.compare-grid{display:flex;gap:16px;}
+.compare-side{flex:1;background:var(--bg);border-radius:var(--radius);padding:14px;}
+.compare-label{font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+.compare-label.before{color:#E67E22;}
+.compare-label.after{color:var(--primary);}
+.compare-row{display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+.compare-row:last-child{border-bottom:none;}
+.compare-key{color:var(--muted);font-weight:600;}
+.compare-val{font-weight:700;font-family:'DM Mono',monospace;color:var(--text);}
+
+/* table styles (missing, column types, audit) */
+.data-table{width:100%;border-collapse:collapse;font-size:12px;}
+.data-table th{background:var(--primary-pale);color:var(--primary);
+  padding:10px 14px;text-align:left;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.5px;}
+.data-table td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text-soft);}
+.pct-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;}
+.pct-low{background:#EDFAF0;color:#065F46;}
+.pct-mid{background:#FEF3C7;color:#92400E;}
+.pct-high{background:#FEF2F2;color:#B91C1C;}
+
+.pill-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+.col-pill{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;}
+.pill-num{background:#EAF2EB;color:#2E4D31;}
+.pill-cat{background:#FEF3C7;color:#92400E;}
+.pill-dt{background:#EDE9FE;color:#5B21B6;}
+
+/* audit table */
+.audit-wrap{max-height:280px;overflow-y:auto;border-radius:var(--radius);
+  border:1px solid var(--border);}
+.audit-table{width:100%;border-collapse:collapse;font-size:12px;}
+.audit-table th{background:var(--primary-pale);color:var(--primary);
+  padding:10px 14px;text-align:left;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.5px;position:sticky;top:0;}
+.audit-table td{padding:10px 14px;border-top:1px solid var(--border);}
+.audit-ts{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.audit-op{font-weight:700;color:var(--primary);font-size:12px;}
+.rows-badge{background:var(--primary-pale);color:var(--primary);
+  padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;}
+
+/* CTA bar */
+.cta-bar{background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
+  padding:22px 28px;display:flex;align-items:center;
+  justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:30px;}
+.cta-text .cta-title{font-size:16px;font-weight:700;color:var(--primary);}
+.cta-text .cta-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+  border-radius:999px;font-size:13px;font-weight:600;transition:var(--transition);
+  border:1.5px solid transparent;cursor:pointer;}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(46,77,49,0.2);}
+.btn-primary:hover{background:var(--primary-mid);transform:translateY(-2px);}
+.btn-outline{background:transparent;color:var(--primary);border-color:var(--border-strong);}
+.btn-outline:hover{background:var(--primary-pale);}
+
+.empty-state{text-align:center;padding:24px;color:var(--muted);}
+.fade-up{opacity:0;transform:translateY(12px);animation:fadeUp 0.4s ease forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.04s;}.d2{animation-delay:0.08s;}.d3{animation-delay:0.12s;}
+.d4{animation-delay:0.16s;}.d5{animation-delay:0.20s;}.d6{animation-delay:0.24s;}
+.d7{animation-delay:0.28s;}.d8{animation-delay:0.32s;}
+</style>
+</head>
+<body>
+
+<!-- redesigned top navbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </div>
+    <div class="nav-links">
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+      <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+    </div>
+    
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Breadcrumb (unchanged) -->
+  <div class="breadcrumb fade-up d1">
+    <a href="{% url 'home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'profile' %}">Profile</a>
+    <i class="fas fa-chevron-right"></i>
+    <span style="color:var(--primary);font-weight:600">Cleaning Report</span>
+  </div>
+
+  <!-- Hero banner with grade and horizontal quality bars -->
+  <div class="hero-banner fade-up d1">
+    <div class="hero-row">
+      <div class="hero-info">
+        <div class="hero-eyebrow">Cleaning Complete</div>
+        <div class="hero-title">{{ dataset.file_name }}</div>
+        <div class="hero-sub">
+          Processed on {{ cleaning_report.created_at|date:"N j, Y · g:i A" }}
+        </div>
+        <div class="domain-chip">
+          <i class="fas fa-tag"></i> {{ domain.display|default:"General Dataset" }}
+        </div>
+      </div>
+      <div class="hero-grade">
+        <div class="grade-ring grade-{{ quality_score.grade }}">
+          {{ quality_score.grade }}
+        </div>
+        <div class="grade-label">Quality Grade</div>
+      </div>
+    </div>
+    <!-- quality bars horizontal row -->
+    <div class="quality-bars">
+      <div class="q-bar-item">
+        <div class="q-bar-head"><span>Completeness</span><span>{{ quality_score.completeness }}%</span></div>
+        <div class="q-bar-track"><div class="q-bar-fill" style="width:{{ quality_score.completeness }}%"></div></div>
+      </div>
+      <div class="q-bar-item">
+        <div class="q-bar-head"><span>Uniqueness</span><span>{{ quality_score.uniqueness }}%</span></div>
+        <div class="q-bar-track"><div class="q-bar-fill" style="width:{{ quality_score.uniqueness }}%;background:#A7F3D0"></div></div>
+      </div>
+      <div class="q-bar-item">
+        <div class="q-bar-head"><span>Consistency</span><span>{{ quality_score.consistency }}%</span></div>
+        <div class="q-bar-track"><div class="q-bar-fill" style="width:{{ quality_score.consistency }}%;background:#6EE7B7"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Changes row (horizontal metrics cards) -->
+  <div class="changes-row fade-up d2">
+    <div class="change-chip"><div class="change-num">{{ changes.rows_removed|default:0 }}</div><div class="change-lbl">Rows Removed</div></div>
+    <div class="change-chip"><div class="change-num">{{ changes.cols_removed|default:0 }}</div><div class="change-lbl">Cols Removed</div></div>
+    <div class="change-chip"><div class="change-num">{{ changes.missing_filled|default:0 }}</div><div class="change-lbl">Missing Filled</div></div>
+    <div class="change-chip"><div class="change-num">{{ changes.duplicates_removed|default:0 }}</div><div class="change-lbl">Dupes Removed</div></div>
+  </div>
+
+  <!-- Cards grid – all cards are now arranged horizontally in rows -->
+  <div class="cards-grid">
+
+    <!-- First horizontal pair: Before/After + Missing analysis -->
+    <div class="horizontal-card">
+      <!-- Before/After card -->
+      <div class="section-card fade-up d3">
+        <div class="section-head">
+          <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
+          <div><div class="section-title">Before vs After</div><div class="section-sub">Shape comparison</div></div>
+        </div>
+        <div class="compare-grid">
+          <div class="compare-side">
+            <div class="compare-label before">Before</div>
+            <div class="compare-row"><span class="compare-key">Rows</span><span class="compare-val">{{ before.row_count }}</span></div>
+            <div class="compare-row"><span class="compare-key">Columns</span><span class="compare-val">{{ before.col_count }}</span></div>
+            <div class="compare-row"><span class="compare-key">Missing</span><span class="compare-val" style="color:#E67E22">{{ before.total_missing_cells }}</span></div>
+            <div class="compare-row"><span class="compare-key">Duplicates</span><span class="compare-val" style="color:#E67E22">{{ before.duplicate_rows }}</span></div>
+            <div class="compare-row"><span class="compare-key">Memory</span><span class="compare-val">{{ before.memory_usage_mb }} MB</span></div>
+          </div>
+          <div class="compare-side">
+            <div class="compare-label after">After</div>
+            <div class="compare-row"><span class="compare-key">Rows</span><span class="compare-val">{{ after.row_count }}</span></div>
+            <div class="compare-row"><span class="compare-key">Columns</span><span class="compare-val">{{ after.col_count }}</span></div>
+            <div class="compare-row"><span class="compare-key">Missing</span><span class="compare-val" style="color:var(--accent)">{{ after.total_missing_cells }}</span></div>
+            <div class="compare-row"><span class="compare-key">Duplicates</span><span class="compare-val" style="color:var(--accent)">{{ after.duplicate_rows }}</span></div>
+            <div class="compare-row"><span class="compare-key">Memory</span><span class="compare-val">{{ after.memory_usage_mb }} MB</span></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:var(--primary-pale);border-radius:var(--radius);font-size:12px;color:var(--primary);">
+          <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+          <strong>Score: {{ quality_score.overall }}/100</strong> — {{ quality_score.summary }}
+        </div>
+      </div>
+
+      <!-- Missing value analysis card (after) -->
+      <div class="section-card fade-up d3">
+        <div class="section-head">
+          <div class="section-icon"><i class="fas fa-search"></i></div>
+          <div><div class="section-title">Missing Analysis</div><div class="section-sub">After cleaning</div></div>
+        </div>
+        <div style="max-height:240px;overflow-y:auto;border-radius:var(--radius);border:1px solid var(--border);">
+          <table class="data-table">
+            <thead><tr><th>Column</th><th>Missing</th><th>%</th></tr></thead>
+            <tbody>
+              {% for col, info in after.missing.items %}
+                {% if info.count > 0 %}
+                <tr>
+                  <td style="font-family:'DM Mono',monospace;">{{ col }}</td>
+                  <td>{{ info.count }}</td>
+                  <td><span class="pct-pill {% if info.percent < 10 %}pct-low{% elif info.percent < 30 %}pct-mid{% else %}pct-high{% endif %}">{{ info.percent }}%</span></td>
+                </tr>
+                {% endif %}
+              {% empty %}
+                <tr><td colspan="3"><div class="empty-state">✅ No missing values remain.</div></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second horizontal pair: Column types + Config -->
+    <div class="horizontal-card">
+      <!-- Column types card -->
+      <div class="section-card fade-up d4">
+        <div class="section-head">
+          <div class="section-icon"><i class="fas fa-columns"></i></div>
+          <div><div class="section-title">Column Types</div><div class="section-sub">After cleaning</div></div>
+        </div>
+        {% if after.numeric_columns %}
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:5px;">Numeric ({{ after.numeric_columns|length }})</div>
+          <div class="pill-wrap">{% for col in after.numeric_columns %}<span class="col-pill pill-num">{{ col }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+        {% if after.categorical_columns %}
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:5px;">Categorical ({{ after.categorical_columns|length }})</div>
+          <div class="pill-wrap">{% for col in after.categorical_columns %}<span class="col-pill pill-cat">{{ col }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+        {% if after.datetime_columns %}
+        <div>
+          <div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:5px;">Datetime ({{ after.datetime_columns|length }})</div>
+          <div class="pill-wrap">{% for col in after.datetime_columns %}<span class="col-pill pill-dt">{{ col }}</span>{% endfor %}</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Config card -->
+      <div class="section-card fade-up d4">
+        <div class="section-head">
+          <div class="section-icon"><i class="fas fa-cog"></i></div>
+          <div><div class="section-title">Configuration</div><div class="section-sub">Cleaning options</div></div>
+        </div>
+        <div class="compare-row"><span class="compare-key">Missing strategy</span><span class="compare-val">{{ config.missing_strategy|default:"auto"|capfirst }}</span></div>
+        <div class="compare-row"><span class="compare-key">Missing threshold</span><span class="compare-val">{{ config.missing_threshold|default:60 }}%</span></div>
+        <div class="compare-row"><span class="compare-key">Outlier flagging</span><span class="compare-val">{% if config.flag_outliers %}Enabled{% else %}Disabled{% endif %}</span></div>
+        <div class="compare-row"><span class="compare-key">Date extraction</span><span class="compare-val">{% if config.extract_dates %}Enabled{% else %}Disabled{% endif %}</span></div>
+      </div>
+    </div>
+
+    <!-- Audit log - full width (still horizontal, occupies entire row) -->
+    <div class="section-card full-width fade-up d5" style="width:100%;">
+      <div class="section-head">
+        <div class="section-icon"><i class="fas fa-list-alt"></i></div>
+        <div><div class="section-title">Cleaning Audit Log</div><div class="section-sub">{{ audit_log|length }} step(s) recorded</div></div>
+      </div>
+      {% if audit_log %}
+      <div class="audit-wrap">
+        <table class="audit-table">
+          <thead><tr><th style="width:140px">Timestamp</th><th>Operation & Detail</th><th style="width:90px;text-align:center">Rows Affected</th></tr></thead>
+          <tbody>
+            {% for entry in audit_log %}
+            <tr>
+              <td class="audit-ts">{{ entry.timestamp }}</td>
+              <td><div class="audit-op">{{ entry.operation }}</div><div class="audit-detail" style="font-size:11px;color:var(--text-soft);">{{ entry.detail }}</div></td>
+              <td style="text-align:center">{% if entry.rows_affected %}<span class="rows-badge">{{ entry.rows_affected }}</span>{% else %}<span style="color:var(--muted);">—</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">📋 No operations logged.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- CTA bar -->
+  <div class="cta-bar fade-up d8">
+    <div class="cta-text">
+      <div class="cta-title">Your data is clean and ready.</div>
+      <div class="cta-sub">Download or proceed to KPI analysis.</div>
+    </div>
+    <div class="cta-btns">
+      <a href="{% url 'download_cleaned' cleaning_report.id %}" class="btn btn-outline"><i class="fas fa-download"></i> Download</a>
+      
+      <form method="POST" action="{% url 'run_analysis' cleaning_report.id %}" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary">
+    <i class="fas fa-chart-bar" style="font-size:12px"></i> Proceed to Analysis
+  </button>
+</form>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  document.querySelectorAll('.q-bar-fill').forEach(bar => {
+    const target = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = target; }, 300);
+  });
+});
+</script>
+</body>
+</html>

@@ -5,323 +5,525 @@
 <title>Profile — Auralis Insights</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 :root {
-  --primary: #477747ff;
-  --primary-soft: #e8f5e9;
-  --background: #F2EFEA;
-  --card-bg: #ffffff;
-  --text-dark: #2B2B2B;
-  --text-muted: #6A6A6A;
-  --shadow: 0 20px 45px rgba(0,0,0,0.08);
-  --soft-border: rgba(0,0,0,0.06);
+  --primary: #0B3B4B;
+  --primary-light: #1D5A6D;
+  --primary-soft: #E3F0F5;
+  --accent: #4A9B8D;
+  --accent-warm: #C8854A;
+  --background: #F0F4F8;
+  --card-bg: #FFFFFF;
+  --text-dark: #0D1F2D;
+  --text-soft: #3A4A5E;
+  --text-muted: #6B7E96;
+  --border: rgba(11,59,75,0.08);
+  --border-strong: rgba(11,59,75,0.14);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.06);
+  --shadow-md: 0 8px 28px rgba(11,59,75,0.10);
+  --shadow-lg: 0 20px 48px rgba(11,59,75,0.13);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  --max-w: 1500px;
 }
 
-/* BASE */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(180deg, #ECE7E0, var(--background));
-  padding: 70px;
+  font-family: 'Sora', sans-serif;
+  background: var(--background);
   color: var(--text-dark);
+  min-height: 100vh;
 }
 
-/* HEADER */
-.header {
+/* subtle background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(74,155,141,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(11,59,75,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  height: 64px;
+  padding: 0 32px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 16px;
+}
+.brand {
+  display: flex;
   align-items: center;
-  margin-bottom: 40px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--soft-border);
-}
-
-.header h1 {
-  font-family: "Times New Roman", serif;
-  color: var(--primary);
-  font-size: 28px;
-  letter-spacing: 0.3px;
-}
-
-.header a {
+  gap: 10px;
   text-decoration: none;
-  color: var(--primary);
-  font-weight: 600;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  opacity: 0.9;
 }
-
-.header a:hover {
-  opacity: 1;
-}
-
-/* PROFILE CARD */
-.profile-card {
-  background: var(--card-bg);
-  padding: 42px;
-  border-radius: 28px;
-  box-shadow: var(--shadow);
-  display: flex;
-  gap: 36px;
-  margin-bottom: 50px;
-  align-items: center;
-}
-
-.avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #3c583c, #4f6f4f);
-  color: white;
-  font-size: 38px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.brand-logo {
+  width: 36px; height: 36px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
+.brand-logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+.brand-name { font-size: 16px; font-weight: 700; color: var(--primary); letter-spacing: -0.2px; }
 
-.profile-info h2 {
-  margin-bottom: 6px;
-  font-size: 22px;
+.nav-links {
+  display: flex;
+  gap: 4px;
 }
-
-.profile-info p {
+.nav-link {
   color: var(--text-muted);
-  margin-bottom: 6px;
-  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  transition: var(--transition);
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.nav-link i { margin-right: 5px; font-size: 11px; }
+
+.topbar-actions { display: flex; gap: 8px; }
+.btn-top {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  border: 1.5px solid transparent;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-ghost { border-color: var(--border-strong); color: var(--text-muted); background: transparent; }
+.btn-ghost:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+.btn-solid { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-solid:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(11,59,75,0.2); }
+
+/* ── Page wrapper ── */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 40px 24px 80px;
 }
 
-/* STATS */
-.stats {
+/* ── Page title row ── */
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  animation: fadeUp 0.4s ease both;
+}
+.page-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-title::before {
+  
+  display: block;
+  width: 20px; height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--primary); }
+.breadcrumb i { font-size: 9px; }
+
+/* ── Card base ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 28px 32px;
+  margin-bottom: 16px;
+  animation: fadeUp 0.4s ease both;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+
+/* ── Profile hero ── */
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  animation-delay: 0.05s;
+}
+.avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+  color: white;
+  font-size: 30px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(11,59,75,0.20);
+  position: relative;
+}
+.avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(74,155,141,0.3);
+}
+.profile-meta { flex: 1; }
+.profile-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.profile-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.profile-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.profile-detail-item i {
+  color: var(--accent);
+  font-size: 11px;
+  width: 14px;
+}
+.profile-badge {
+  margin-left: auto;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(11,59,75,0.12);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.profile-badge i { color: var(--accent); font-size: 10px; }
+
+/* ── Stats row ── */
+.stats-card {
+  animation-delay: 0.10s;
+  padding: 0;
+  overflow: hidden;
+}
+.stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
-  margin-bottom: 50px;
 }
-
-.stat-card {
-  background: var(--card-bg);
-  padding: 30px 24px;
-  border-radius: 24px;
-  box-shadow: var(--shadow);
+.stat-item {
+  padding: 24px 20px;
   text-align: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-right: 1px solid var(--border);
+  transition: var(--transition);
+  cursor: default;
 }
-
-.stat-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 26px 55px rgba(0,0,0,0.12);
-}
-
-.stat-card h3 {
-  font-size: 30px;
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: var(--primary-soft); }
+.stat-num {
+  font-size: 28px;
+  font-weight: 700;
   color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
   margin-bottom: 6px;
 }
-
-.stat-card p {
-  font-size: 13px;
-  color: var(--text-muted);
-  letter-spacing: 0.3px;
-}
-
-/* MANAGE DATASETS */
-.manage-datasets {
-  background: var(--card-bg);
-  padding: 36px;
-  border-radius: 28px;
-  box-shadow: var(--shadow);
-}
-
-.manage-datasets h3 {
-  margin-bottom: 26px;
-  font-size: 20px;
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 18px 16px;
-  border-bottom: 1px solid var(--soft-border);
-  text-align: left;
-}
-
-th {
-  font-size: 13px;
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
 
-tbody tr {
-  transition: background 0.2s ease;
-}
-
-tbody tr:hover {
-  background: #fafafa;
-}
-
-/* ACTIONS */
-.dataset-actions {
+/* ── Section header inside card ── */
+.section-head {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
-
-.dataset-actions a,
-.link-btn {
-  font-size: 13px;
-  font-weight: 600;
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
   color: var(--primary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
-  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title i { color: var(--accent); font-size: 13px; }
+.section-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--primary-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
-.dataset-actions a,
-.dataset-actions a:visited,
-.dataset-actions a:hover,
-.dataset-actions a:active 
-.link-btn:hover {
-  text-decoration: none;
-  text-decoration: none;
+/* ── Dataset list ── */
+.datasets-card { animation-delay: 0.15s; }
+
+.dataset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* STATUS BADGES */
+.dataset-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.dataset-row:last-child { border-bottom: none; padding-bottom: 0; }
+.dataset-row:first-child { padding-top: 0; }
+
+.dataset-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dataset-name a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.dataset-name a:hover { color: var(--primary); }
+.dataset-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* badges */
 .badge {
-  padding: 6px 14px;
-  border-radius: 1000px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.badge-processed {
+  background: #E6F5F0;
+  color: #1A6B50;
+  border: 1px solid rgba(26,107,80,0.15);
+}
+.badge-processed i { font-size: 9px; }
+.badge-pending {
+  background: #FFF4E6;
+  color: #A05C00;
+  border: 1px solid rgba(160,92,0,0.15);
+}
+.badge-pending i { font-size: 9px; }
+
+/* actions */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
 }
-
-.badge-processed {
+.action-view {
   background: var(--primary-soft);
-  color: #2e7d32;
+  color: var(--primary);
 }
-
-.badge-pending {
-  background: #fff3e0;
-  color: #b26a00;
+.action-view:hover {
+  background: var(--primary);
+  color: white;
 }
-
-/* TOAST */
-#toast-container {
-  position: fixed;
-  top: 30px;
-  right: 30px;
-  z-index: 9999;
+.action-delete {
+  background: #FFF0F0;
+  color: #C0392B;
 }
-
-.toast {
-  background: var(--primary-soft);
-  color: #2e7d32;
-  padding: 14px 22px;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-  animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
+.action-delete:hover {
+  background: #C0392B;
+  color: white;
 }
+.action-btn i { font-size: 10px; }
 
-/* ANIMATIONS */
-@keyframes slideIn {
-  from { transform: translateX(40px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes fadeOut {
-  to { opacity: 0; transform: translateX(40px); }
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  body { padding: 30px; }
-  .stats { grid-template-columns: 1fr; }
-  .profile-card { flex-direction: column; text-align: center; }
-}
-
-.dataset-table-wrapper {
-  max-height: 320px;        /* ~5 rows height */
-  overflow-y: auto;
-  border-radius: 8px;
-}
-
-/* Optional: smooth scrollbar */
-.dataset-table-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-
-.dataset-table-wrapper::-webkit-scrollbar-thumb {
-  background-color: #bbb;
-  border-radius: 10px;
-}
-
-.dataset-table-wrapper::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-
-.no-dataset-state {
+/* ── Empty state ── */
+.empty-state {
   text-align: center;
   padding: 40px 20px;
 }
-
-.upload-btn {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 10px 22px;
-  background-color: #2e7d32;
-  color: #ffffff;
+.empty-icon {
+  width: 56px; height: 56px;
+  background: var(--primary-soft);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 22px;
+  color: var(--primary);
+}
+.empty-state p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+.upload-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 999px;
   text-decoration: none;
-  border-radius: 25px;
-  font-weight: 500;
-  transition: background 0.3s ease;
+  font-weight: 600;
+  font-size: 13px;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(11,59,75,0.15);
+}
+.upload-link:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
 }
 
-.upload-btn:hover {
-  background-color: #1b5e20;
+/* ── Toast ── */
+#toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: white;
+  color: var(--primary);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  border-left: 3px solid var(--accent);
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+@keyframes slideIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(30px); }
 }
 
-
-/* FINAL, CORRECT TABLE ALIGNMENT FIX */
-.manage-datasets table {
-  table-layout: fixed;
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.manage-datasets table th:nth-child(1),
-.manage-datasets table td:nth-child(1) {
-  width: 65%;
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .page { padding: 24px 16px 60px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .stats-row .stat-item:nth-child(2) { border-right: none; }
+  .stats-row .stat-item:nth-child(1),
+  .stats-row .stat-item:nth-child(2) { border-bottom: 1px solid var(--border); }
+  .profile-hero { flex-wrap: wrap; }
+  .profile-badge { margin-left: 0; }
+  .nav-links { display: none; }
+  .dataset-row { grid-template-columns: 1fr auto; }
+  .badge { display: none; }
 }
-
-.manage-datasets table th:nth-child(2),
-.manage-datasets table td:nth-child(2) {
-  text-align: left;
-}
-
-.manage-datasets table th:nth-child(3),
-.manage-datasets table td:nth-child(3) {
-  width: 20%;
-  text-align: center;
-}
-
-
 </style>
 </head>
-
 <body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="{% url 'home' %}" class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </a>
+    <nav class="nav-links">
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+      
+      <a href="{% url 'upload_data' %}" class="nav-link"><i class="fas fa-upload"></i>Upload</a>
+    </nav>
+    
+  </div>
+</div>
 
 {% if messages %}
 <div id="toast-container">
@@ -331,103 +533,107 @@ tbody tr:hover {
 </div>
 {% endif %}
 
-<div class="header">
-  <h1>User Profile</h1>
-  <a href="{% url 'home' %}">
-    <i class="fas fa-arrow-left"></i> Back to Home
-  </a>
-</div>
+<div class="page">
 
-<!-- PROFILE -->
-<div class="profile-card">
-  <div class="avatar">
-    {{ user.name|slice:":1"|upper }}
-  </div>
-  <div class="profile-info">
-    <h2>{{ user.name }}</h2>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Account Type:</strong> Standard User</p>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stat-card">
-    <h3>{{ total_datasets }}</h3>
-    <p>Total Datasets</p>
-  </div>
-  <div class="stat-card">
-    <h3>{{ processed_datasets }}</h3>
-    <p>Processed</p>
-  </div>
-  <div class="stat-card">
-    <h3>{{ pending_datasets }}</h3>
-    <p>Pending</p>
-  </div>
-  <div class="stat-card">
-    <h3>{{ total_reports }}</h3>
-    <p>Reports Generated</p>
-  </div>
-</div>
-
-<!-- MANAGE DATASETS -->
-<div class="manage-datasets">
-  <h3>Manage Datasets</h3>
-
-  {% if recent_datasets %}
-<div class="dataset-table-wrapper">
-
-  <table class="dataset-table">
-    <thead>
-      <tr>
-        <th class="col-dataset">Dataset</th>
-<th class="col-status">Status</th>
-<th class="col-actions">Actions</th>
-
-      </tr>
-    </thead>
-  </table>
-
-  <div class="dataset-table-body">
-    <table class="dataset-table">
-      <tbody>
-        {% for ds in recent_datasets %}
-        <tr>
-          <td>{{ ds.file_name }}</td>
-          <td>
-            {% if ds.is_processed %}
-              <span class="badge badge-processed">Processed</span>
-            {% else %}
-              <span class="badge badge-pending">Pending</span>
-            {% endif %}
-          </td>
-          <td class="dataset-actions">
-            <a href="{% url 'dataset_detail' ds.id %}">View</a>
-
-            <form action="{% url 'delete_dataset' ds.id %}"
-                  method="post"
-                  style="display:inline;"
-                  onsubmit="return confirm('Are you sure you want to delete this dataset?');">
-              {% csrf_token %}
-              <button type="submit" class="link-btn">Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Title row -->
+  <div class="page-title-row">
+    <div class="page-title">User Profile</div>
+    
   </div>
 
-</div>
-{% else %}
-  <div class="no-dataset-state">
-    <p>No datasets available to manage.</p>
-
-    <a href="{% url 'upload_data' %}" class="upload-btn">
-      Upload Dataset
-    </a>
+  <!-- Profile card -->
+  <div class="card profile-hero" style="animation-delay:0.05s">
+    <div class="avatar">{{ user.name|slice:":1"|upper }}</div>
+    <div class="profile-meta">
+      <div class="profile-name">{{ user.name }}</div>
+      <div class="profile-details">
+        <span class="profile-detail-item"><i class="fas fa-envelope"></i>{{ user.email }}</span>
+       
+      </div>
+    </div>
+    <div class="profile-badge">
+      <i class="fas fa-check-circle"></i> Standard User
+    </div>
   </div>
-{% endif %}
+
+  <!-- Stats card -->
+  <div class="card stats-card" style="padding:0; animation-delay:0.10s;">
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">{{ total_datasets }}</div>
+        <div class="stat-label">Total Datasets</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">{{ processed_datasets }}</div>
+        <div class="stat-label">Processed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">{{ pending_datasets }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">{{ total_reports }}</div>
+        <div class="stat-label">Reports</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Datasets card -->
+  <div class="card datasets-card" style="animation-delay:0.15s;">
+    <div class="section-head">
+      <div class="section-title">
+        <i class="fas fa-database"></i> Datasets
+      </div>
+      {% if recent_datasets %}
+      <span class="section-count">{{ recent_datasets|length }} total</span>
+      {% endif %}
+    </div>
+
+    {% if recent_datasets %}
+    <div class="dataset-list">
+      {% for ds in recent_datasets %}
+      <div class="dataset-row">
+        <div>
+          <div class="dataset-name">
+            <a href="{% url 'dataset_detail' ds.id %}">{{ ds.file_name }}</a>
+          </div>
+          <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
+        </div>
+
+        <div>
+          {% if ds.is_processed %}
+            <span class="badge badge-processed"><i class="fas fa-check-circle"></i> Processed</span>
+          {% else %}
+            <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
+          {% endif %}
+        </div>
+
+        <div class="row-actions">
+          <a href="{% url 'dataset_detail' ds.id %}" class="action-btn action-view">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
+                onsubmit="return confirm('Delete this dataset?');">
+            {% csrf_token %}
+            <button type="submit" class="action-btn action-delete">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-database"></i></div>
+      <p>No datasets yet. Upload your first dataset to get started.</p>
+      <a href="{% url 'upload_data' %}" class="upload-link">
+        <i class="fas fa-upload"></i> Upload Dataset
+      </a>
+    </div>
+    {% endif %}
+  </div>
 
 </div>
 

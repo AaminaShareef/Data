@@ -1,3 +1,0 @@
-Student_ID,Age,Gender,Academic_Level,Country,Avg_Daily_Usage_Hours,Most_Used_Platform,Affects_Academic_Performance,Sleep_Hours_Per_Night,Mental_Health_Score,Relationship_Status,Conflicts_Over_Social_Media,Addicted_Score,outlier_flag
--1.0,-1.0,0,1,0,0.9999999999999999,0,1.0,-1.0,-1.0,0,1.0,1.0,0.0
-1.0,1.0,1,0,1,-1.0000000000000002,1,-1.0,1.0,1.0,1,-1.0,-1.0,0.0
