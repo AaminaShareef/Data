@@ -3,306 +3,604 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auralis Insights | Calm Data Intelligence</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <title>Auralis Insights · Calm Data Intelligence</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      /* 🌊 Professional navy & teal palette */
-      --primary: #0B3B4B;
-      --primary-bright: #1D5A6D;
-      --primary-dark: #0A2F3C;
+  /* Primary navy scale */
+  --primary: #0B3B4B;
+  --primary-mid: #1D5A6D;
+  --primary-light: #2C7A8F;
+  
+  /* Accent teal scale */
+  --accent: #4A9B8D;
+  --accent-pale: #7BBDB3;
+  
+  /* Backgrounds */
+  --bg: #F8F9FC;
+  --bg2: #EDF2F7;
+  
+  /* Cards & surfaces */
+  --card: #FFFFFF;
+  
+  /* Text hierarchy */
+  --text: #1A2B3C;
+  --text-soft: #3A4A5E;
+  --muted: #6B7A8D;
+  
+  /* Borders */
+  --border: rgba(11,59,75,0.09);
+  --border2: rgba(11,59,75,0.15);
+  
+  /* Shadows */
+  --shadow: 0 4px 24px rgba(11,59,75,0.09);
+  --shadow-md: 0 8px 40px rgba(11,59,75,0.13);
+}
 
-      --background-base: #F8F9FC;
-      --background-soft: #EDF2F7;
-
-      --card-bg: rgba(255,255,255,0.85);
-      --border-light: rgba(11,59,75,0.08);
-
-      --text-dark: #1A2B3C;
-      --text-medium: #5E6F88;
-
-      --shadow-soft: 0 14px 34px rgba(11,59,75,0.10);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(143,191,176,0.25), transparent 60%),
-        radial-gradient(circle at bottom right, rgba(242,239,234,0.65), transparent 70%),
-        linear-gradient(180deg, var(--background-soft), var(--background-base));
-      color: var(--text-dark);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* ===== NAVBAR ===== */
-    .navbar {
+    /* ── Subtle mesh background ── */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 0% 0%, rgba(74,155,141,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 100% 100%, rgba(11,59,75,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(44,122,143,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── All content above bg ── */
+    nav, main, footer { position: relative; z-index: 1; }
+
+    /* ═══════════════════════════════
+       NAVBAR
+    ═══════════════════════════════ */
+    nav {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 28px 80px;
+      justify-content: space-between;
+      padding: 0 60px;
+      height: 64px;
+      background: rgba(248,249,252,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
     }
 
- .navbar h1 {
-  font-size: 52px;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin-bottom: 10px;
-  letter-spacing: 0.5px;
-}
-
-.tagline {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 17px;
-  font-weight: 500;
-  
-  color: var(--text-medium);
-  margin-bottom: 26px;
-  max-width: 520px;
-}
-
-
-    .nav-actions a {
-      margin-left: 22px;
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
       text-decoration: none;
-      font-weight: 600;
-      color: var(--primary-dark);
-      font-size: 15px;
+    }
+    .nav-logo {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: linear-gradient(135deg, var(--primary-mid), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.2; }
+    .nav-brand-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -.3px;
     }
 
-    /* ===== HERO (FULL WIDTH) ===== */
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-link {
+      font-size: 13px; font-weight: 500; color: var(--text-soft);
+      text-decoration: none; padding: 7px 16px; border-radius: 8px;
+      transition: all .18s;
+    }
+    .nav-link:hover { background: var(--bg2); color: var(--primary); }
+    .nav-link.primary {
+      background: var(--primary); color: #fff;
+      font-weight: 600;
+    }
+    .nav-link.primary:hover { background: var(--primary-mid); }
+
+    /* ═══════════════════════════════
+       HERO
+    ═══════════════════════════════ */
     .hero {
-      width: 100%;
-      padding: 100px 120px 80px;
+      display: flex; flex-direction: column; align-items: center;
       text-align: center;
+      padding: 88px 40px 72px;
+      max-width: 860px; margin: 0 auto;
     }
 
-    .hero h2 {
-      font-size: 36px;
-      line-height: 1.2;
-      color: var(--primary-dark);
-      margin-bottom: 26px;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(74,155,141,0.1);
+      border: 1px solid rgba(74,155,141,0.25);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 22px;
+      animation: fadeUp .5s ease both;
+    }
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(30px, 4.5vw, 48px);
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.18;
+      letter-spacing: -.5px;
+      margin-bottom: 18px;
+      animation: fadeUp .55s .08s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--primary-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .hero p {
-      font-size: 19px;
-      line-height: 1.8;
-      color: var(--text-medium);
-      max-width: 900px;
-      margin: 0 auto 36px;
+    .hero-desc {
+      font-size: 15px; line-height: 1.75; color: var(--muted);
+      max-width: 580px; margin-bottom: 36px;
+      animation: fadeUp .55s .16s ease both;
     }
 
-    .hero-buttons a {
-      display: inline-block;
-      padding: 15px 36px;
-      border-radius: 999px;
-      font-weight: 600;
-      text-decoration: none;
-      margin: 0 10px;
-      transition: all 250ms ease;
+    .hero-actions {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .55s .24s ease both;
     }
-
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 24px; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+      transition: all .18s; border: none;
+    }
     .btn-primary {
-      background: linear-gradient(180deg, var(--primary-bright), var(--primary-dark));
-      color: white;
-      box-shadow: var(--shadow-soft);
+      background: var(--primary); color: #fff;
+      box-shadow: 0 4px 16px rgba(11,59,75,0.22);
     }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-    }
-
+    .btn-primary:hover { background: var(--primary-mid); transform: translateY(-1px); }
     .btn-outline {
-      border: 2px solid var(--primary-dark);
-      color: var(--primary-dark);
+      background: transparent; color: var(--primary);
+      border: 1.5px solid var(--border2);
+    }
+    .btn-outline:hover { background: var(--bg2); }
+
+    /* hero stats strip */
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 52px; padding-top: 32px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp .55s .32s ease both;
+    }
+    .stat-item { text-align: center; }
+    .stat-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px; font-weight: 800; color: var(--primary);
+    }
+    .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+
+    /* ═══════════════════════════════
+       FEATURES
+    ═══════════════════════════════ */
+    .section { padding: 64px 60px; max-width: 1100px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 10px; text-align: center;
+    }
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(20px, 2.5vw, 26px); font-weight: 700;
+      color: var(--primary); text-align: center;
+      letter-spacing: -.3px; margin-bottom: 40px;
     }
 
-    /* ===== SECTION ===== */
-    section {
-      padding: 90px 120px;
-    }
-
-    section h3 {
-      font-size: 36px;
-      text-align: center;
-      color: var(--primary-dark);
-      margin-bottom: 50px;
-
-    }
-
-    /* ===== FEATURES ===== */
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 44px;
+      gap: 16px;
     }
-
     .feature-card {
-      background: var(--card-bg);
-      border-radius: 22px;
-      padding: 40px;
-      box-shadow: var(--shadow-soft);
-      text-align: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 24px;
+      box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
     }
-
-    .feature-card i {
-      font-size: 32px;
-      color: var(--primary-dark);
-      margin-bottom: 18px;
+    .feature-card::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0; transition: opacity .2s;
     }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .feature-card:hover::before { opacity: 1; }
 
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(11,59,75,0.07);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+      font-size: 17px; color: var(--primary);
+    }
     .feature-card h4 {
-      font-size: 20px;
-      margin-bottom: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--primary); margin-bottom: 8px;
     }
-
     .feature-card p {
-      font-size: 15px;
-      color: var(--text-medium);
-      line-height: 1.7;
+      font-size: 13px; color: var(--muted); line-height: 1.65;
     }
 
-    /* ===== PLATFORM INFO ===== */
-    .info {
-      max-width: 1000px;
-      margin: auto;
-      text-align: center;
+    /* ═══════════════════════════════
+       TWO-COL INFO SECTIONS
+    ═══════════════════════════════ */
+    .info-section {
+      padding: 56px 60px;
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+    }
+    .info-section.flip { direction: rtl; }
+    .info-section.flip > * { direction: ltr; }
+
+    .info-text {}
+    .info-text .section-eyebrow { text-align: left; }
+    .info-text .section-title   { text-align: left; font-size: 20px; }
+    .info-text p {
+      font-size: 13px; color: var(--muted); line-height: 1.8;
+      margin-top: 14px;
     }
 
-    .info p {
-      font-size: 18px;
-      line-height: 1.9;
-      color: var(--text-medium);
+    .info-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 28px;
+      box-shadow: var(--shadow-md);
     }
+    .info-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .info-metric {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .info-metric-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px; font-weight: 800; color: var(--primary);
+    }
+    .info-metric-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
 
-    /* ===== FOOTER ===== */
+    /* mini bar chart visual */
+    .mini-bars { display: flex; align-items: flex-end; gap: 5px; height: 64px; margin-top: 16px; }
+    .mini-bar {
+      flex: 1; border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--accent), var(--primary));
+      opacity: .75; transition: opacity .2s;
+    }
+    .mini-bar:hover { opacity: 1; }
+
+    /* ═══════════════════════════════
+       WHY SECTION
+    ═══════════════════════════════ */
+    .why-section {
+      padding: 56px 60px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 14px; margin-top: 40px;
+    }
+    .why-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+      box-shadow: var(--shadow); transition: transform .18s;
+    }
+    .why-item:hover { transform: translateY(-2px); }
+    .why-icon {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      background: rgba(11,59,75,0.07);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--primary);
+    }
+    .why-item h5 {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 5px;
+    }
+    .why-item p { font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+    /* ═══════════════════════════════
+       CTA BAND
+    ═══════════════════════════════ */
+    .cta-band {
+      margin: 48px 60px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 60%, var(--primary-light) 100%);
+      border-radius: 20px; padding: 48px 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+      position: relative; overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .cta-band::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(74,155,141,0.22), transparent);
+    }
+    .cta-band > * { position: relative; z-index: 1; }
+    .cta-band-left {}
+    .cta-band h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 7px;
+    }
+    .cta-band p { font-size: 13px; color: rgba(255,255,255,.7); }
+    .btn-white {
+      background: #fff; color: var(--primary);
+      font-weight: 700; padding: 11px 26px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+    .btn-white:hover { background: var(--bg2); transform: translateY(-1px); }
+
+    /* ═══════════════════════════════
+       FOOTER
+    ═══════════════════════════════ */
     footer {
-      text-align: center;
-      padding: 42px;
-      font-size: 14px;
-      color: var(--text-medium);
+      border-top: 1px solid var(--border);
+      padding: 28px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
     }
+    .footer-brand {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; font-weight: 700; color: var(--primary);
+    }
+    .footer-copy { font-size: 12px; color: var(--muted); }
 
+    /* ═══════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════ */
     @media (max-width: 900px) {
-      .hero, section {
-        padding: 60px 30px;
-      }
-
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero h2 {
-        font-size: 40px;
-      }
+      nav { padding: 0 22px; }
+      .hero { padding: 60px 22px 48px; }
+      .section, .info-section, .why-section, .cta-band, footer { padding-left: 22px; padding-right: 22px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .info-section { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .cta-band { flex-direction: column; text-align: center; margin: 24px 22px; }
+      .hero-stats { gap: 20px; }
     }
   </style>
 </head>
-
 <body>
 
-  <div class="navbar">
-  <div class="brand">
-    <h1>Auralis Insights</h1>
-    <span class="tagline">Calm Intelligence · Clear Decisions</span>
+<!-- ── Navbar ── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="nav-brand-name">Auralis Insights</span>
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i>Login</a>
+        <a href="{% url 'signup' %}" class="nav-link"><i class="fas fa-user-plus"></i>Sign Up</a>
   </div>
+</nav>
 
-  <div class="nav-actions">
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'signup' %}">Sign Up</a>
+<main>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <div class="hero-eyebrow-dot"></div>
+    Calm Data Intelligence
+  </div>
+  <h1>Turn Raw Data Into<br><em>Clear Decisions</em></h1>
+  <p class="hero-desc">
+    Auralis Insights transforms complex datasets into clean, structured visual narratives —
+    helping you understand trends and draw confident conclusions without the cognitive overload.
+  </p>
+  <div class="hero-actions">
+    <a href="{% url 'signup' %}" class="btn btn-primary">
+       Get Started
+    </a>
+    <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-val">100%</div>
+      <div class="stat-lbl">Automated Analysis</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">3-Step</div>
+      <div class="stat-lbl">Upload · Clean · Insight</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">AI-Powered</div>
+      <div class="stat-lbl">Insight Discovery</div>
+    </div>
   </div>
 </div>
 
-
-  <!-- HERO -->
-  <div class="hero">
-    <h2>Calm Data Visualization for<br>Clear & Confident Decisions</h2>
-    <p>
-        
-  Modern data analysis often presents information in a way that is dense, cluttered, and cognitively demanding. Auralis Insights addresses this challenge by offering a calm, user-centered approach to data visualization and reporting. The platform transforms raw data into structured visual narratives, helping users quickly grasp insights without unnecessary mental effort.
-
-By prioritizing clarity and simplicity, Auralis Insights allows users to focus on what truly matters—understanding data, identifying trends, and making informed decisions with confidence. Whether analyzing reports or exploring dashboards, the experience remains smooth, balanced, and visually comfortable.
-</p>
-
-
-
-    <div class="hero-buttons">
-      <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
-      
+<!-- ── Features ── -->
+<div class="section reveal">
+  <div class="section-eyebrow">Platform Features</div>
+  <div class="section-title">Everything you need to understand your data</div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+      <h4>Interactive Dashboards</h4>
+      <p>Explore data through live charts — bar, line, scatter, and donut — with real-time filtering and drill-down controls.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+      <h4>Automated Reports</h4>
+      <p>Generate structured KPI reports and distribution summaries automatically from any uploaded dataset.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+      <h4>AI Insight Discovery</h4>
+      <p>Ask plain-English questions about your filtered data and receive instant computed stats plus AI-powered context.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-broom"></i></div>
+      <h4>Smart Data Cleaning</h4>
+      <p>Automatic detection and handling of missing values, duplicates, and type inconsistencies before analysis begins.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-filter"></i></div>
+      <h4>Live Filtering</h4>
+      <p>Apply numeric range and categorical filters that instantly update every chart, KPI, and table on the page.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-download"></i></div>
+      <h4>CSV Export</h4>
+      <p>Download exactly what you're looking at — the filtered, cleaned dataset — with one click at any time.</p>
     </div>
   </div>
+</div>
 
-  <!-- FEATURES -->
-  <section>
-    <h3>Key Features</h3>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <i class="fas fa-chart-line"></i>
-        <h4>Interactive Dashboards</h4>
-        <p>
-          Visualize data through interactive charts that highlight trends,
-          comparisons, and patterns clearly.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <i class="fas fa-file-alt"></i>
-        <h4>Automated Reports</h4>
-        <p>
-          Generate structured reports that summarize insights and support
-          data-driven decision-making.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <i class="fas fa-lightbulb"></i>
-        <h4>Insight Discovery</h4>
-        <p>
-          Identify meaningful insights quickly using clean layouts and
-          focused visual representations.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-  <h3>How Auralis Insights Helps You</h3>
-
-  <div class="info">
+<!-- ── How it helps ── -->
+<div class="info-section reveal">
+  <div class="info-text">
+    <div class="section-eyebrow">How It Works</div>
+    <div class="section-title">From raw file to structured insight in minutes</div>
     <p>
-      Auralis Insights helps users understand and work with data in a calm, structured, and meaningful way. Instead of overwhelming users with complex charts and cluttered dashboards, the platform presents information using clean visual layouts that are easy to read and interpret. This reduces mental effort and allows users to focus on insights rather than struggling with the interface.
-
-The platform supports users in identifying trends, patterns, and summaries quickly through well-organized dashboards and automated reports. By simplifying data presentation, Auralis Insights improves decision-making efficiency and helps users draw conclusions with greater confidence and accuracy.
-
-Auralis Insights also enhances productivity by reducing the time required to analyze data and generate reports. Users can spend less time formatting or searching for information and more time understanding results. 
+      Upload any CSV dataset, let Auralis clean and profile it automatically, then explore
+      interactive visualizations that surface patterns, correlations, and outliers — all without
+      writing a single line of code.
+    </p>
+    <p style="margin-top:10px;">
+      The platform is designed for students, analysts, and professionals who value
+      clarity over complexity. Every screen is built to reduce cognitive load
+      and guide your attention toward what matters most.
     </p>
   </div>
-</section>
-
-  <!-- INFO -->
-  <section>
-    <div class="info">
-      <h3>Why Auralis Insights?</h3>
-      <p>
-        Auralis Insights stands out by combining calm UI design with analytical functionality. Instead of prioritizing excessive features or dense visuals, the platform emphasizes simplicity, readability, and thoughtful interaction. This design philosophy ensures that users remain engaged without experiencing fatigue or confusion.
-
-The platform is especially suited for academic environments, students, analysts, and professionals who value structured thinking and clarity in data interpretation. By reducing visual clutter and emphasizing meaningful presentation, Auralis Insights enables users to make better decisions through a more relaxed and focused analytical experience.
-      </p>
+  <div class="info-visual">
+    <div class="info-metric-grid">
+      <div class="info-metric">
+        <div class="info-metric-val">KPIs</div>
+        <div class="info-metric-lbl">Auto-computed</div>
+      </div>
+      <div class="info-metric">
+        <div class="info-metric-val">Dist.</div>
+        <div class="info-metric-lbl">Column Spread</div>
+      </div>
+      <div class="info-metric">
+        <div class="info-metric-val">r²</div>
+        <div class="info-metric-lbl">Correlations</div>
+      </div>
+      <div class="info-metric">
+        <div class="info-metric-val">AI</div>
+        <div class="info-metric-lbl">Q&amp;A Engine</div>
+      </div>
     </div>
-  </section>
+    <div class="mini-bars">
+      <div class="mini-bar" style="height:35%"></div>
+      <div class="mini-bar" style="height:55%"></div>
+      <div class="mini-bar" style="height:72%"></div>
+      <div class="mini-bar" style="height:48%"></div>
+      <div class="mini-bar" style="height:90%"></div>
+      <div class="mini-bar" style="height:63%"></div>
+      <div class="mini-bar" style="height:41%"></div>
+      <div class="mini-bar" style="height:78%"></div>
+    </div>
+  </div>
+</div>
 
-  <!-- FOOTER -->
-  <footer>
-    © 2025 Auralis Insights · Calm Intelligence · Clear Decisions
-  </footer>
+<!-- ── Why Auralis ── -->
+<div class="why-section reveal">
+  <div class="section-eyebrow" style="text-align:center">Why Auralis Insights</div>
+  <div class="section-title">Built for clarity, not complexity</div>
+  <div class="why-grid">
+    <div class="why-item">
+      <div class="why-icon"><i class="fas fa-eye"></i></div>
+      <div>
+        <h5>Calm Visual Design</h5>
+        <p>Clean layouts with purposeful whitespace reduce fatigue and let you focus on the data, not the interface.</p>
+      </div>
+    </div>
+    <div class="why-item">
+      <div class="why-icon"><i class="fas fa-bolt"></i></div>
+      <div>
+        <h5>Instant Results</h5>
+        <p>No configuration needed. Upload, clean, and explore — the entire pipeline runs automatically.</p>
+      </div>
+    </div>
+    <div class="why-item">
+      <div class="why-icon"><i class="fas fa-graduation-cap"></i></div>
+      <div>
+        <h5>Built for Analysts & Students</h5>
+        <p>Equally suited for academic projects and professional reporting, with domain-aware KPI detection.</p>
+      </div>
+    </div>
+    <div class="why-item">
+      <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+      <div>
+        <h5>Private & Secure</h5>
+        <p>Your data stays within your session. No third-party analytics or data sharing — ever.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- ── CTA Band ── -->
+<div class="cta-band reveal">
+  <div class="cta-band-left">
+    <h3>Ready to explore your data?</h3>
+    <p>Create an account and upload your first dataset in under a minute.</p>
+  </div>
+  <a href="{% url 'signup' %}" class="btn btn-white">
+    </i> Get Started
+  </a>
+</div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-brand">Auralis Insights</div>
+  <div class="footer-copy">© 2025 Auralis Insights · Calm Intelligence · Clear Decisions</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
