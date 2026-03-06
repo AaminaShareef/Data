@@ -233,7 +233,9 @@ a{text-decoration:none;color:var(--primary);}
       <span class="brand-name">Auralis Insights</span>
     </div>
     <div style="display:flex;gap:8px;">
-     
+      <a href="{% url 'report' cleaning_report.id %}" class="tbtn">
+        <i style="font-size:11px"></i> Back
+      </a>
       <a href="{% url 'profile' %}" class="tbtn primary">
         <i class="fas fa-user" style="font-size:12px"></i> Profile
       </a>
@@ -433,10 +435,10 @@ a{text-decoration:none;color:var(--primary);}
       <div class="cta-sub">{{ kpis|length }} KPI{{ kpis|length|pluralize }} · {{ insights|length }} insight{{ insights|length|pluralize }} · {{ distributions|length }} distribution{{ distributions|length|pluralize }}</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <a href="{% url 'interactive_dashboard' result_id=result.id %}" class="btn btn-accent">
-  <i class="fas fa-chart-line" style="font-size:12px"></i> Interactive Dashboard
-</a>
-     
+      <a href="{% url 'interactive_dashboard' analysis_result.id %}" class="btn btn-accent">
+        <i class="fas fa-sliders-h" style="font-size:12px"></i> Interactive Dashboard
+      </a>
+      
     </div>
   </div>
 

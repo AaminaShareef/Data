@@ -4,894 +4,1956 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>{{ domain_display }} · Interactive Dashboard · Auralis</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<title>Interactive Dashboard · {{ domain_display }} · Auralis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <style>
+/* ═══════════════════════════════════════════════════════
+   ROOT TOKENS
+═══════════════════════════════════════════════════════ */
 :root {
-  --bg:        #0D1117;
-  --bg2:       #161B22;
-  --bg3:       #1C2128;
-  --bg4:       #21262D;
-  --border:    rgba(255,255,255,0.07);
-  --border2:   rgba(255,255,255,0.13);
-  --text:      #E6EDF3;
-  --text-muted:#7D8590;
-  --text-soft: #B1BAC4;
-  --accent:    #00D4AA;
-  --accent2:   #0EA5E9;
-  --accent3:   #F59E0B;
-  --accent4:   #EF4444;
-  --accent5:   #8B5CF6;
-  --mono:      'JetBrains Mono', monospace;
+  --navy:       #0B3B4B;
+  --navy-mid:   #1D5A6D;
+  --navy-light: #2C6F84;
+  --navy-pale:  #E3F0F5;
+  --teal:       #4A9B8D;
+  --teal-light: #7BBDB3;
+  --teal-pale:  #E0F2F0;
+  --bg:         #F4F7FA;
+  --bg2:        #EDF2F7;
+  --card:       #FFFFFF;
+  --text:       #1A2B3C;
+  --text-soft:  #3A4A5E;
+  --muted:      #6B7A90;
+  --border:     rgba(11,59,75,0.09);
+  --border-md:  rgba(11,59,75,0.15);
+  --shadow-xs:  0 1px 4px rgba(11,59,75,0.06);
+  --shadow-sm:  0 2px 10px rgba(11,59,75,0.08);
+  --shadow-md:  0 6px 24px rgba(11,59,75,0.11);
+  --shadow-lg:  0 16px 48px rgba(11,59,75,0.14);
+  --radius:     12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+  --ease:       cubic-bezier(0.4,0,0.2,1);
+  --red:        #DC2626;
+  --amber:      #D97706;
+  --green:      #059669;
+
+  /* sidebar width */
+  --sidebar-w: 260px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'Inter',sans-serif;
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans',sans-serif;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
 }
-body::before{
-  content:"";position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
-  background-size:40px 40px;
-  pointer-events:none;z-index:0;
+body::before {
+  content:"";
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 2% 8%, rgba(74,155,141,0.07), transparent),
+    radial-gradient(ellipse 45% 55% at 98% 92%, rgba(11,59,75,0.06), transparent);
+  pointer-events:none; z-index:0;
 }
+a { text-decoration:none; color:var(--navy); }
 
-/* ── Topbar ── */
-.topbar{
-  position:sticky;top:0;z-index:200;
-  background:rgba(13,17,23,0.95);
-  backdrop-filter:blur(20px);
+/* ═══════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════ */
+.topbar {
+  position:sticky; top:0; z-index:200;
+  background:rgba(255,255,255,0.94);
+  backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);
-  height:52px;display:flex;align-items:center;
-  justify-content:space-between;padding:0 24px;
+  box-shadow:var(--shadow-xs);
 }
-.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;
-  color:var(--text);text-decoration:none;letter-spacing:-.3px;}
-.brand-mark{
-  width:30px;height:30px;border-radius:8px;
-  background:linear-gradient(135deg,#00D4AA,#0EA5E9);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:900;color:#000;
+.topbar-inner {
+  max-width:none;
+  padding:0 28px; height:58px;
+  display:flex; align-items:center; justify-content:space-between;
 }
-.tbtn{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:12px;font-weight:500;font-family:inherit;
-  padding:6px 14px;border-radius:6px;cursor:pointer;
-  text-decoration:none;transition:all .15s;
-  border:1px solid var(--border2);
-  background:var(--bg3);color:var(--text-soft);
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-logo {
+  width:32px; height:32px;
+  background:var(--navy); border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
 }
-.tbtn:hover{background:var(--bg4);color:var(--text);}
+.brand-logo svg { width:17px; height:17px; fill:none; stroke:#fff; stroke-width:2; }
+.brand-name { font-size:16px; font-weight:700; color:var(--navy); letter-spacing:-0.3px; }
+.brand-tag {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1px; color:var(--teal);
+  background:var(--teal-pale); padding:2px 8px; border-radius:999px;
+  margin-left:4px;
+}
+.topbar-center {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--muted);
+}
+.topbar-center strong { color:var(--navy); font-weight:600; }
+.topbar-right { display:flex; gap:8px; align-items:center; }
+.tbtn {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:500; color:var(--text-soft);
+  padding:6px 13px; border-radius:999px;
+  border:1.5px solid var(--border-md);
+  transition:all 0.18s var(--ease);
+  background:transparent; cursor:pointer; text-decoration:none;
+}
+.tbtn:hover { background:var(--navy-pale); color:var(--navy); border-color:var(--navy); }
+.tbtn.primary { background:var(--navy); color:#fff; border-color:var(--navy); }
+.tbtn.primary:hover { background:var(--navy-mid); }
+.tbtn.teal { background:var(--teal); color:#fff; border-color:var(--teal); }
+.tbtn.teal:hover { background:#3a8a7d; }
 
-/* ── Sub-header ── */
-.subheader{
-  position:sticky;top:52px;z-index:190;
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:10px 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:14px;flex-wrap:wrap;
+/* ═══════════════════════════════════════════════════════
+   MAIN LAYOUT — sidebar + content
+═══════════════════════════════════════════════════════ */
+.layout {
+  display:flex;
+  min-height:calc(100vh - 58px);
+  position:relative; z-index:1;
 }
-.sh-left{display:flex;align-items:center;gap:12px;}
-.domain-tag{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg3);border:1px solid var(--border2);
-  border-radius:7px;padding:7px 13px;
-}
-.domain-tag-name{font-size:13px;font-weight:700;color:var(--text);}
-.domain-tag-sub{font-size:10px;color:var(--text-muted);}
-.live-pill{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(0,212,170,.09);border:1px solid rgba(0,212,170,.22);
-  border-radius:20px;padding:4px 10px;
-  font-size:11px;font-weight:600;color:var(--accent);
-}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-.sh-right{text-align:right;}
-.sh-count{font-size:26px;font-weight:800;color:var(--accent);font-family:var(--mono);line-height:1;}
-.sh-label{font-size:9px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
 
-/* ── Filter bar ── */
-.filter-bar{
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:10px 24px;
-  display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════ */
+.sidebar {
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  position:sticky;
+  top:58px;
+  height:calc(100vh - 58px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:20px 16px 32px;
+  display:flex; flex-direction:column; gap:20px;
+  box-shadow:2px 0 12px rgba(11,59,75,0.04);
 }
-.fg{display:flex;flex-direction:column;gap:4px;}
-.fg label{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
-.fg select,.fg input[type=text]{
-  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
-  color:var(--text);font-family:inherit;font-size:12px;
-  padding:6px 10px;outline:none;min-width:150px;transition:border-color .15s;
-}
-.fg select:focus,.fg input:focus{border-color:var(--accent);}
-.range-row{display:flex;gap:6px;align-items:center;}
-.range-row input[type=number]{
-  width:82px;background:var(--bg3);border:1px solid var(--border2);
-  border-radius:6px;color:var(--text);font-family:var(--mono);
-  font-size:12px;padding:6px 8px;outline:none;transition:border-color .15s;
-}
-.range-row input:focus{border-color:var(--accent);}
-.range-sep{font-size:11px;color:var(--text-muted);}
-.btn-addfilter{
-  background:var(--accent);color:#000;border:none;
-  font-family:inherit;font-size:12px;font-weight:700;
-  padding:7px 16px;border-radius:6px;cursor:pointer;
-  transition:opacity .15s;white-space:nowrap;
-}
-.btn-addfilter:hover{opacity:.82;}
-.btn-resetfilter{
-  background:transparent;border:1px solid var(--border2);color:var(--text-muted);
-  font-family:inherit;font-size:12px;font-weight:500;
-  padding:7px 14px;border-radius:6px;cursor:pointer;transition:all .15s;
-}
-.btn-resetfilter:hover{border-color:var(--accent4);color:var(--accent4);}
+.sidebar::-webkit-scrollbar { width:4px; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:99px; }
 
-/* chips */
-.chip-row{
-  display:none;flex-wrap:wrap;gap:6px;
-  padding:8px 24px;background:var(--bg2);
+.sidebar-section-title {
+  font-size:9px; font-weight:800; text-transform:uppercase;
+  letter-spacing:1.2px; color:var(--muted);
+  margin-bottom:10px; padding-bottom:6px;
   border-bottom:1px solid var(--border);
 }
-.chip{
-  display:inline-flex;align-items:center;gap:5px;
-  background:rgba(0,212,170,.09);border:1px solid rgba(0,212,170,.22);
-  color:var(--accent);border-radius:4px;padding:3px 9px;
-  font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;
-}
-.chip:hover{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--accent4);}
 
-/* cat dropdown */
-.cat-wrap{position:relative;}
-.cat-btn{
-  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
-  color:var(--text);font-family:inherit;font-size:12px;
-  padding:6px 10px;cursor:pointer;min-width:165px;
-  display:flex;align-items:center;gap:6px;transition:border-color .15s;
+/* Active filter chips */
+.active-chips {
+  display:flex; flex-wrap:wrap; gap:5px;
+  min-height:28px;
 }
-.cat-btn:hover,.cat-btn.open{border-color:var(--accent);}
-.cat-dropdown{
-  display:none;position:absolute;top:calc(100%+4px);left:0;z-index:400;
-  background:var(--bg3);border:1px solid var(--border2);
-  border-radius:8px;min-width:210px;max-height:240px;overflow-y:auto;
-  padding:6px;box-shadow:0 10px 40px rgba(0,0,0,.6);
+.chip {
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--teal-pale); color:var(--teal);
+  border:1px solid rgba(74,155,141,0.30);
+  border-radius:999px; padding:3px 9px;
+  font-size:11px; font-weight:600;
+  max-width:200px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
 }
-.cat-dropdown.open{display:block;}
-.cat-opt{
-  display:flex;align-items:center;gap:8px;padding:6px 8px;
-  border-radius:5px;cursor:pointer;font-size:12px;color:var(--text-soft);
-  transition:background .12s;
+.chip-x {
+  cursor:pointer; font-size:12px; font-weight:700;
+  color:var(--teal); flex-shrink:0;
+  line-height:1; transition:color 0.15s;
 }
-.cat-opt:hover{background:var(--bg4);}
-.cat-opt input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;}
+.chip-x:hover { color:var(--red); }
+.no-filters-text {
+  font-size:11px; color:var(--muted); font-style:italic; padding:4px 2px;
+}
 
-/* ── KPI strip ── */
-.kpi-strip{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:1px;background:var(--border);
-  border-bottom:1px solid var(--border);
+/* Filter controls */
+.filter-group { display:flex; flex-direction:column; gap:8px; }
+.filter-label {
+  font-size:11px; font-weight:700; color:var(--text-soft);
+  text-transform:uppercase; letter-spacing:0.5px;
 }
-.kpi-tile{
-  background:var(--bg2);padding:16px 22px;
-  display:flex;flex-direction:column;gap:3px;
-  transition:background .15s;
+.filter-select {
+  width:100%; padding:8px 10px; border-radius:var(--radius);
+  border:1.5px solid var(--border-md);
+  background:var(--bg); color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:12px;
+  transition:border-color 0.15s;
+  cursor:pointer;
 }
-.kpi-tile:hover{background:var(--bg3);}
-.kpi-tile-label{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
-.kpi-tile-val{font-size:30px;font-weight:800;font-family:var(--mono);line-height:1.05;}
-.kpi-tile-val.v1{color:var(--accent);}
-.kpi-tile-val.v2{color:var(--accent2);}
-.kpi-tile-val.v3{color:var(--accent3);}
-.kpi-tile-val.v4{color:var(--accent5);}
-.kpi-tile-sub{font-size:10px;color:var(--text-muted);}
+.filter-select:focus { outline:none; border-color:var(--teal); }
 
-/* ── Main ── */
-.main{position:relative;z-index:1;padding:14px 24px 48px;}
+/* Range slider */
+.range-wrap { display:flex; flex-direction:column; gap:6px; }
+.range-minmax {
+  display:flex; justify-content:space-between;
+  font-size:10px; font-family:'DM Mono',monospace; color:var(--muted);
+}
+.range-inputs { display:flex; flex-direction:column; gap:6px; }
+.range-row { display:flex; align-items:center; gap:8px; }
+.range-row label { font-size:10px; color:var(--muted); width:26px; flex-shrink:0; }
+input[type=range] {
+  flex:1; -webkit-appearance:none; height:4px;
+  background:linear-gradient(90deg,var(--teal),var(--navy));
+  border-radius:99px; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px;
+  background:var(--navy); border-radius:50%;
+  border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.range-val {
+  font-size:10px; font-family:'DM Mono',monospace;
+  color:var(--navy); font-weight:600; width:46px; text-align:right; flex-shrink:0;
+}
 
-/* ── Charts ── */
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-.c-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:12px;padding:16px;
-  display:flex;flex-direction:column;gap:12px;
-  transition:border-color .2s;
-}
-.c-card:hover{border-color:var(--border2);}
-.c-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.c-title{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
-.c-selects{display:flex;gap:6px;flex-wrap:wrap;}
-.c-selects select{
-  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
-  color:var(--text-muted);font-family:inherit;font-size:11px;
-  padding:4px 8px;outline:none;cursor:pointer;transition:all .15s;
-}
-.c-selects select:hover,.c-selects select:focus{border-color:var(--accent);color:var(--text);}
-.c-wrap{position:relative;height:200px;}
-.c-wrap canvas{width:100%!important;height:100%!important;}
+/* Category checkboxes */
+.cat-list { display:flex; flex-direction:column; gap:5px; max-height:180px; overflow-y:auto; }
+.cat-list::-webkit-scrollbar { width:3px; }
+.cat-list::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:99px; }
+.cat-item { display:flex; align-items:center; gap:8px; cursor:pointer; }
+.cat-item input[type=checkbox] { accent-color:var(--teal); width:13px; height:13px; cursor:pointer; }
+.cat-item label { font-size:12px; color:var(--text-soft); cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cat-count { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; }
 
-/* ── Table ── */
-.table-card{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:12px;overflow:hidden;margin-bottom:12px;
+/* Reset button */
+.reset-btn {
+  width:100%; padding:9px; border-radius:var(--radius);
+  background:transparent; border:1.5px solid var(--border-md);
+  color:var(--muted); font-size:12px; font-weight:600;
+  cursor:pointer; transition:all 0.15s var(--ease);
+  font-family:'DM Sans',sans-serif;
+  display:flex; align-items:center; justify-content:center; gap:6px;
 }
-.table-topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;
-}
-.table-title-txt{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
-.btn-csv{
-  display:inline-flex;align-items:center;gap:5px;
-  background:transparent;border:1px solid var(--border2);
-  color:var(--accent);font-family:inherit;font-size:11px;font-weight:600;
-  padding:5px 12px;border-radius:5px;cursor:pointer;transition:all .15s;
-}
-.btn-csv:hover{background:rgba(0,212,170,.09);}
-.t-scroll{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:12px;}
-thead th{
-  background:var(--bg3);padding:9px 12px;text-align:left;
-  font-size:9px;font-weight:700;color:var(--text-muted);
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border);white-space:nowrap;
-  cursor:pointer;user-select:none;transition:color .15s;
-}
-thead th:hover{color:var(--accent);}
-thead th.s-asc::after{content:' ↑';color:var(--accent);}
-thead th.s-desc::after{content:' ↓';color:var(--accent);}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
-tbody tr:hover{background:var(--bg3);}
-tbody td{
-  padding:8px 12px;color:var(--text-soft);
-  font-family:var(--mono);font-size:11px;
-  white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;
-}
-.t-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:6px;
-}
-.t-info{font-size:10px;color:var(--text-muted);font-family:var(--mono);}
-.pagi{display:flex;gap:3px;}
-.pgb{
-  width:28px;height:28px;border-radius:5px;border:1px solid var(--border);
-  background:var(--bg3);color:var(--text-muted);font-size:11px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .15s;font-family:var(--mono);
-}
-.pgb:hover{border-color:var(--accent);color:var(--accent);}
-.pgb.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
-.pgb:disabled{opacity:.3;cursor:not-allowed;}
+.reset-btn:hover { background:var(--bg2); border-color:var(--navy); color:var(--navy); }
 
-/* ── AI card ── */
-.ai-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.ai-head{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 16px;border-bottom:1px solid var(--border);
-  background:linear-gradient(90deg,rgba(0,212,170,.06),transparent);
+/* Record count badge in sidebar */
+.record-badge {
+  background:linear-gradient(135deg,var(--navy),var(--teal));
+  border-radius:var(--radius); padding:12px 14px;
+  text-align:center; color:#fff;
 }
-.ai-head-icon{
-  width:30px;height:30px;border-radius:7px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+.record-badge-num {
+  font-size:28px; font-weight:800;
+  font-family:'DM Mono',monospace; line-height:1;
 }
-.ai-head-title{font-size:12px;font-weight:700;color:var(--text);}
-.ai-head-sub{font-size:10px;color:var(--text-muted);margin-top:2px;}
-.ai-body{padding:14px 16px;}
-.ai-row{display:flex;gap:8px;}
-.ai-inp{
-  flex:1;background:var(--bg3);border:1px solid var(--border2);
-  border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;
-  padding:9px 14px;outline:none;transition:border-color .15s;
-}
-.ai-inp:focus{border-color:var(--accent);}
-.ai-inp::placeholder{color:var(--text-muted);}
-.btn-ask{
-  background:var(--accent);color:#000;border:none;
-  font-family:inherit;font-size:12px;font-weight:700;
-  padding:9px 20px;border-radius:6px;cursor:pointer;transition:opacity .15s;white-space:nowrap;
-}
-.btn-ask:hover{opacity:.82;}
-.btn-ask:disabled{opacity:.4;cursor:not-allowed;}
-.ai-spinner{display:none;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--text-muted);}
-.ai-spinner.show{display:flex;}
-.dots span{
-  display:inline-block;width:5px;height:5px;border-radius:50%;
-  background:var(--accent);margin:0 2px;animation:d .8s infinite alternate;
-}
-.dots span:nth-child(2){animation-delay:.25s}
-.dots span:nth-child(3){animation-delay:.5s}
-@keyframes d{from{transform:translateY(0)}to{transform:translateY(-6px)}}
-.qa-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
-.qa-item{border-radius:8px;overflow:hidden;border:1px solid var(--border);}
-.qa-q{
-  background:var(--bg3);padding:8px 12px;
-  font-size:11px;font-weight:600;color:var(--text-muted);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
-}
-.qa-answers{display:grid;grid-template-columns:1fr 1fr;}
-@media(max-width:680px){.qa-answers{grid-template-columns:1fr;}}
-.qa-blk{padding:12px 14px;background:var(--bg2);}
-.qa-blk+.qa-blk{border-left:1px solid var(--border);}
-.qa-blk-lbl{
-  font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
-  margin-bottom:6px;display:flex;align-items:center;gap:4px;
-}
-.qa-blk-lbl.stat{color:var(--accent);}
-.qa-blk-lbl.ai{color:var(--accent5);}
-.qa-a{font-size:12px;color:var(--text-soft);line-height:1.65;}
-.src-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;}
-.src-hybrid{background:rgba(139,92,246,.15);color:var(--accent5);}
-.src-instant{background:rgba(0,212,170,.12);color:var(--accent);}
-.src-timeout{background:rgba(245,158,11,.12);color:var(--accent3);}
+.record-badge-label { font-size:10px; opacity:0.7; margin-top:3px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.record-badge-total { font-size:10px; opacity:0.55; margin-top:2px; }
 
-/* ── Fade ── */
-.fade-grp{transition:opacity .2s;}
-.fade-grp.fading{opacity:.2;}
+/* ═══════════════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════════════ */
+.content {
+  flex:1; min-width:0;
+  padding:24px 24px 64px;
+  display:flex; flex-direction:column; gap:20px;
+  overflow:hidden;
+}
 
-/* ── Responsive ── */
-@media(max-width:880px){
-  .chart-grid{grid-template-columns:1fr;}
-  .kpi-strip{grid-template-columns:1fr 1fr;}
+/* ═══════════════════════════════════════════════════════
+   AI NARRATIVE PANEL
+═══════════════════════════════════════════════════════ */
+.narrative-panel {
+  background:linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--teal) 100%);
+  border-radius:var(--radius-xl);
+  padding:24px 28px;
+  position:relative; overflow:hidden;
+  box-shadow:var(--shadow-lg);
 }
-@media(max-width:520px){
-  .kpi-strip{grid-template-columns:1fr;}
-  .main,.filter-bar,.subheader,.topbar{padding-left:14px;padding-right:14px;}
+.narrative-panel::before {
+  content:"";
+  position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E") repeat;
+  opacity:0.4;
 }
+.narrative-panel > * { position:relative; z-index:1; }
+.narrative-top {
+  display:flex; align-items:flex-start;
+  justify-content:space-between; gap:16px;
+  margin-bottom:14px; flex-wrap:wrap;
+}
+.narrative-eyebrow {
+  display:flex; align-items:center; gap:7px;
+  font-size:10px; font-weight:700;
+  color:rgba(255,255,255,0.55);
+  text-transform:uppercase; letter-spacing:1px;
+  margin-bottom:5px;
+}
+.narrative-eyebrow i { font-size:11px; color:var(--teal-light); }
+.narrative-title {
+  font-family:'Playfair Display',serif;
+  font-size:18px; font-weight:700; color:#fff;
+  letter-spacing:-0.2px;
+}
+.narrative-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.narr-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.22);
+  color:rgba(255,255,255,0.9); border-radius:999px;
+  padding:6px 13px; font-size:11px; font-weight:600;
+  cursor:pointer; transition:all 0.15s;
+  font-family:'DM Sans',sans-serif;
+}
+.narr-btn:hover { background:rgba(255,255,255,0.20); }
+.narrative-text {
+  font-size:13px; line-height:1.75;
+  color:rgba(255,255,255,0.82);
+  font-style:italic;
+}
+.narrative-loading {
+  display:flex; align-items:center; gap:10px;
+  color:rgba(255,255,255,0.65); font-size:13px;
+}
+.pulse-dots { display:flex; gap:4px; }
+.pulse-dots span {
+  width:6px; height:6px; background:var(--teal-light); border-radius:50%;
+  animation:pulse 1.4s ease infinite;
+}
+.pulse-dots span:nth-child(2) { animation-delay:0.2s; }
+.pulse-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+.narrative-source {
+  font-size:10px; color:rgba(255,255,255,0.40);
+  margin-top:10px; display:flex; align-items:center; gap:5px;
+}
+.source-badge {
+  padding:1px 7px; border-radius:999px; font-size:9px; font-weight:700;
+  letter-spacing:0.5px;
+}
+.source-badge.hybrid { background:rgba(74,155,141,0.35); color:#7BBDB3; }
+.source-badge.hardcoded { background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.55); }
+
+/* ═══════════════════════════════════════════════════════
+   KPI STRIP
+═══════════════════════════════════════════════════════ */
+.kpi-strip {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:12px;
+}
+.kpi-tile {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:16px;
+  box-shadow:var(--shadow-sm);
+  position:relative; overflow:hidden;
+  transition:transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.kpi-tile::after {
+  content:""; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--navy),var(--teal));
+}
+.kpi-tile:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.kpi-tile-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.kpi-tile-icon { font-size:22px; line-height:1; }
+.kpi-tile-trend { font-size:15px; font-weight:700; }
+.kpi-tile-trend.up   { color:var(--teal); }
+.kpi-tile-trend.down { color:var(--red); }
+.kpi-tile-trend.neutral { color:var(--muted); }
+.kpi-tile-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.kpi-tile-value { font-size:22px; font-weight:800; color:var(--navy); font-family:'DM Mono',monospace; line-height:1.1; }
+.kpi-tile-sub { font-size:10px; color:var(--muted); margin-top:4px; }
+
+/* ═══════════════════════════════════════════════════════
+   SECTION CARD
+═══════════════════════════════════════════════════════ */
+.section-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius-xl); box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.section-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  gap:12px; flex-wrap:wrap;
+}
+.section-head-left { display:flex; align-items:center; gap:10px; }
+.section-icon {
+  width:30px; height:30px; background:var(--navy-pale);
+  border-radius:8px; display:flex; align-items:center; justify-content:center;
+}
+.section-icon i { font-size:13px; color:var(--navy); }
+.section-title { font-size:13px; font-weight:700; color:var(--navy); }
+.section-sub { font-size:11px; color:var(--muted); margin-top:1px; }
+.section-body { padding:18px 20px; }
+.section-actions { display:flex; gap:8px; }
+
+/* Axis selector */
+.axis-selector {
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.axis-label { font-size:11px; color:var(--muted); font-weight:600; }
+.axis-select {
+  padding:5px 10px; border-radius:8px;
+  border:1.5px solid var(--border-md);
+  background:var(--bg); color:var(--text);
+  font-size:11px; font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+}
+.axis-select:focus { outline:none; border-color:var(--teal); }
+
+/* ═══════════════════════════════════════════════════════
+   CHART GRID
+═══════════════════════════════════════════════════════ */
+.chart-grid-2 {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+}
+.chart-grid-3 {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;
+}
+@media(max-width:1100px) { .chart-grid-2,.chart-grid-3 { grid-template-columns:1fr; } }
+
+.chart-box { min-height:320px; }
+.chart-container { width:100%; }
+
+/* ═══════════════════════════════════════════════════════
+   DATA TABLE
+═══════════════════════════════════════════════════════ */
+.table-controls {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap; margin-bottom:12px;
+}
+.table-search {
+  padding:7px 12px; border-radius:var(--radius);
+  border:1.5px solid var(--border-md);
+  background:var(--bg); color:var(--text);
+  font-size:12px; font-family:'DM Sans',sans-serif;
+  width:200px;
+}
+.table-search:focus { outline:none; border-color:var(--teal); }
+.table-wrap {
+  border:1px solid var(--border); border-radius:var(--radius);
+  overflow:hidden; max-height:380px; overflow-y:auto;
+}
+.table-wrap::-webkit-scrollbar { width:5px; height:5px; }
+.table-wrap::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:99px; }
+.data-table { width:100%; border-collapse:collapse; font-size:12px; }
+.data-table th {
+  background:var(--navy); color:#fff;
+  padding:9px 12px; text-align:left;
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.5px; position:sticky; top:0; z-index:2;
+  cursor:pointer; white-space:nowrap; user-select:none;
+}
+.data-table th:hover { background:var(--navy-mid); }
+.data-table th .sort-icon { margin-left:5px; opacity:0.5; font-size:9px; }
+.data-table th.sorted-asc .sort-icon::after  { content:"▲"; opacity:1; }
+.data-table th.sorted-desc .sort-icon::after { content:"▼"; opacity:1; }
+.data-table th:not(.sorted-asc):not(.sorted-desc) .sort-icon::after { content:"⇅"; }
+.data-table td {
+  padding:8px 12px; border-top:1px solid var(--border);
+  color:var(--text-soft); white-space:nowrap;
+  font-family:'DM Mono',monospace; font-size:11px;
+}
+.data-table tr:hover td { background:var(--navy-pale); }
+.table-pagination {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0 2px; gap:10px; flex-wrap:wrap;
+}
+.pagination-info { font-size:11px; color:var(--muted); }
+.pagination-btns { display:flex; gap:5px; }
+.pg-btn {
+  padding:5px 10px; border-radius:7px;
+  border:1.5px solid var(--border-md);
+  background:var(--bg); color:var(--text-soft);
+  font-size:11px; font-weight:600; cursor:pointer;
+  transition:all 0.15s; font-family:'DM Sans',sans-serif;
+}
+.pg-btn:hover { background:var(--navy-pale); border-color:var(--navy); color:var(--navy); }
+.pg-btn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+.pg-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+/* ═══════════════════════════════════════════════════════
+   AI CHAT BOX
+═══════════════════════════════════════════════════════ */
+.chat-box {
+  display:flex; flex-direction:column; gap:14px;
+}
+.chat-history {
+  display:flex; flex-direction:column; gap:12px;
+  max-height:340px; overflow-y:auto;
+  padding:4px 2px;
+}
+.chat-history::-webkit-scrollbar { width:4px; }
+.chat-history::-webkit-scrollbar-thumb { background:var(--border-md); border-radius:99px; }
+.chat-bubble {
+  display:flex; gap:10px; align-items:flex-start;
+  animation:fadeUp 0.3s ease forwards;
+}
+.chat-bubble.user { flex-direction:row-reverse; }
+.bubble-avatar {
+  width:28px; height:28px; border-radius:50%;
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700;
+}
+.chat-bubble.user .bubble-avatar { background:var(--navy); color:#fff; }
+.chat-bubble.ai   .bubble-avatar { background:linear-gradient(135deg,var(--teal),var(--navy)); color:#fff; font-size:10px; }
+.bubble-content {
+  max-width:80%; padding:10px 14px; border-radius:12px;
+  font-size:12px; line-height:1.65; color:var(--text);
+}
+.chat-bubble.user .bubble-content {
+  background:var(--navy); color:#fff;
+  border-radius:12px 2px 12px 12px;
+}
+.chat-bubble.ai .bubble-content {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:2px 12px 12px 12px;
+}
+.bubble-source {
+  font-size:9px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.5px; margin-top:5px;
+  padding:1px 6px; border-radius:999px; display:inline-block;
+}
+.bubble-source.hybrid    { background:var(--teal-pale); color:var(--teal); }
+.bubble-source.hardcoded { background:var(--bg2); color:var(--muted); }
+.chat-input-row {
+  display:flex; gap:8px; align-items:center;
+}
+.chat-input {
+  flex:1; padding:10px 14px; border-radius:var(--radius);
+  border:1.5px solid var(--border-md);
+  background:var(--bg); color:var(--text);
+  font-size:13px; font-family:'DM Sans',sans-serif;
+  transition:border-color 0.15s;
+}
+.chat-input:focus { outline:none; border-color:var(--teal); }
+.chat-send-btn {
+  padding:10px 18px; border-radius:var(--radius);
+  background:var(--navy); color:#fff; border:none;
+  font-size:13px; font-weight:600; cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.15s;
+  display:flex; align-items:center; gap:6px;
+}
+.chat-send-btn:hover { background:var(--navy-mid); }
+.chat-send-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.chat-empty {
+  text-align:center; padding:28px 20px;
+  font-size:12px; color:var(--muted); font-style:italic;
+}
+
+/* ═══════════════════════════════════════════════════════
+   EMPTY / LOADING STATES
+═══════════════════════════════════════════════════════ */
+.empty-chart {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:280px; font-size:12px; color:var(--muted); gap:8px;
+}
+.empty-chart i { font-size:32px; opacity:0.3; }
+
+/* ═══════════════════════════════════════════════════════
+   FADE ANIMATIONS
+═══════════════════════════════════════════════════════ */
+.fade-up { opacity:0; transform:translateY(12px); animation:fadeUp 0.4s ease forwards; }
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+.d1{animation-delay:.05s}.d2{animation-delay:.10s}.d3{animation-delay:.15s}
+.d4{animation-delay:.20s}.d5{animation-delay:.25s}.d6{animation-delay:.30s}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media(max-width:860px) {
+  .layout { flex-direction:column; }
+  .sidebar { width:100%; height:auto; position:static; border-right:none; border-bottom:1px solid var(--border); }
+  .content { padding:16px 16px 48px; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   REPORT MODAL
+═══════════════════════════════════════════════════════ */
+.modal-overlay {
+  position:fixed; inset:0; z-index:1000;
+  background:rgba(11,59,75,0.55);
+  backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s var(--ease);
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal {
+  background:var(--card); border-radius:var(--radius-xl);
+  box-shadow:var(--shadow-lg);
+  width:480px; max-width:94vw;
+  padding:28px 30px 24px;
+  transform:translateY(16px) scale(0.97);
+  transition:transform 0.25s var(--ease);
+  position:relative;
+}
+.modal-overlay.open .modal { transform:translateY(0) scale(1); }
+.modal-close {
+  position:absolute; top:14px; right:16px;
+  background:none; border:none; font-size:18px;
+  color:var(--muted); cursor:pointer; line-height:1;
+  transition:color 0.15s;
+}
+.modal-close:hover { color:var(--navy); }
+.modal-title {
+  font-size:16px; font-weight:800; color:var(--navy);
+  letter-spacing:-0.3px; margin-bottom:4px;
+}
+.modal-sub { font-size:12px; color:var(--muted); margin-bottom:20px; }
+.modal-rule { height:1px; background:var(--border); margin:16px 0; }
+
+.report-option {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 14px; border-radius:var(--radius);
+  border:2px solid var(--border-md);
+  cursor:pointer; margin-bottom:8px;
+  transition:all 0.15s var(--ease);
+}
+.report-option:hover { border-color:var(--teal); background:var(--teal-pale); }
+.report-option.selected { border-color:var(--teal); background:var(--teal-pale); }
+.report-option input[type=radio] { accent-color:var(--teal); margin-top:3px; flex-shrink:0; }
+.report-option-label { font-size:13px; font-weight:700; color:var(--navy); }
+.report-option-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+
+.report-section-check {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0;
+}
+.report-section-check input[type=checkbox] { accent-color:var(--teal); }
+.report-section-check label { font-size:12px; color:var(--text-soft); cursor:pointer; }
+
+.report-generate-btn {
+  width:100%; padding:12px; border-radius:var(--radius);
+  background:linear-gradient(135deg,var(--navy),var(--teal));
+  color:#fff; border:none; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:opacity 0.15s; margin-top:16px;
+}
+.report-generate-btn:hover { opacity:0.9; }
+.report-generate-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+.report-progress {
+  display:none; flex-direction:column; align-items:center; gap:10px;
+  padding:20px 0;
+}
+.report-progress.show { display:flex; }
+.progress-bar-wrap {
+  width:100%; height:6px; background:var(--bg2);
+  border-radius:99px; overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; border-radius:99px;
+  background:linear-gradient(90deg,var(--navy),var(--teal));
+  width:0%; transition:width 0.4s var(--ease);
+}
+.progress-label { font-size:11px; color:var(--muted); }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
-<nav class="topbar">
-  <a class="brand" href="/">
-    <div class="brand-mark">A</div>
-    Auralis
-  </a>
-  <a href="{% url 'profile' %}" class="tbtn">← Back</a>
-</nav>
-
-<!-- Subheader -->
-<div class="subheader">
-  <div class="sh-left">
-    <div class="domain-tag">
-      <div>
-        <div class="domain-tag-name">{{ domain_display }}</div>
-        <div class="domain-tag-sub">Interactive Dashboard</div>
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
+      <span class="brand-name">Auralis Insights</span>
+      <span class="brand-tag">Interactive</span>
     </div>
-    <div class="live-pill">
-      <div class="live-dot"></div>Live
+    <div class="topbar-center">
+      <i class="fas fa-chart-bar" style="color:var(--teal);font-size:12px"></i>
+      <strong>{{ domain_display }}</strong>
+      <span>·</span>
+      <span id="top-record-count">{{ total_rows }} records</span>
     </div>
-  </div>
-  <div class="sh-right">
-    <div class="sh-count" id="rec-count">{{ total_rows }}</div>
-    <div class="sh-label">Records visible</div>
+    <div class="topbar-right">
+      
+      <button class="tbtn teal" onclick="openReportModal()">
+        <i class="fas fa-file-pdf" style="font-size:11px"></i> Generate Report
+      </button>
+      <a href="{% url 'profile' %}" class="tbtn primary">
+        <i class="fas fa-user" style="font-size:11px"></i> Profile
+      </a>
+    </div>
   </div>
 </div>
 
-<!-- Filter bar -->
-<div class="filter-bar">
-  <div class="fg">
-    <label>Filter Column</label>
-    <select id="f-col"><option value="">— select column —</option></select>
-  </div>
-  <div id="f-inp" style="display:none"></div>
-  <div id="f-addwrap" style="display:none">
-    <div class="fg"><label>&nbsp;</label>
-      <button class="btn-addfilter" id="f-add">+ Add Filter</button>
-    </div>
-  </div>
-  <div class="fg"><label>&nbsp;</label>
-    <button class="btn-resetfilter" id="f-reset">✕ Reset All</button>
-  </div>
-</div>
-<div class="chip-row" id="chip-row"></div>
+<!-- ═══ LAYOUT ═══ -->
+<div class="layout">
 
-<!-- KPI Strip -->
-<div class="kpi-strip fade-grp" id="kpi-strip">
-  <div class="kpi-tile">
-    <div class="kpi-tile-label">Filtered Records</div>
-    <div class="kpi-tile-val v1" id="kv-count">—</div>
-    <div class="kpi-tile-sub">of {{ total_rows }} total</div>
-  </div>
-  <div class="kpi-tile">
-    <div class="kpi-tile-label">Average · <span id="kv-avg-lbl"></span></div>
-    <div class="kpi-tile-val v2" id="kv-avg">—</div>
-    <div class="kpi-tile-sub">primary numeric col</div>
-  </div>
-  <div class="kpi-tile">
-    <div class="kpi-tile-label">Sum · <span id="kv-sum-lbl"></span></div>
-    <div class="kpi-tile-val v3" id="kv-sum">—</div>
-    <div class="kpi-tile-sub">primary numeric col</div>
-  </div>
-  <div class="kpi-tile">
-    <div class="kpi-tile-label">Unique · <span id="kv-uniq-lbl"></span></div>
-    <div class="kpi-tile-val v4" id="kv-uniq">—</div>
-    <div class="kpi-tile-sub">primary categorical col</div>
-  </div>
-</div>
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
 
-<!-- Charts -->
-<div class="main">
-<div class="chart-grid fade-grp" id="chart-grid">
-  <div class="c-card">
-    <div class="c-top">
-      <div class="c-title">Bar Chart</div>
-      <div class="c-selects"><select id="bar-col"></select></div>
-    </div>
-    <div class="c-wrap"><canvas id="barChart"></canvas></div>
-  </div>
-  <div class="c-card">
-    <div class="c-top">
-      <div class="c-title">Trend Line</div>
-      <div class="c-selects"><select id="line-col"></select></div>
-    </div>
-    <div class="c-wrap"><canvas id="lineChart"></canvas></div>
-  </div>
-  <div class="c-card">
-    <div class="c-top">
-      <div class="c-title">Scatter Plot</div>
-      <div class="c-selects">
-        <select id="sc-x"></select>
-        <select id="sc-y"></select>
-      </div>
-    </div>
-    <div class="c-wrap"><canvas id="scChart"></canvas></div>
-  </div>
-  <div class="c-card">
-    <div class="c-top">
-      <div class="c-title">Distribution</div>
-      <div class="c-selects"><select id="donut-col"></select></div>
-    </div>
-    <div class="c-wrap"><canvas id="donutChart"></canvas></div>
-  </div>
-</div>
-
-<!-- Table -->
-<div class="table-card fade-grp">
-  <div class="table-topbar">
-    <div class="table-title-txt" id="tbl-title">Data Table</div>
-    <button class="btn-csv" id="btn-csv">⬇ Export CSV</button>
-  </div>
-  <div class="t-scroll">
-    <table><thead id="t-head"></thead><tbody id="t-body"></tbody></table>
-  </div>
-  <div class="t-footer">
-    <div class="t-info" id="t-info"></div>
-    <div class="pagi" id="t-pagi"></div>
-  </div>
-</div>
-
-<!-- AI -->
-<div class="ai-card">
-  <div class="ai-head">
-    <div class="ai-head-icon">🤖</div>
+    <!-- Record count -->
     <div>
-      <div class="ai-head-title">AI Insight — Arcee Trinity</div>
-      <div class="ai-head-sub">Ask anything about your filtered data in plain English</div>
+      <div class="record-badge">
+        <div class="record-badge-num" id="sb-count">{{ total_rows }}</div>
+        <div class="record-badge-label">Filtered Records</div>
+        <div class="record-badge-total">of {{ total_rows }} total</div>
+      </div>
     </div>
-  </div>
-  <div class="ai-body">
-    <div class="ai-row">
-      <input class="ai-inp" id="ai-q" type="text" placeholder="e.g. Which category has the highest average value?"/>
-      <button class="btn-ask" id="btn-ask">Ask AI</button>
-    </div>
-    <div class="ai-spinner" id="ai-spin">
-      <div class="dots"><span></span><span></span><span></span></div>
-      Thinking…
-    </div>
-    <div class="qa-list" id="qa-list"></div>
-  </div>
-</div>
-</div><!-- /main -->
 
+    <!-- Active filters -->
+    <div>
+      <div class="sidebar-section-title">Active Filters</div>
+      <div class="active-chips" id="active-chips">
+        <span class="no-filters-text">No filters applied</span>
+      </div>
+    </div>
+
+    <!-- Numeric filter -->
+    <div>
+      <div class="sidebar-section-title">Numeric Filter</div>
+      <div class="filter-group">
+        <label class="filter-label">Column</label>
+        <select class="filter-select" id="num-col-select" onchange="onNumColChange()">
+          <option value="">— Select column —</option>
+        </select>
+        <div class="range-wrap" id="range-wrap" style="display:none">
+          <div class="range-minmax">
+            <span id="range-abs-min"></span>
+            <span id="range-abs-max"></span>
+          </div>
+          <div class="range-inputs">
+            <div class="range-row">
+              <label>Min</label>
+              <input type="range" id="range-min" oninput="onRangeChange()">
+              <span class="range-val" id="range-min-val"></span>
+            </div>
+            <div class="range-row">
+              <label>Max</label>
+              <input type="range" id="range-max" oninput="onRangeChange()">
+              <span class="range-val" id="range-max-val"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categorical filter -->
+    <div>
+      <div class="sidebar-section-title">Category Filter</div>
+      <div class="filter-group">
+        <label class="filter-label">Column</label>
+        <select class="filter-select" id="cat-col-select" onchange="onCatColChange()">
+          <option value="">— Select column —</option>
+        </select>
+        <div id="cat-values-wrap" style="display:none">
+          <div class="cat-list" id="cat-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div>
+      <button class="reset-btn" onclick="resetFilters()">
+        <i class="fas fa-undo" style="font-size:10px"></i> Reset All Filters
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ═══ CONTENT ═══ -->
+  <main class="content">
+
+    <!-- AI Narrative -->
+    <div class="narrative-panel fade-up d1">
+      <div class="narrative-top">
+        <div>
+          <div class="narrative-eyebrow">
+            <i class="fas fa-robot"></i> AI Story · Arcee Trinity
+          </div>
+          <div class="narrative-title">{{ domain_display }} — Data Story</div>
+        </div>
+        <div class="narrative-actions">
+          <button class="narr-btn" onclick="generateNarrative(true)" id="regen-btn">
+            <i class="fas fa-sync" style="font-size:10px"></i> Regenerate for Filtered Data
+          </button>
+        </div>
+      </div>
+      <div id="narrative-body">
+        <div class="narrative-loading">
+          <div class="pulse-dots"><span></span><span></span><span></span></div>
+          Generating your data story…
+        </div>
+      </div>
+      <div class="narrative-source" id="narrative-source" style="display:none">
+        <span>Powered by</span>
+        <span class="source-badge" id="narrative-source-badge"></span>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip fade-up d2" id="kpi-strip">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Row 1: Bar + Line -->
+    <div class="chart-grid-2 fade-up d3">
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-chart-bar"></i></div>
+            <div>
+              <div class="section-title">Bar Chart</div>
+              <div class="section-sub" id="bar-sub">Top categories</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <span class="axis-label">Column:</span>
+            <select class="axis-select" id="bar-col" onchange="renderBar()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-bar" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <div class="section-title">Line Chart</div>
+              <div class="section-sub">Trend over records</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <span class="axis-label">Y:</span>
+            <select class="axis-select" id="line-col" onchange="renderLine()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-line" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 2: Scatter + Heatmap -->
+    <div class="chart-grid-2 fade-up d4">
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-braille"></i></div>
+            <div>
+              <div class="section-title">Scatter Plot</div>
+              <div class="section-sub">Relationship between two columns</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <span class="axis-label">X:</span>
+            <select class="axis-select" id="scatter-x" onchange="renderScatter()"></select>
+            <span class="axis-label">Y:</span>
+            <select class="axis-select" id="scatter-y" onchange="renderScatter()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-scatter" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-th"></i></div>
+            <div>
+              <div class="section-title">Correlation Heatmap</div>
+              <div class="section-sub">All numeric column relationships</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-heatmap" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 3: Box + Histogram + Donut -->
+    <div class="chart-grid-3 fade-up d5">
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-box"></i></div>
+            <div>
+              <div class="section-title">Box Plot</div>
+              <div class="section-sub">Outlier distribution</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <select class="axis-select" id="box-col" onchange="renderBox()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-box" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-chart-area"></i></div>
+            <div>
+              <div class="section-title">Histogram</div>
+              <div class="section-sub">Value distribution</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <select class="axis-select" id="hist-col" onchange="renderHistogram()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-hist" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-left">
+            <div class="section-icon"><i class="fas fa-chart-pie"></i></div>
+            <div>
+              <div class="section-title">Donut Chart</div>
+              <div class="section-sub">Category breakdown</div>
+            </div>
+          </div>
+          <div class="axis-selector">
+            <select class="axis-select" id="donut-col" onchange="renderDonut()"></select>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="chart-donut" class="chart-container chart-box"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data Table -->
+    <div class="section-card fade-up d6">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-icon"><i class="fas fa-table"></i></div>
+          <div>
+            <div class="section-title">Filtered Data</div>
+            <div class="section-sub" id="table-sub">Showing all records</div>
+          </div>
+        </div>
+        <div class="section-actions">
+          <div class="table-controls" style="margin-bottom:0">
+            <input type="text" class="table-search" id="table-search" placeholder="Search…" oninput="onTableSearch()">
+          </div>
+          <button class="tbtn teal" onclick="exportCSV()">
+            <i class="fas fa-download" style="font-size:10px"></i> Export CSV
+          </button>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table class="data-table" id="data-table">
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div class="table-pagination">
+          <span class="pagination-info" id="pg-info"></span>
+          <div class="pagination-btns" id="pg-btns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Chat -->
+    <div class="section-card fade-up d6">
+      <div class="section-head">
+        <div class="section-head-left">
+          <div class="section-icon"><i class="fas fa-comments"></i></div>
+          <div>
+            <div class="section-title">Ask About Your Data</div>
+            <div class="section-sub">Hybrid AI — Arcee Trinity + instant engine</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="chat-box">
+          <div class="chat-history" id="chat-history">
+            <div class="chat-empty" id="chat-empty">
+              Ask anything about your filtered data — try "What is the average?", "Show me trends", "Any outliers?"
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chat-input"
+              placeholder="Ask about your filtered data…"
+              onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send-btn" id="chat-btn" onclick="sendChat()">
+              <i class="fas fa-paper-plane" style="font-size:11px"></i> Ask
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
 <script>
-/* ── Data bootstrap ── */
+/* ── Data from Django ─────────────────────────────────────────── */
 const DATA    = {{ data_json|safe }};
 const COLUMNS = {{ columns_json|safe }};
-const DOMAIN  = "{{ domain_display|escapejs }}";
-const RID     = {{ result.id }};
-const CSRF    = "{{ csrf_token }}";
+const DOMAIN  = "{{ domain_display }}";
+const RESULT_ID = {{ result.id }};
+const CSRF_TOKEN = "{{ csrf_token }}";
+const AI_INSIGHT_URL = "{% url 'ai_insight' result.id %}";
 
-const numCols = Object.keys(COLUMNS).filter(c=>COLUMNS[c]==='numeric');
-const catCols = Object.keys(COLUMNS).filter(c=>COLUMNS[c]==='categorical');
-const allCols = Object.keys(COLUMNS);
+/* ── Column lists ─────────────────────────────────────────────── */
+const ALL_COLS     = Object.keys(COLUMNS);
+const NUM_COLS     = ALL_COLS.filter(c => COLUMNS[c] === 'numeric');
+const CAT_COLS     = ALL_COLS.filter(c => COLUMNS[c] === 'categorical');
+const TOTAL_ROWS   = DATA.length;
 
-const P=['#00D4AA','#0EA5E9','#F59E0B','#8B5CF6','#EF4444','#10B981','#F97316','#06B6D4','#EC4899','#84CC16'];
+/* ── Auralis colour palette for Plotly ────────────────────────── */
+const COLORS = ['#0B3B4B','#1D5A6D','#4A9B8D','#7BBDB3','#2C6F84','#B2DFDB','#0B3B4B','#E3F0F5'];
+const PLOTLY_LAYOUT_BASE = {
+  paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+  font:{ family:'DM Sans, sans-serif', color:'#1A2B3C', size:11 },
+  margin:{ t:20, b:40, l:50, r:20 },
+  colorway: COLORS,
+  xaxis:{ gridcolor:'rgba(11,59,75,0.07)', zerolinecolor:'rgba(11,59,75,0.12)' },
+  yaxis:{ gridcolor:'rgba(11,59,75,0.07)', zerolinecolor:'rgba(11,59,75,0.12)' },
+  legend:{ font:{size:10} },
+  hoverlabel:{ bgcolor:'#0B3B4B', bordercolor:'#4A9B8D', font:{color:'#fff', size:11} },
+};
+const PLOTLY_CONFIG = { displayModeBar:false, responsive:true };
 
-Chart.defaults.color='#7D8590';
-Chart.defaults.font.family='Inter';
-Chart.defaults.font.size=11;
+/* ── Filters state ────────────────────────────────────────────── */
+let activeFilters = {};   // { col: { type:'numeric', min, max } | { type:'cat', values:Set } }
+let filteredData  = [...DATA];
+let tableSearch   = '';
+let tablePage     = 0;
+const PAGE_SIZE   = 20;
+let sortCol       = null;
+let sortDir       = 'asc';
+let chatHistory   = [];
 
-/* ── State ── */
-let filtered=[...DATA], filters={}, sortCol=null, sortDir=1, pg=0;
-const PER=20;
-let charts={};
+/* ══════════════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  populateSelects();
+  applyFilters();
+  renderAllCharts();
+  generateNarrative(false);
+});
 
-/* ── Format ── */
-function fmt(n){
-  if(n==null||isNaN(n))return'—';
-  const a=Math.abs(n);
-  if(a>=1e9)return(n/1e9).toFixed(1)+'B';
-  if(a>=1e6)return(n/1e6).toFixed(1)+'M';
-  if(a>=1e3)return n.toLocaleString(undefined,{maximumFractionDigits:1});
-  return parseFloat(n.toFixed(4)).toLocaleString();
+/* ── Populate all <select> dropdowns ─────────────────────────── */
+function populateSelects() {
+  // Sidebar numeric
+  fillSelect('num-col-select', NUM_COLS, '— Select column —');
+  // Sidebar categorical
+  fillSelect('cat-col-select', CAT_COLS, '— Select column —');
+  // Chart selects
+  fillSelect('bar-col',    [...CAT_COLS, ...NUM_COLS], null, CAT_COLS[0] || NUM_COLS[0]);
+  fillSelect('line-col',   NUM_COLS,  null, NUM_COLS[0]);
+  fillSelect('scatter-x',  NUM_COLS,  null, NUM_COLS[0]);
+  fillSelect('scatter-y',  NUM_COLS,  null, NUM_COLS[1] || NUM_COLS[0]);
+  fillSelect('box-col',    NUM_COLS,  null, NUM_COLS[0]);
+  fillSelect('hist-col',   NUM_COLS,  null, NUM_COLS[0]);
+  fillSelect('donut-col',  CAT_COLS,  null, CAT_COLS[0]);
 }
 
-/* ── Filter engine ── */
-function applyFilters(){
-  document.querySelectorAll('.fade-grp').forEach(e=>e.classList.add('fading'));
-  setTimeout(()=>{
-    filtered=DATA.filter(row=>{
-      for(const[col,f]of Object.entries(filters)){
-        const v=row[col];
-        if(f.t==='num'){
-          const n=parseFloat(v);if(isNaN(n))return false;
-          if(f.mn!=null&&n<f.mn)return false;
-          if(f.mx!=null&&n>f.mx)return false;
-        }else{
-          if(f.vals.size>0&&!f.vals.has(String(v)))return false;
-        }
+function fillSelect(id, cols, placeholder, defaultVal) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = '';
+  if (placeholder) {
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = placeholder;
+    el.appendChild(o);
+  }
+  cols.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c.replace(/_/g,' ');
+    if (c === defaultVal) o.selected = true;
+    el.appendChild(o);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FILTER ENGINE
+══════════════════════════════════════════════════════════════ */
+function applyFilters() {
+  filteredData = DATA.filter(row => {
+    for (const [col, f] of Object.entries(activeFilters)) {
+      if (f.type === 'numeric') {
+        const v = parseFloat(row[col]);
+        if (isNaN(v) || v < f.min || v > f.max) return false;
+      } else if (f.type === 'cat') {
+        if (!f.values.has(String(row[col]))) return false;
       }
-      return true;
-    });
-    pg=0; updateAll();
-    document.querySelectorAll('.fade-grp').forEach(e=>e.classList.remove('fading'));
-  },200);
-}
-
-/* ── KPIs ── */
-function updateKPIs(){
-  const n=filtered.length;
-  document.getElementById('rec-count').textContent=n.toLocaleString();
-  document.getElementById('kv-count').textContent=n.toLocaleString();
-  if(numCols[0]){
-    const c=numCols[0];
-    document.getElementById('kv-avg-lbl').textContent=c;
-    document.getElementById('kv-sum-lbl').textContent=c;
-    const vals=filtered.map(r=>parseFloat(r[c])).filter(v=>!isNaN(v));
-    document.getElementById('kv-avg').textContent=fmt(vals.length?vals.reduce((a,b)=>a+b)/vals.length:0);
-    document.getElementById('kv-sum').textContent=fmt(vals.reduce((a,b)=>a+b,0));
-  }
-  if(catCols[0]){
-    const c=catCols[0];
-    document.getElementById('kv-uniq-lbl').textContent=c;
-    document.getElementById('kv-uniq').textContent=new Set(filtered.map(r=>r[c])).size.toLocaleString();
-  }
-}
-
-/* ── Chart base options ── */
-function baseOpts(){
-  return{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{
-        backgroundColor:'#1C2128',titleColor:'#E6EDF3',
-        bodyColor:'#7D8590',borderColor:'rgba(255,255,255,0.1)',
-        borderWidth:1,padding:10,
-        callbacks:{label:c=>` ${fmt(c.parsed?.y??c.parsed)}`}
-      }
-    },
-    scales:{
-      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7D8590',maxRotation:30,font:{size:10}}},
-      y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7D8590',font:{size:10},callback:v=>fmt(v)}}
-    },
-    animation:{duration:280}
-  };
-}
-
-function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-
-/* Bar */
-function buildBar(){
-  const col=document.getElementById('bar-col').value;if(!col)return;dc('bar');
-  const ctx=document.getElementById('barChart').getContext('2d');
-  let labels,vals;
-  if(COLUMNS[col]==='numeric'){
-    const nums=filtered.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
-    if(!nums.length)return;
-    const mn=Math.min(...nums),mx=Math.max(...nums),bk=10,st=(mx-mn)/bk||1;
-    const cnt=Array(bk).fill(0);
-    nums.forEach(v=>{let i=Math.floor((v-mn)/st);if(i>=bk)i=bk-1;cnt[i]++;});
-    labels=cnt.map((_,i)=>fmt(mn+i*st));vals=cnt;
-  }else{
-    const freq={};
-    filtered.forEach(r=>{const v=String(r[col]??'');freq[v]=(freq[v]||0)+1;});
-    const s=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,12);
-    labels=s.map(([k])=>k);vals=s.map(([,v])=>v);
-  }
-  charts.bar=new Chart(ctx,{type:'bar',
-    data:{labels,datasets:[{data:vals,backgroundColor:P,borderRadius:4,borderSkipped:false}]},
-    options:baseOpts()
-  });
-}
-
-/* Line */
-function buildLine(){
-  const col=document.getElementById('line-col').value;if(!col)return;dc('line');
-  const ctx=document.getElementById('lineChart').getContext('2d');
-  const sl=filtered.slice(0,500);
-  charts.line=new Chart(ctx,{type:'line',
-    data:{
-      labels:sl.map((_,i)=>i+1),
-      datasets:[{data:sl.map(r=>parseFloat(r[col])),
-        borderColor:P[1],backgroundColor:P[1]+'18',
-        borderWidth:2,pointRadius:0,fill:true,tension:0.4}]
-    },options:baseOpts()
-  });
-}
-
-/* Scatter */
-function buildScatter(){
-  const xc=document.getElementById('sc-x').value,yc=document.getElementById('sc-y').value;
-  if(!xc||!yc)return;dc('sc');
-  const ctx=document.getElementById('scChart').getContext('2d');
-  const pts=filtered.slice(0,600)
-    .map(r=>({x:parseFloat(r[xc]),y:parseFloat(r[yc])}))
-    .filter(p=>!isNaN(p.x)&&!isNaN(p.y));
-  const o={...baseOpts()};
-  o.scales.x={...o.scales.x,title:{display:true,text:xc,color:'#7D8590',font:{size:10}}};
-  o.scales.y={...o.scales.y,title:{display:true,text:yc,color:'#7D8590',font:{size:10}}};
-  o.plugins.tooltip.callbacks.label=c=>`(${fmt(c.parsed.x)}, ${fmt(c.parsed.y)})`;
-  charts.sc=new Chart(ctx,{type:'scatter',
-    data:{datasets:[{data:pts,backgroundColor:P[0]+'99',pointRadius:3}]},
-    options:o
-  });
-}
-
-/* Donut */
-function buildDonut(){
-  const col=document.getElementById('donut-col').value;if(!col)return;dc('donut');
-  const ctx=document.getElementById('donutChart').getContext('2d');
-  const freq={};
-  filtered.forEach(r=>{const v=String(r[col]??'');freq[v]=(freq[v]||0)+1;});
-  const s=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,9);
-  charts.donut=new Chart(ctx,{type:'doughnut',
-    data:{
-      labels:s.map(([k])=>k),
-      datasets:[{data:s.map(([,v])=>v),backgroundColor:P,borderWidth:2,borderColor:'#161B22'}]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,cutout:'64%',
-      plugins:{
-        legend:{display:true,position:'right',
-          labels:{color:'#7D8590',font:{family:'Inter',size:10},boxWidth:10,padding:10}},
-        tooltip:{backgroundColor:'#1C2128',titleColor:'#E6EDF3',bodyColor:'#7D8590',
-          borderColor:'rgba(255,255,255,0.1)',borderWidth:1}
-      },animation:{duration:280}
     }
+    return true;
+  });
+
+  updateRecordBadge();
+  updateActiveChips();
+  renderAllCharts();
+  renderTable();
+}
+
+function updateRecordBadge() {
+  const n = filteredData.length;
+  document.getElementById('sb-count').textContent = n.toLocaleString();
+  document.getElementById('top-record-count').textContent = n.toLocaleString() + ' records';
+  const total = document.querySelector('.record-badge-total');
+  if (total) total.textContent = `of ${TOTAL_ROWS.toLocaleString()} total`;
+}
+
+function updateActiveChips() {
+  const wrap = document.getElementById('active-chips');
+  wrap.innerHTML = '';
+  const entries = Object.entries(activeFilters);
+  if (entries.length === 0) {
+    wrap.innerHTML = '<span class="no-filters-text">No filters applied</span>';
+    return;
+  }
+  entries.forEach(([col, f]) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    let label = col.replace(/_/g,' ');
+    if (f.type === 'numeric') label += ` [${fmtNum(f.min)}–${fmtNum(f.max)}]`;
+    else label += ` (${f.values.size})`;
+    chip.innerHTML = `<span style="overflow:hidden;text-overflow:ellipsis">${label}</span>
+      <span class="chip-x" onclick="removeFilter('${col}')">×</span>`;
+    wrap.appendChild(chip);
   });
 }
 
-/* ── Table ── */
-function sortedData(){
-  if(!sortCol)return filtered;
-  const num=COLUMNS[sortCol]==='numeric';
-  return[...filtered].sort((a,b)=>{
-    const av=num?parseFloat(a[sortCol]):String(a[sortCol]??'');
-    const bv=num?parseFloat(b[sortCol]):String(b[sortCol]??'');
-    return av<bv?-sortDir:av>bv?sortDir:0;
-  });
+function removeFilter(col) {
+  delete activeFilters[col];
+  // reset UI for that col
+  if (document.getElementById('num-col-select').value === col) {
+    document.getElementById('num-col-select').value = '';
+    document.getElementById('range-wrap').style.display = 'none';
+  }
+  if (document.getElementById('cat-col-select').value === col) {
+    document.getElementById('cat-col-select').value = '';
+    document.getElementById('cat-values-wrap').style.display = 'none';
+  }
+  applyFilters();
 }
-function renderTable(){
-  const sd=sortedData(),start=pg*PER,rows=sd.slice(start,start+PER);
-  const cols=allCols.slice(0,14);
-  // head
-  const th=document.getElementById('t-head');
-  th.innerHTML='<tr>'+cols.map(c=>{
-    const cls=c===sortCol?(sortDir===1?'s-asc':'s-desc'):'';
-    return`<th class="${cls}" data-col="${c}">${c}</th>`;
-  }).join('')+'</tr>';
-  th.querySelectorAll('th').forEach(el=>el.addEventListener('click',()=>{
-    const c=el.dataset.col;
-    sortCol===c?sortDir*=-1:(sortCol=c,sortDir=1);renderTable();
+
+function resetFilters() {
+  activeFilters = {};
+  document.getElementById('num-col-select').value = '';
+  document.getElementById('range-wrap').style.display = 'none';
+  document.getElementById('cat-col-select').value = '';
+  document.getElementById('cat-values-wrap').style.display = 'none';
+  applyFilters();
+}
+
+/* ── Numeric range filter ─────────────────────────────────────── */
+function onNumColChange() {
+  const col = document.getElementById('num-col-select').value;
+  const wrap = document.getElementById('range-wrap');
+  if (!col) { wrap.style.display = 'none'; return; }
+
+  const vals = DATA.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
+  const mn   = Math.min(...vals);
+  const mx   = Math.max(...vals);
+  const step = (mx - mn) / 200 || 0.01;
+
+  ['range-min','range-max'].forEach(id => {
+    const el = document.getElementById(id);
+    el.min   = mn; el.max = mx; el.step = step;
+  });
+  document.getElementById('range-min').value = mn;
+  document.getElementById('range-max').value = mx;
+  document.getElementById('range-abs-min').textContent = fmtNum(mn);
+  document.getElementById('range-abs-max').textContent = fmtNum(mx);
+  document.getElementById('range-min-val').textContent = fmtNum(mn);
+  document.getElementById('range-max-val').textContent = fmtNum(mx);
+
+  wrap.style.display = 'block';
+  applyNumFilter();
+}
+
+function onRangeChange() {
+  const col = document.getElementById('num-col-select').value;
+  if (!col) return;
+  const minEl = document.getElementById('range-min');
+  const maxEl = document.getElementById('range-max');
+  let mn = parseFloat(minEl.value);
+  let mx = parseFloat(maxEl.value);
+  if (mn > mx) { mx = mn; maxEl.value = mn; }
+  document.getElementById('range-min-val').textContent = fmtNum(mn);
+  document.getElementById('range-max-val').textContent = fmtNum(mx);
+  applyNumFilter();
+}
+
+function applyNumFilter() {
+  const col = document.getElementById('num-col-select').value;
+  if (!col) return;
+  const mn = parseFloat(document.getElementById('range-min').value);
+  const mx = parseFloat(document.getElementById('range-max').value);
+  const allVals = DATA.map(r => parseFloat(r[col])).filter(v => !isNaN(v));
+  // remove filter if covers full range
+  if (mn <= Math.min(...allVals) && mx >= Math.max(...allVals)) {
+    delete activeFilters[col];
+  } else {
+    activeFilters[col] = { type:'numeric', min:mn, max:mx };
+  }
+  applyFilters();
+}
+
+/* ── Categorical filter ───────────────────────────────────────── */
+function onCatColChange() {
+  const col = document.getElementById('cat-col-select').value;
+  const wrap = document.getElementById('cat-values-wrap');
+  const list = document.getElementById('cat-list');
+  if (!col) { wrap.style.display = 'none'; return; }
+
+  const uniq = [...new Set(DATA.map(r => String(r[col])))].sort();
+  list.innerHTML = '';
+  uniq.slice(0, 50).forEach(val => {
+    const cnt = DATA.filter(r => String(r[col]) === val).length;
+    const item = document.createElement('label');
+    item.className = 'cat-item';
+    item.innerHTML = `
+      <input type="checkbox" value="${escHtml(val)}" checked
+        onchange="applyCatFilter('${escHtml(col)}')">
+      <label>${escHtml(val)}</label>
+      <span class="cat-count">${cnt}</span>`;
+    list.appendChild(item);
+  });
+  if (uniq.length > 50) {
+    list.innerHTML += `<div style="font-size:10px;color:var(--muted);padding:6px 0">…and ${uniq.length-50} more</div>`;
+  }
+  wrap.style.display = 'block';
+  delete activeFilters[col];
+  applyFilters();
+}
+
+function applyCatFilter(col) {
+  const checkboxes = document.querySelectorAll('#cat-list input[type=checkbox]');
+  const selected = new Set([...checkboxes].filter(c=>c.checked).map(c=>c.value));
+  const all = new Set([...checkboxes].map(c=>c.value));
+  if (selected.size === all.size) {
+    delete activeFilters[col];
+  } else {
+    activeFilters[col] = { type:'cat', values:selected };
+  }
+  applyFilters();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CHART RENDERERS
+══════════════════════════════════════════════════════════════ */
+function renderAllCharts() {
+  renderBar();
+  renderLine();
+  renderScatter();
+  renderHeatmap();
+  renderBox();
+  renderHistogram();
+  renderDonut();
+  renderKpiStrip();
+}
+
+/* ── Bar ────────────────────────────────────────────────────── */
+function renderBar() {
+  const col = document.getElementById('bar-col').value;
+  if (!col || filteredData.length === 0) return showEmpty('chart-bar');
+
+  const layout = { ...PLOTLY_LAYOUT_BASE, height:300 };
+
+  if (COLUMNS[col] === 'categorical') {
+    // count by category
+    const counts = {};
+    filteredData.forEach(r => {
+      const k = String(r[col] || '(empty)');
+      counts[k] = (counts[k]||0) + 1;
+    });
+    const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,15);
+    Plotly.react('chart-bar', [{
+      type:'bar', x:sorted.map(x=>x[0]), y:sorted.map(x=>x[1]),
+      marker:{ color: sorted.map((_,i)=>COLORS[i%COLORS.length]) },
+      hovertemplate:'%{x}<br><b>%{y}</b><extra></extra>',
+    }], { ...layout, xaxis:{...layout.xaxis, tickangle:-30} }, PLOTLY_CONFIG);
+    document.getElementById('bar-sub').textContent = `Top values in ${col}`;
+  } else {
+    // binned numeric bar
+    const vals = filteredData.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+    Plotly.react('chart-bar', [{
+      type:'histogram', x:vals, nbinsx:20,
+      marker:{ color:COLORS[2], opacity:0.85 },
+      hovertemplate:'Range: %{x}<br>Count: %{y}<extra></extra>',
+    }], layout, PLOTLY_CONFIG);
+    document.getElementById('bar-sub').textContent = `Distribution of ${col}`;
+  }
+}
+
+/* ── Line ───────────────────────────────────────────────────── */
+function renderLine() {
+  const col = document.getElementById('line-col').value;
+  if (!col || filteredData.length === 0) return showEmpty('chart-line');
+
+  const vals = filteredData.map(r=>parseFloat(r[col]));
+  const idx  = vals.map((_,i)=>i);
+
+  Plotly.react('chart-line', [{
+    type:'scatter', mode:'lines', x:idx, y:vals,
+    line:{ color:COLORS[0], width:2 },
+    fill:'tozeroy', fillcolor:'rgba(11,59,75,0.07)',
+    hovertemplate:'Row %{x}<br><b>%{y:.3f}</b><extra></extra>',
+  }], { ...PLOTLY_LAYOUT_BASE, height:300 }, PLOTLY_CONFIG);
+}
+
+/* ── Scatter ─────────────────────────────────────────────────── */
+function renderScatter() {
+  const xCol = document.getElementById('scatter-x').value;
+  const yCol = document.getElementById('scatter-y').value;
+  if (!xCol || !yCol || filteredData.length === 0) return showEmpty('chart-scatter');
+
+  const xs = filteredData.map(r=>parseFloat(r[xCol]));
+  const ys = filteredData.map(r=>parseFloat(r[yCol]));
+
+  // Compute trendline
+  const n   = xs.length;
+  const mx  = xs.reduce((a,b)=>a+b,0)/n;
+  const my  = ys.reduce((a,b)=>a+b,0)/n;
+  const b1  = xs.reduce((s,x,i)=>s+(x-mx)*(ys[i]-my),0) / xs.reduce((s,x)=>s+(x-mx)**2,0);
+  const b0  = my - b1*mx;
+  const txs = [Math.min(...xs), Math.max(...xs)];
+  const tys = txs.map(x=>b0+b1*x);
+
+  Plotly.react('chart-scatter', [
+    {
+      type:'scatter', mode:'markers',
+      x:xs, y:ys,
+      marker:{ color:COLORS[2], size:5, opacity:0.7 },
+      hovertemplate:`${xCol}: %{x:.3f}<br>${yCol}: %{y:.3f}<extra></extra>`,
+    },
+    {
+      type:'scatter', mode:'lines',
+      x:txs, y:tys,
+      line:{ color:COLORS[0], width:2, dash:'dash' },
+      name:'Trend', hoverinfo:'skip',
+    }
+  ], { ...PLOTLY_LAYOUT_BASE, height:300,
+    xaxis:{...PLOTLY_LAYOUT_BASE.xaxis, title:xCol},
+    yaxis:{...PLOTLY_LAYOUT_BASE.yaxis, title:yCol},
+  }, PLOTLY_CONFIG);
+}
+
+/* ── Heatmap ─────────────────────────────────────────────────── */
+function renderHeatmap() {
+  const cols = NUM_COLS.slice(0,12); // cap at 12 cols for readability
+  if (cols.length < 2 || filteredData.length === 0) return showEmpty('chart-heatmap');
+
+  const matrix = cols.map(c1 => cols.map(c2 => {
+    const v1 = filteredData.map(r=>parseFloat(r[c1])).filter(v=>!isNaN(v));
+    const v2 = filteredData.map(r=>parseFloat(r[c2])).filter(v=>!isNaN(v));
+    return pearson(v1.slice(0,Math.min(v1.length,v2.length)),
+                   v2.slice(0,Math.min(v1.length,v2.length)));
   }));
-  // body
-  document.getElementById('t-body').innerHTML=rows.length
-    ?rows.map(r=>'<tr>'+cols.map(c=>`<td title="${r[c]??''}">${r[c]??''}</td>`).join('')+'</tr>').join('')
-    :`<tr><td colspan="${cols.length}" style="text-align:center;padding:32px;color:var(--text-muted)">🔍 No records match current filters</td></tr>`;
-  // footer
-  const total=Math.ceil(sd.length/PER);
-  document.getElementById('t-info').textContent=
-    `${(start+1).toLocaleString()}–${Math.min(start+PER,sd.length).toLocaleString()} of ${sd.length.toLocaleString()} rows`;
-  document.getElementById('tbl-title').textContent=
-    `Data Table — ${filtered.length.toLocaleString()} rows`;
-  const pagi=document.getElementById('t-pagi');pagi.innerHTML='';
-  const mk=(txt,p,dis,act)=>{
-    const b=document.createElement('button');
-    b.className='pgb'+(act?' active':'');b.textContent=txt;b.disabled=dis;
-    b.onclick=()=>{pg=p;renderTable();};return b;
-  };
-  pagi.appendChild(mk('‹',pg-1,pg===0,false));
-  const s=Math.max(0,pg-2),e=Math.min(total-1,pg+2);
-  for(let i=s;i<=e;i++)pagi.appendChild(mk(i+1,i,false,i===pg));
-  pagi.appendChild(mk('›',pg+1,pg>=total-1,false));
+
+  const labels = cols.map(c=>c.replace(/_/g,' '));
+  Plotly.react('chart-heatmap', [{
+    type:'heatmap', z:matrix, x:labels, y:labels,
+    colorscale:[
+      [0,'#DC2626'],[0.5,'#F8F9FC'],[1,'#0B3B4B']
+    ],
+    zmin:-1, zmax:1,
+    hovertemplate:'%{y} × %{x}<br>r = <b>%{z:.2f}</b><extra></extra>',
+    showscale:true,
+  }], { ...PLOTLY_LAYOUT_BASE, height:300,
+    margin:{t:20,b:80,l:80,r:20},
+    xaxis:{...PLOTLY_LAYOUT_BASE.xaxis, tickangle:-40, tickfont:{size:9}},
+    yaxis:{...PLOTLY_LAYOUT_BASE.yaxis, tickfont:{size:9}},
+  }, PLOTLY_CONFIG);
 }
 
-/* ── Export ── */
-document.getElementById('btn-csv').addEventListener('click',()=>{
-  const csv=[allCols,...filtered.map(r=>allCols.map(c=>r[c]??''))]
-    .map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='filtered_data.csv';a.click();
-});
+/* ── Box ─────────────────────────────────────────────────────── */
+function renderBox() {
+  const col = document.getElementById('box-col').value;
+  if (!col || filteredData.length === 0) return showEmpty('chart-box');
 
-/* ── Filter UI ── */
-function populateFilterCol(){
-  const sel=document.getElementById('f-col');
-  allCols.forEach(c=>sel.appendChild(new Option(`${c} (${COLUMNS[c]})`,c)));
-  sel.addEventListener('change',onColChange);
+  const vals = filteredData.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+  Plotly.react('chart-box', [{
+    type:'box', y:vals, name:col.replace(/_/g,' '),
+    boxpoints:'outliers',
+    marker:{ color:COLORS[2], size:3, opacity:0.7 },
+    line:{ color:COLORS[0] },
+    fillcolor:COLORS[7],
+    hovertemplate:'<b>%{y:.3f}</b><extra></extra>',
+  }], { ...PLOTLY_LAYOUT_BASE, height:300 }, PLOTLY_CONFIG);
 }
-function onColChange(){
-  const col=document.getElementById('f-col').value;
-  const area=document.getElementById('f-inp');
-  const wrap=document.getElementById('f-addwrap');
-  area.innerHTML='';
-  area.style.display=col?'flex':'none';
-  wrap.style.display=col?'block':'none';
-  if(!col)return;
-  if(COLUMNS[col]==='numeric'){
-    const vals=DATA.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
-    const mn=Math.min(...vals),mx=Math.max(...vals);
-    area.innerHTML=`<div class="fg"><label>Range</label>
-      <div class="range-row">
-        <input type="number" id="f-mn" value="${mn}" step="any"/>
-        <span class="range-sep">→</span>
-        <input type="number" id="f-mx" value="${mx}" step="any"/>
-      </div></div>`;
-  }else{
-    const uniq=[...new Set(DATA.map(r=>String(r[col]??'')))].sort();
-    area.innerHTML=`<div class="fg"><label>Values</label>
-      <div class="cat-wrap">
-        <button class="cat-btn" id="cat-btn" type="button">Select values ▾</button>
-        <div class="cat-dropdown" id="cat-dd">
-          ${uniq.slice(0,120).map(v=>`<label class="cat-opt">
-            <input type="checkbox" value="${v.replace(/"/g,'&quot;')}" checked/>${v||'(empty)'}
-          </label>`).join('')}
-        </div>
-      </div></div>`;
-    document.getElementById('cat-btn').addEventListener('click',e=>{
-      e.stopPropagation();
-      document.getElementById('cat-dd').classList.toggle('open');
-      document.getElementById('cat-btn').classList.toggle('open');
-    });
-  }
+
+/* ── Histogram ───────────────────────────────────────────────── */
+function renderHistogram() {
+  const col = document.getElementById('hist-col').value;
+  if (!col || filteredData.length === 0) return showEmpty('chart-hist');
+
+  const vals = filteredData.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+  Plotly.react('chart-hist', [{
+    type:'histogram', x:vals, nbinsx:25,
+    marker:{ color:COLORS[2], opacity:0.85 },
+    hovertemplate:'Range: %{x}<br>Count: %{y}<extra></extra>',
+  }], { ...PLOTLY_LAYOUT_BASE, height:300 }, PLOTLY_CONFIG);
 }
-document.getElementById('f-add').addEventListener('click',()=>{
-  const col=document.getElementById('f-col').value;if(!col)return;
-  if(COLUMNS[col]==='numeric'){
-    const mn=parseFloat(document.getElementById('f-mn').value);
-    const mx=parseFloat(document.getElementById('f-mx').value);
-    filters[col]={t:'num',mn:isNaN(mn)?null:mn,mx:isNaN(mx)?null:mx};
-  }else{
-    const checked=[...document.querySelectorAll('#cat-dd input:checked')].map(i=>i.value);
-    filters[col]={t:'cat',vals:new Set(checked)};
-  }
-  document.getElementById('f-col').value='';
-  document.getElementById('f-inp').style.display='none';
-  document.getElementById('f-addwrap').style.display='none';
-  renderChips();applyFilters();
-});
-document.getElementById('f-reset').addEventListener('click',()=>{
-  filters={};
-  document.getElementById('f-col').value='';
-  document.getElementById('f-inp').style.display='none';
-  document.getElementById('f-addwrap').style.display='none';
-  renderChips();applyFilters();
-});
-document.addEventListener('click',()=>{
-  document.getElementById('cat-dd')?.classList.remove('open');
-  document.getElementById('cat-btn')?.classList.remove('open');
-});
-function renderChips(){
-  const row=document.getElementById('chip-row');
-  row.innerHTML='';
-  const entries=Object.entries(filters);
-  row.style.display=entries.length?'flex':'none';
-  entries.forEach(([col,f])=>{
-    const lbl=f.t==='num'?`${col}: ${fmt(f.mn)} → ${fmt(f.mx)}`
-      :`${col}: ${[...f.vals].slice(0,3).join(', ')}${f.vals.size>3?` +${f.vals.size-3}`:''}`;
-    const c=document.createElement('div');
-    c.className='chip';c.innerHTML=`${lbl} ✕`;
-    c.addEventListener('click',()=>{delete filters[col];renderChips();applyFilters();});
-    row.appendChild(c);
+
+/* ── Donut ───────────────────────────────────────────────────── */
+function renderDonut() {
+  const col = document.getElementById('donut-col').value;
+  if (!col || filteredData.length === 0) return showEmpty('chart-donut');
+
+  const counts = {};
+  filteredData.forEach(r => {
+    const k = String(r[col] || '(empty)');
+    counts[k] = (counts[k]||0)+1;
   });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+
+  Plotly.react('chart-donut', [{
+    type:'pie',
+    labels: sorted.map(x=>x[0]),
+    values: sorted.map(x=>x[1]),
+    hole: 0.52,
+    marker:{ colors: COLORS.concat(COLORS) },
+    textinfo:'percent',
+    hovertemplate:'<b>%{label}</b><br>%{value} records (%{percent})<extra></extra>',
+    textfont:{ size:10 },
+  }], { ...PLOTLY_LAYOUT_BASE, height:300,
+    margin:{t:20,b:20,l:20,r:20},
+    legend:{orientation:'v', x:1.02, y:0.5, font:{size:10}},
+  }, PLOTLY_CONFIG);
 }
 
-/* ── Chart selects ── */
-function populateChartSelects(){
-  const bar=document.getElementById('bar-col');
-  const line=document.getElementById('line-col');
-  const scx=document.getElementById('sc-x');
-  const scy=document.getElementById('sc-y');
-  const donut=document.getElementById('donut-col');
-  allCols.forEach((c,i)=>{
-    bar.appendChild(new Option(c,c,i===0,i===0));
-    if(COLUMNS[c]==='numeric'){
-      line.appendChild(new Option(c,c));
-      scx.appendChild(new Option(c,c));
-      scy.appendChild(new Option(c,c));
-    }
-    if(COLUMNS[c]==='categorical')donut.appendChild(new Option(c,c));
-  });
-  if(line.options.length)line.options[0].selected=true;
-  if(scx.options.length)scx.options[0].selected=true;
-  if(scy.options.length>1)scy.options[1].selected=true;
-  if(donut.options.length)donut.options[0].selected=true;
-  bar.addEventListener('change',buildBar);
-  line.addEventListener('change',buildLine);
-  scx.addEventListener('change',buildScatter);
-  scy.addEventListener('change',buildScatter);
-  donut.addEventListener('change',buildDonut);
-}
+/* ── KPI Strip ───────────────────────────────────────────────── */
+function renderKpiStrip() {
+  const strip = document.getElementById('kpi-strip');
+  if (!strip || filteredData.length === 0) return;
 
-/* ── Master update ── */
-function updateAll(){updateKPIs();buildBar();buildLine();buildScatter();buildDonut();renderTable();}
+  const tiles = [];
 
-/* ── AI ── */
-const qaH=[];
-document.getElementById('btn-ask').addEventListener('click',askAI);
-document.getElementById('ai-q').addEventListener('keydown',e=>{if(e.key==='Enter')askAI();});
-async function askAI(){
-  const q=document.getElementById('ai-q').value.trim();if(!q)return;
-  document.getElementById('btn-ask').disabled=true;
-  document.getElementById('ai-spin').classList.add('show');
-  const fForApi={};
-  for(const[col,f]of Object.entries(filters))
-    fForApi[col]=f.t==='cat'?{type:'cat',values:[...f.vals]}:{type:'num',min:f.mn,max:f.mx};
-  let entry={q,hardcoded:null,arcee:null,source:'error'};
-  try{
-    const res=await fetch(`/result/${RID}/ai-insight/`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-CSRFToken':CSRF},
-      body:JSON.stringify({question:q,filtered_data_sample:filtered.slice(0,50),active_filters:fForApi,domain:DOMAIN})
+  // Tile 1: Record count
+  tiles.push({ icon:'📋', label:'Filtered Records', value:fmtNum(filteredData.length), sub:'', trend:'neutral' });
+
+  // Tiles 2-4: first 3 numeric cols
+  NUM_COLS.slice(0,3).forEach(col => {
+    const vals = filteredData.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+    if (!vals.length) return;
+    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+    // trend: compare halves
+    const half = Math.floor(vals.length/2);
+    const t1 = half>0 ? vals.slice(0,half).reduce((a,b)=>a+b,0)/half : avg;
+    const t2 = half>0 ? vals.slice(half).reduce((a,b)=>a+b,0)/vals.slice(half).length : avg;
+    const trend = t2 > t1*1.02 ? 'up' : t2 < t1*0.98 ? 'down' : 'neutral';
+    tiles.push({
+      icon:'📊', label:'Avg '+col.replace(/_/g,' '),
+      value: fmtNum(avg,2), sub:`${vals.length.toLocaleString()} values`, trend
     });
-    const d=await res.json();
-    entry={q,hardcoded:d.hardcoded_answer||null,arcee:d.ai_answer||null,source:d.source||'hardcoded'};
-  }catch(e){entry.hardcoded='Connection error. Please try again.';}
-  qaH.unshift(entry);if(qaH.length>3)qaH.pop();
-  renderQA();
-  document.getElementById('ai-spin').classList.remove('show');
-  document.getElementById('btn-ask').disabled=false;
-  document.getElementById('ai-q').value='';
-}
-function renderQA(){
-  document.getElementById('qa-list').innerHTML=qaH.map(({q,hardcoded,arcee,source})=>{
-    const isH=source==='hybrid'&&arcee;
-    const isT=source.includes('timeout');
-    const bc=isH?'src-hybrid':isT?'src-timeout':'src-instant';
-    const bl=isH?'✦ Hybrid':'⚡ Instant';
-    return`<div class="qa-item">
-      <div class="qa-q"><span>Q: ${q}</span><span class="src-badge ${bc}">${bl}</span></div>
-      <div class="qa-answers">
-        <div class="qa-blk">
-          <div class="qa-blk-lbl stat">⚡ Instant Stats</div>
-          <div class="qa-a">${hardcoded||'—'}</div>
-        </div>
-        <div class="qa-blk">
-          <div class="qa-blk-lbl ai">🤖 Arcee Trinity</div>
-          <div class="qa-a">${isH?arcee:`<span style="color:var(--text-muted);font-size:11px">${isT?'API timed out.':'Set OPENROUTER_API_KEY to enable Arcee AI.'}</span>`}</div>
-        </div>
+  });
+
+  // Tile: unique count of first cat col
+  if (CAT_COLS[0]) {
+    const uniq = new Set(filteredData.map(r=>String(r[CAT_COLS[0]]))).size;
+    tiles.push({ icon:'🏷️', label:'Unique '+CAT_COLS[0].replace(/_/g,' '), value:uniq, sub:'distinct values', trend:'neutral' });
+  }
+
+  strip.innerHTML = tiles.map(t=>`
+    <div class="kpi-tile">
+      <div class="kpi-tile-top">
+        <span class="kpi-tile-icon">${t.icon}</span>
+        <span class="kpi-tile-trend ${t.trend}">${t.trend==='up'?'↑':t.trend==='down'?'↓':'→'}</span>
       </div>
-    </div>`;
-  }).join('');
+      <div class="kpi-tile-label">${t.label}</div>
+      <div class="kpi-tile-value">${t.value}</div>
+      ${t.sub?`<div class="kpi-tile-sub">${t.sub}</div>`:''}
+    </div>`).join('');
 }
 
-/* ── Init ── */
-(function(){
-  populateFilterCol();
-  populateChartSelects();
-  updateAll();
-})();
+/* ── Empty chart placeholder ─────────────────────────────────── */
+function showEmpty(id) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = `<div class="empty-chart">
+    <i class="fas fa-chart-bar"></i>
+    <span>No data to display</span>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DATA TABLE
+══════════════════════════════════════════════════════════════ */
+function renderTable() {
+  tablePage = 0;
+  drawTable();
+}
+
+function onTableSearch() {
+  tableSearch = document.getElementById('table-search').value.toLowerCase();
+  tablePage   = 0;
+  drawTable();
+}
+
+function drawTable() {
+  let rows = filteredData;
+
+  // search filter
+  if (tableSearch) {
+    rows = rows.filter(r => ALL_COLS.some(c => String(r[c]||'').toLowerCase().includes(tableSearch)));
+  }
+
+  // sort
+  if (sortCol) {
+    rows = [...rows].sort((a,b) => {
+      const av = a[sortCol], bv = b[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      if (!isNaN(an)&&!isNaN(bn)) return sortDir==='asc'?an-bn:bn-an;
+      return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    });
+  }
+
+  const total   = rows.length;
+  const pages   = Math.ceil(total/PAGE_SIZE) || 1;
+  tablePage     = Math.min(tablePage, pages-1);
+  const start   = tablePage*PAGE_SIZE;
+  const pageRows= rows.slice(start, start+PAGE_SIZE);
+
+  // head
+  const head = document.getElementById('table-head');
+  head.innerHTML = '<tr>' + ALL_COLS.map(c=>`
+    <th onclick="sortTable('${c}')" class="${sortCol===c?'sorted-'+sortDir:''}">
+      ${c.replace(/_/g,' ')} <span class="sort-icon"></span>
+    </th>`).join('') + '</tr>';
+
+  // body
+  const body = document.getElementById('table-body');
+  if (pageRows.length===0) {
+    body.innerHTML = `<tr><td colspan="${ALL_COLS.length}" style="text-align:center;padding:28px;color:var(--muted)">No matching records</td></tr>`;
+  } else {
+    body.innerHTML = pageRows.map(r=>`<tr>${ALL_COLS.map(c=>`<td>${escHtml(String(r[c]??''))}</td>`).join('')}</tr>`).join('');
+  }
+
+  // pagination info
+  document.getElementById('pg-info').textContent =
+    `Rows ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total.toLocaleString()}`;
+
+  // pagination buttons
+  const btnWrap = document.getElementById('pg-btns');
+  btnWrap.innerHTML = '';
+  const prev = document.createElement('button');
+  prev.className = 'pg-btn'; prev.textContent = '‹ Prev';
+  prev.disabled = tablePage === 0;
+  prev.onclick = () => { tablePage--; drawTable(); };
+  btnWrap.appendChild(prev);
+
+  const maxBtns = Math.min(pages, 7);
+  for (let i=0; i<maxBtns; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'pg-btn' + (i===tablePage?' active':'');
+    btn.textContent = i+1;
+    btn.onclick = (idx=>()=>{ tablePage=idx; drawTable(); })(i);
+    btnWrap.appendChild(btn);
+  }
+  if (pages > maxBtns) btnWrap.innerHTML += `<span style="padding:5px;font-size:11px;color:var(--muted)">…${pages}</span>`;
+
+  const next = document.createElement('button');
+  next.className = 'pg-btn'; next.textContent = 'Next ›';
+  next.disabled = tablePage >= pages-1;
+  next.onclick = () => { tablePage++; drawTable(); };
+  btnWrap.appendChild(next);
+
+  document.getElementById('table-sub').textContent = `${total.toLocaleString()} row${total!==1?'s':''} after filters`;
+}
+
+function sortTable(col) {
+  if (sortCol === col) { sortDir = sortDir==='asc'?'desc':'asc'; }
+  else { sortCol = col; sortDir = 'asc'; }
+  drawTable();
+}
+
+function exportCSV() {
+  const header = ALL_COLS.join(',');
+  const rows   = filteredData.map(r => ALL_COLS.map(c => {
+    const v = String(r[c]??'');
+    return v.includes(',') ? `"${v}"` : v;
+  }).join(','));
+  const blob = new Blob([header+'\n'+rows.join('\n')], { type:'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'filtered_data.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AI NARRATIVE
+══════════════════════════════════════════════════════════════ */
+async function generateNarrative(forFiltered) {
+  const body = document.getElementById('narrative-body');
+  const srcWrap = document.getElementById('narrative-source');
+  body.innerHTML = `<div class="narrative-loading">
+    <div class="pulse-dots"><span></span><span></span><span></span></div>
+    ${forFiltered ? 'Regenerating for filtered data…' : 'Generating your data story…'}
+  </div>`;
+  srcWrap.style.display = 'none';
+  document.getElementById('regen-btn').disabled = true;
+
+  const sample  = filteredData.slice(0,50);
+  const question = forFiltered
+    ? 'Summarise the key patterns and findings in this filtered dataset in 3-4 sentences.'
+    : 'Tell the story of this dataset in 3-4 plain English sentences. What are the key highlights?';
+
+  try {
+    const res = await fetch(AI_INSIGHT_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'X-CSRFToken':CSRF_TOKEN },
+      body: JSON.stringify({
+        question,
+        filtered_data_sample: sample,
+        active_filters: activeFilters,
+        domain: DOMAIN,
+      })
+    });
+    const data = await res.json();
+    body.innerHTML = `<div class="narrative-text">${escHtml(data.answer)}</div>`;
+    srcWrap.style.display = 'flex';
+    const badge = document.getElementById('narrative-source-badge');
+    badge.className = 'source-badge ' + (data.source==='hybrid'?'hybrid':'hardcoded');
+    badge.textContent = data.source==='hybrid' ? 'Arcee Trinity + Engine' : 'Instant Engine';
+  } catch(e) {
+    body.innerHTML = `<div class="narrative-text" style="opacity:0.6">Could not generate narrative. Check your API connection.</div>`;
+  }
+  document.getElementById('regen-btn').disabled = false;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AI CHAT
+══════════════════════════════════════════════════════════════ */
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  input.value = '';
+  document.getElementById('chat-btn').disabled = true;
+
+  // remove empty state
+  document.getElementById('chat-empty')?.remove();
+
+  // add user bubble
+  appendBubble('user', question, null);
+
+  // typing indicator
+  const typingId = 'typing-' + Date.now();
+  const history  = document.getElementById('chat-history');
+  const typing   = document.createElement('div');
+  typing.id = typingId; typing.className = 'chat-bubble ai';
+  typing.innerHTML = `<div class="bubble-avatar">AI</div>
+    <div class="bubble-content">
+      <div class="pulse-dots"><span></span><span></span><span></span></div>
+    </div>`;
+  history.appendChild(typing);
+  history.scrollTop = history.scrollHeight;
+
+  try {
+    const res = await fetch(AI_INSIGHT_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'X-CSRFToken':CSRF_TOKEN },
+      body: JSON.stringify({
+        question,
+        filtered_data_sample: filteredData.slice(0,50),
+        active_filters: activeFilters,
+        domain: DOMAIN,
+      })
+    });
+    const data = await res.json();
+    document.getElementById(typingId)?.remove();
+    appendBubble('ai', data.answer, data.source);
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    appendBubble('ai', 'Sorry, could not reach the AI service. Please try again.', 'error');
+  }
+
+  // keep last 6 bubbles (3 exchanges)
+  const bubbles = document.querySelectorAll('.chat-bubble');
+  if (bubbles.length > 6) {
+    for (let i=0; i<bubbles.length-6; i++) bubbles[i].remove();
+  }
+
+  document.getElementById('chat-btn').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+function appendBubble(role, text, source) {
+  const history = document.getElementById('chat-history');
+  const div = document.createElement('div');
+  div.className = `chat-bubble ${role} fade-up`;
+  const avatarText = role==='user' ? 'U' : 'AI';
+  div.innerHTML = `
+    <div class="bubble-avatar">${avatarText}</div>
+    <div class="bubble-content">
+      ${escHtml(text)}
+      ${source && role==='ai' ? `<br><span class="bubble-source ${source==='hybrid'?'hybrid':'hardcoded'}">${source==='hybrid'?'Arcee Trinity + Engine':'Instant Engine'}</span>` : ''}
+    </div>`;
+  history.appendChild(div);
+  history.scrollTop = history.scrollHeight;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════════════ */
+function pearson(xs, ys) {
+  const n = Math.min(xs.length, ys.length);
+  if (n < 2) return 0;
+  const mx = xs.slice(0,n).reduce((a,b)=>a+b)/n;
+  const my = ys.slice(0,n).reduce((a,b)=>a+b)/n;
+  let num=0, dx=0, dy=0;
+  for (let i=0;i<n;i++) {
+    num += (xs[i]-mx)*(ys[i]-my);
+    dx  += (xs[i]-mx)**2;
+    dy  += (ys[i]-my)**2;
+  }
+  const den = Math.sqrt(dx*dy);
+  return den ? +(num/den).toFixed(4) : 0;
+}
+
+function fmtNum(v, dp=0) {
+  if (v === undefined || v === null || isNaN(v)) return '—';
+  const n = parseFloat(v);
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if (Math.abs(n) >= 1e3) return n.toLocaleString(undefined,{maximumFractionDigits:dp});
+  return n.toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:Math.max(dp,2)});
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 </script>
+
+<!-- ═══ REPORT MODAL ═══ -->
+<div class="modal-overlay" id="report-modal-overlay" onclick="closeReportModalOnBg(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeReportModal()">×</button>
+
+    <div id="report-form-view">
+      <div class="modal-title">
+        <i class="fas fa-file-pdf" style="color:var(--teal);margin-right:8px;font-size:15px"></i>
+        Generate PDF Report
+      </div>
+      <div class="modal-sub">A styled, multi-page PDF with charts, KPIs, AI narrative and data table.</div>
+
+      <!-- Data scope -->
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Data Scope</div>
+
+      <label class="report-option selected" id="opt-filtered">
+        <input type="radio" name="report-scope" value="filtered" checked
+          onchange="selectScope(this)">
+        <div>
+          <div class="report-option-label">Filtered Data</div>
+          <div class="report-option-desc" id="scope-filtered-desc">Current filters applied — <span id="modal-filtered-count">0</span> records</div>
+        </div>
+      </label>
+
+      <label class="report-option" id="opt-full">
+        <input type="radio" name="report-scope" value="full"
+          onchange="selectScope(this)">
+        <div>
+          <div class="report-option-label">Full Dataset</div>
+          <div class="report-option-desc">All <span id="modal-total-count">0</span> records, no filters</div>
+        </div>
+      </label>
+
+      <div class="modal-rule"></div>
+
+      <!-- Sections -->
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Include Sections</div>
+
+      <div class="report-section-check">
+        <input type="checkbox" id="sec-kpis" checked>
+        <label for="sec-kpis">KPI Summary Table</label>
+      </div>
+      <div class="report-section-check">
+        <input type="checkbox" id="sec-charts" checked>
+        <label for="sec-charts">All Charts (Bar, Line, Scatter, Heatmap, Box, Histogram, Donut)</label>
+      </div>
+      <div class="report-section-check">
+        <input type="checkbox" id="sec-narrative" checked>
+        <label for="sec-narrative">AI Data Story (Arcee Trinity)</label>
+      </div>
+      <div class="report-section-check">
+        <input type="checkbox" id="sec-insights" checked>
+        <label for="sec-insights">Insights &amp; Correlations</label>
+      </div>
+      <div class="report-section-check">
+        <input type="checkbox" id="sec-table" checked>
+        <label for="sec-table">Filtered Data Table (up to 150 rows)</label>
+      </div>
+
+      <button class="report-generate-btn" id="gen-btn" onclick="startReportGeneration()">
+        <i class="fas fa-download" style="font-size:12px"></i>
+        Generate &amp; Download PDF
+      </button>
+    </div>
+
+    <!-- Progress view -->
+    <div class="report-progress" id="report-progress-view">
+      <i class="fas fa-file-pdf" style="font-size:36px;color:var(--teal);opacity:0.7"></i>
+      <div style="font-size:14px;font-weight:700;color:var(--navy)" id="progress-title">Building your report…</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+      <div class="progress-label" id="progress-label">Preparing data…</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   REPORT GENERATION
+══════════════════════════════════════════════════════════════ */
+const REPORT_URL = "{% url 'generate_report' result.id %}";
+let lastNarrative = '';   // populated when narrative is generated
+
+// intercept narrative saves
+const _origNarrBodySet = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+function captureNarrative(text) { lastNarrative = text; }
+
+// Override generateNarrative to also store narrative text
+const _origGenNarrative = window.generateNarrative;
+
+function openReportModal() {
+  document.getElementById('modal-filtered-count').textContent =
+    filteredData.length.toLocaleString();
+  document.getElementById('modal-total-count').textContent =
+    TOTAL_ROWS.toLocaleString();
+
+  // show form, hide progress
+  document.getElementById('report-form-view').style.display = 'block';
+  document.getElementById('report-progress-view').classList.remove('show');
+
+  document.getElementById('report-modal-overlay').classList.add('open');
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal-overlay').classList.remove('open');
+}
+
+function closeReportModalOnBg(e) {
+  if (e.target === document.getElementById('report-modal-overlay')) closeReportModal();
+}
+
+function selectScope(radio) {
+  document.getElementById('opt-filtered').classList.toggle('selected', radio.value === 'filtered');
+  document.getElementById('opt-full').classList.toggle('selected',    radio.value === 'full');
+}
+
+function setProgress(pct, label) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = label;
+}
+
+async function startReportGeneration() {
+  const scope  = document.querySelector('input[name="report-scope"]:checked').value;
+  const inclKpis      = document.getElementById('sec-kpis').checked;
+  const inclCharts    = document.getElementById('sec-charts').checked;
+  const inclNarrative = document.getElementById('sec-narrative').checked;
+  const inclInsights  = document.getElementById('sec-insights').checked;
+  const inclTable     = document.getElementById('sec-table').checked;
+
+  // Switch to progress view
+  document.getElementById('report-form-view').style.display = 'none';
+  document.getElementById('report-progress-view').classList.add('show');
+  document.getElementById('progress-title').textContent = 'Building your report…';
+  setProgress(5, 'Preparing data…');
+
+  // Collect data to send
+  const dataToSend = scope === 'filtered' ? filteredData : DATA;
+
+  // Build columns_meta from JS COLUMNS
+  const colsMeta = {};
+  Object.entries(COLUMNS).forEach(([col, type]) => { colsMeta[col] = type; });
+
+  // Get narrative text from DOM if present
+  const narrativeEl = document.getElementById('narrative-body');
+  const narrativeText = inclNarrative
+    ? (narrativeEl ? narrativeEl.innerText.trim() : lastNarrative)
+    : '';
+
+  setProgress(20, 'Sending to server…');
+
+  try {
+    setProgress(40, 'Generating charts with Matplotlib…');
+
+    const res = await fetch(REPORT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF_TOKEN,
+      },
+      body: JSON.stringify({
+        filtered_data:   dataToSend.slice(0, 2000),
+        active_filters:  scope === 'filtered' ? activeFilters : {},
+        narrative:       narrativeText,
+        columns_meta:    colsMeta,
+        include_kpis:      inclKpis,
+        include_charts:    inclCharts,
+        include_narrative: inclNarrative,
+        include_insights:  inclInsights,
+        include_table:     inclTable,
+      }),
+    });
+
+    setProgress(85, 'Finalising PDF…');
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(err.error || `Server error ${res.status}`);
+    }
+
+    setProgress(100, 'Complete! Downloading…');
+    document.getElementById('progress-title').textContent = 'Report ready!';
+
+    // Trigger download
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `auralis_report_${new Date().toISOString().slice(0,10)}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Auto-close modal after 2s
+    setTimeout(() => {
+      closeReportModal();
+    }, 2000);
+
+  } catch (err) {
+    document.getElementById('progress-title').textContent = 'Error generating report';
+    document.getElementById('progress-label').textContent = err.message;
+    document.getElementById('progress-bar').style.background = 'var(--red)';
+    setProgress(100, err.message);
+    setTimeout(() => {
+      // Show form again so user can retry
+      document.getElementById('report-form-view').style.display = 'block';
+      document.getElementById('report-progress-view').classList.remove('show');
+      document.getElementById('progress-bar').style.background = '';
+    }, 3000);
+  }
+}
+</script>
+
 </body>
 </html>
