@@ -208,3 +208,27 @@ def download_cleaned(request, report_id):
     file_name = os.path.basename(file_path)
     response  = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=file_name)
     return response
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIEW 5 — List all cleaning reports for the logged-in user
+# URL: /cleaning/my-reports/
+# ─────────────────────────────────────────────────────────────────────────────
+from django.db.models import Avg
+
+def cleaned_reports_list(request):
+    user_id = get_logged_in_user_id(request)
+    if not user_id:
+        return redirect('login')
+
+    reports = CleaningReport.objects.filter(
+        dataset__user_id=user_id
+    ).select_related('dataset').order_by('-created_at')
+
+    context = {
+        'reports':         reports,
+        'total':           reports.count(),
+        'grade_a_count':   reports.filter(quality_grade='A').count(),
+        'avg_score':       reports.aggregate(avg=Avg('quality_score'))['avg'] or 0,
+        'files_available': reports.exclude(cleaned_file='').count(),
+    }
+    return render(request, 'datacleaning/cleaned_reports.html', context)

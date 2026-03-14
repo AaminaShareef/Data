@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cleaned Reports — Auralis Insights</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --primary: #0B3B4B;
+  --primary-light: #1D5A6D;
+  --primary-soft: #E3F0F5;
+  --accent: #4A9B8D;
+  --background: #F0F4F8;
+  --card-bg: #FFFFFF;
+  --text-dark: #0D1F2D;
+  --text-soft: #3A4A5E;
+  --text-muted: #6B7E96;
+  --border: rgba(11,59,75,0.08);
+  --border-strong: rgba(11,59,75,0.14);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.06);
+  --shadow-md: 0 8px 28px rgba(11,59,75,0.10);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  --max-w: 1200px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--background);
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(74,155,141,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(11,59,75,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  height: 64px;
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo {
+  width: 36px; height: 36px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+.brand-name { font-size: 16px; font-weight: 700; color: var(--primary); }
+
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  color: var(--text-muted); font-weight: 500; text-decoration: none;
+  font-size: 13px; padding: 7px 14px; border-radius: 999px; transition: var(--transition);
+}
+.nav-link:hover { color: var(--primary); background: var(--primary-soft); }
+.nav-link i { margin-right: 5px; font-size: 11px; }
+
+/* ── Page wrapper ── */
+.page-wrapper {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  position: relative; z-index: 1;
+}
+
+/* ── Page header ── */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+  animation: fadeUp 0.4s ease both;
+}
+.page-header-left { display: flex; flex-direction: column; gap: 6px; }
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted);
+}
+.breadcrumb a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+.breadcrumb a:hover { color: var(--primary); }
+.breadcrumb i { font-size: 9px; }
+.page-title {
+  font-size: 22px; font-weight: 700;
+  color: var(--text-dark); letter-spacing: -0.3px;
+  display: flex; align-items: center; gap: 10px;
+}
+.page-title i { color: var(--accent); font-size: 18px; }
+
+.count-badge {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(11,59,75,0.12);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Summary stats row ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.4s ease both 0.05s;
+}
+.summary-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.summary-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.summary-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.summary-icon.blue { background: var(--primary-soft); color: var(--primary); }
+.summary-icon.green { background: #E6F5F0; color: #1A6B50; }
+.summary-icon.orange { background: #FFF4E6; color: #A05C00; }
+.summary-icon.purple { background: #F0EEFF; color: #5B4FCF; }
+.summary-num {
+  font-size: 24px; font-weight: 700;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+.summary-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  margin-top: 3px;
+}
+
+/* ── Reports table card ── */
+.table-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: fadeUp 0.4s ease both 0.10s;
+}
+.table-card:hover { box-shadow: var(--shadow-md); }
+
+.table-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--primary);
+  display: flex; align-items: center; gap: 8px;
+}
+.table-title i { color: var(--accent); }
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.reports-table thead tr {
+  background: var(--primary-soft);
+}
+.reports-table th {
+  padding: 12px 20px;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.7px;
+  color: var(--text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+.reports-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.reports-table tbody tr:last-child { border-bottom: none; }
+.reports-table tbody tr:hover { background: rgba(11,59,75,0.02); }
+.reports-table td {
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--text-soft);
+  vertical-align: middle;
+}
+
+/* dataset name cell */
+.dataset-cell { display: flex; align-items: center; gap: 12px; }
+.dataset-icon {
+  width: 36px; height: 36px;
+  background: var(--primary-soft);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary); font-size: 14px; flex-shrink: 0;
+}
+.dataset-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+.dataset-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+/* domain pill */
+.domain-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.domain-health   { background: #FFE8E8; color: #C0392B; }
+.domain-finance  { background: #E8F5E9; color: #2E7D32; }
+.domain-education{ background: #E3F2FD; color: #1565C0; }
+.domain-sales    { background: #FFF3E0; color: #E65100; }
+.domain-hr       { background: #F3E5F5; color: #7B1FA2; }
+.domain-generic  { background: #ECEFF1; color: #546E7A; }
+
+/* grade badge */
+.grade-badge {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+.grade-A { background: #E6F5F0; color: #1A6B50; }
+.grade-B { background: #E3F2FD; color: #1565C0; }
+.grade-C { background: #FFF8E1; color: #F57F17; }
+.grade-D { background: #FFF3E0; color: #E65100; }
+.grade-F { background: #FFEBEE; color: #C62828; }
+
+/* score bar */
+.score-cell { display: flex; align-items: center; gap: 10px; }
+.score-bar-wrap {
+  flex: 1; height: 6px;
+  background: var(--primary-soft);
+  border-radius: 999px; overflow: hidden;
+  min-width: 60px;
+}
+.score-bar {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--primary-light));
+  transition: width 0.6s ease;
+}
+.score-num { font-size: 12px; font-weight: 600; color: var(--primary); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+
+/* file badge */
+.file-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+}
+.file-yes { background: #E6F5F0; color: #1A6B50; }
+.file-no  { background: #FFF0F0; color: #C0392B; }
+
+/* date */
+.date-cell { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* actions */
+.action-group { display: flex; align-items: center; gap: 6px; }
+.action-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  text-decoration: none; transition: var(--transition);
+  border: none; cursor: pointer; font-family: 'Sora', sans-serif;
+  white-space: nowrap;
+}
+.action-view   { background: var(--primary-soft); color: var(--primary); }
+.action-view:hover { background: var(--primary); color: white; }
+.action-dl     { background: #E6F5F0; color: #1A6B50; }
+.action-dl:hover { background: #1A6B50; color: white; }
+.action-btn i  { font-size: 10px; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 64px 20px;
+  animation: fadeUp 0.4s ease both 0.10s;
+}
+.empty-icon {
+  width: 64px; height: 64px;
+  background: var(--primary-soft); border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; font-size: 26px; color: var(--primary);
+}
+.empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+.empty-state p  { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--primary); color: white;
+  padding: 12px 28px; border-radius: 999px;
+  text-decoration: none; font-weight: 600; font-size: 13px;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(11,59,75,0.18);
+}
+.cta-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .summary-row { grid-template-columns: repeat(2, 1fr); }
+  .reports-table { display: block; overflow-x: auto; }
+}
+@media (max-width: 640px) {
+  .summary-row { grid-template-columns: 1fr 1fr; }
+  .page-header { flex-wrap: wrap; gap: 12px; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="{% url 'home' %}" class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </a>
+    <nav class="nav-links">
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
+      <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user"></i>Profile</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="{% url 'profile' %}">Profile</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Cleaned Reports</span>
+      </div>
+      <h1 class="page-title">
+        <i class="fas fa-file-alt"></i>
+        Cleaned Reports
+      </h1>
+    </div>
+    <span class="count-badge">{{ total }} report{{ total|pluralize }}</span>
+  </div>
+
+  {% if reports %}
+
+  <!-- Summary stats -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon blue"><i class="fas fa-file-alt"></i></div>
+      <div>
+        <div class="summary-num">{{ total }}</div>
+        <div class="summary-label">Total Reports</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon green"><i class="fas fa-star"></i></div>
+      <div>
+        <div class="summary-num">{{ grade_a_count }}</div>
+        <div class="summary-label">Grade A Reports</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon orange"><i class="fas fa-percentage"></i></div>
+      <div>
+        <div class="summary-num">{{ avg_score|floatformat:1 }}</div>
+        <div class="summary-label">Avg Quality Score</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon purple"><i class="fas fa-download"></i></div>
+      <div>
+        <div class="summary-num">{{ files_available }}</div>
+        <div class="summary-label">Files Available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports table -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title">
+        <i class="fas fa-list-alt"></i> All Cleaning Reports
+      </div>
+      <span style="font-size:12px; color:var(--text-muted);">Sorted by most recent</span>
+    </div>
+
+    <table class="reports-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Dataset</th>
+          <th>Domain</th>
+          <th>Grade</th>
+          <th>Quality Score</th>
+          <th>Cleaned File</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rpt in reports %}
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-muted);">
+            #{{ rpt.id }}
+          </td>
+
+          <td>
+            <div class="dataset-cell">
+              <div class="dataset-icon">
+                {% if rpt.dataset.file_name|lower|slice:"-4:" == "xlsx" or rpt.dataset.file_name|lower|slice:"-3:" == "xls" %}
+                  <i class="fas fa-file-excel"></i>
+                {% elif rpt.dataset.file_name|lower|slice:"-3:" == "csv" %}
+                  <i class="fas fa-file-csv"></i>
+                {% else %}
+                  <i class="fas fa-file-alt"></i>
+                {% endif %}
+              </div>
+              <div>
+                <div class="dataset-name">{{ rpt.dataset.file_name }}</div>
+                <div class="dataset-sub">ID {{ rpt.dataset.id }}</div>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="domain-pill domain-{{ rpt.domain|lower }}">
+              {{ rpt.get_domain_display }}
+            </span>
+          </td>
+
+          <td>
+            <span class="grade-badge grade-{{ rpt.quality_grade }}">
+              {{ rpt.quality_grade }}
+            </span>
+          </td>
+
+          <td>
+            <div class="score-cell">
+              <div class="score-bar-wrap">
+                <div class="score-bar" style="width: {{ rpt.quality_score }}%"></div>
+              </div>
+              <span class="score-num">{{ rpt.quality_score|floatformat:1 }}</span>
+            </div>
+          </td>
+
+          <td>
+            {% if rpt.cleaned_file %}
+              <span class="file-badge file-yes"><i class="fas fa-check-circle"></i> Ready</span>
+            {% else %}
+              <span class="file-badge file-no"><i class="fas fa-times-circle"></i> None</span>
+            {% endif %}
+          </td>
+
+          <td class="date-cell">{{ rpt.created_at|date:"M d, Y" }}<br>
+            <span style="font-size:10px;">{{ rpt.created_at|date:"g:i A" }}</span>
+          </td>
+
+          <td>
+            <div class="action-group">
+              <a href="{% url 'report' report_id=rpt.id %}" class="action-btn action-view">
+                <i class="fas fa-eye"></i> View
+              </a>
+              {% if rpt.cleaned_file %}
+              <a href="{% url 'download_cleaned' report_id=rpt.id %}" class="action-btn action-dl">
+                <i class="fas fa-download"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-file-alt"></i></div>
+    <h3>No Cleaned Reports Yet</h3>
+    <p>Upload a dataset and run the cleaning pipeline<br>to generate your first report.</p>
+    <a href="{% url 'upload_data' %}" class="cta-btn">
+      <i class="fas fa-upload"></i> Upload a Dataset
+    </a>
+  </div>
+
+  {% endif %}
+
+</div>
+</body>
+</html>

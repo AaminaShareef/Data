@@ -68,7 +68,7 @@ def smart_read(file_path_or_file):
 # ==================================================
 # 🏠 USER HOME
 # ==================================================
-#D:\S10\PROJECT\Data\data_preparation\views.py
+
 def home(request):
     if "user_id" not in request.session:
         return redirect("login")
@@ -133,7 +133,6 @@ def upload_data(request):
             )
             return render(request, "data_preparation/upload_data.html")
 
-        
         # 🔹 Save dataset record
         dataset = Dataset.objects.create(
             user_id=request.session["user_id"],
@@ -154,14 +153,9 @@ def upload_data(request):
             "dataset_status": "Uploaded successfully",
         }
 
-        
-
-
         return redirect("dataset_detail", dataset_id=dataset.id)
 
     return render(request, "data_preparation/upload_data.html")
-
-
 
 
 # ==================================================
@@ -243,7 +237,7 @@ def dataset_detail(request, dataset_id):
 
     # Preview
     preview_df = df.head(10)
-    
+
     cleaning_report = CleaningReport.objects.filter(dataset=dataset).last()
     context = {
         "dataset": dataset,
@@ -263,7 +257,7 @@ def dataset_detail(request, dataset_id):
 
     return render(request, "data_preparation/dataset_detail.html", context)
 
-    
+
 # ==================================================
 # 🧹 DELETE DATASET
 # ==================================================
@@ -292,35 +286,80 @@ def profile_view(request):
     if "user_id" not in request.session:
         return redirect("login")
 
-    user = CustomUser.objects.get(id=request.session["user_id"])
+    user_id = request.session["user_id"]
+    user    = CustomUser.objects.get(id=user_id)
 
-    total_datasets = Dataset.objects.filter(user=user).count()
-    processed_datasets = Dataset.objects.filter(
-        user=user, is_processed=True
-    ).count()
-    pending_datasets = Dataset.objects.filter(
-        user=user, is_processed=False
-    ).count()
-    total_reports = Report.objects.filter(user=user).count()
+    # ── existing counts ───────────────────────────────────────────
+    total_datasets     = Dataset.objects.filter(user=user).count()
+    processed_datasets = Dataset.objects.filter(user=user, is_processed=True).count()
+    pending_datasets   = Dataset.objects.filter(user=user, is_processed=False).count()
+    total_reports      = Report.objects.filter(user=user).count()
 
     recent_datasets = Dataset.objects.filter(
-        user_id=request.session["user_id"]
+        user_id=user_id
     ).order_by('-id')
 
+    # ── cleaned reports count ─────────────────────────────────────
+    cleaned_reports_count = CleaningReport.objects.filter(
+        dataset__user_id=user_id
+    ).count()
+
+    # ── analysis result per dataset (for KPI / Dashboard card links) ───
+    try:
+        from kpi_engine.models import AnalysisResult, SavedReport
+
+        # Annotate each dataset with its own analysis result id (if any)
+        for ds in recent_datasets:
+            try:
+                ar = AnalysisResult.objects.get(
+                    cleaning_report__dataset=ds
+                )
+                ds.analysis_result_id = ar.id
+                ds.kpi_count = len(ar.result_json.get('kpis', []))
+            except AnalysisResult.DoesNotExist:
+                ds.analysis_result_id = None
+                ds.kpi_count = 0
+
+        # Global latest for the top cards
+        latest_analysis = AnalysisResult.objects.filter(
+            cleaning_report__dataset__user_id=user_id
+        ).order_by('-created_at').first()
+
+        latest_analysis_id = latest_analysis.id if latest_analysis else None
+        kpi_count = len(latest_analysis.result_json.get('kpis', [])) if latest_analysis else 0
+
+        my_reports_count = SavedReport.objects.filter(
+            analysis_result__cleaning_report__dataset__user_id=user_id
+        ).count()
+
+    except Exception:
+        latest_analysis_id = None
+        kpi_count          = 0
+        my_reports_count   = 0
+        for ds in recent_datasets:
+            ds.analysis_result_id = None
+            ds.kpi_count = 0
+
     context = {
-        "user": user,
-        "total_datasets": total_datasets,
-        "processed_datasets": processed_datasets,
-        "pending_datasets": pending_datasets,
-        "total_reports": total_reports,
-        "recent_datasets": recent_datasets,
+        "user":                  user,
+        "total_datasets":        total_datasets,
+        "processed_datasets":    processed_datasets,
+        "pending_datasets":      pending_datasets,
+        "total_reports":         total_reports,
+        "recent_datasets":       recent_datasets,
+        "cleaned_reports_count": cleaned_reports_count,
+        "latest_analysis_id":    latest_analysis_id,
+        "kpi_count":             kpi_count,
+        "my_reports_count":      my_reports_count,
     }
 
     return render(request, "data_preparation/profile.html", context)
 
+
 def preprocess_dataset(request, dataset_id):
     messages.success(request, "Preprocessing pipeline will start here.")
     return redirect("dataset_detail", dataset_id=dataset_id)
+
 
 # ==================================================
 # 🚪 LOGOUT

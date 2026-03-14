@@ -66,7 +66,7 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 .topbar-inner {
-  max-width: 1500px;
+  max-width: var(--max-w);
   margin: 0 auto;
   height: 64px;
   padding: 0 32px;
@@ -110,31 +110,98 @@ body::before {
 }
 .nav-link i { margin-right: 5px; font-size: 11px; }
 
-.topbar-actions { display: flex; gap: 8px; }
-.btn-top {
-  padding: 7px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: var(--transition);
-  border: 1.5px solid transparent;
-  font-family: 'Sora', sans-serif;
-  cursor: pointer;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.btn-ghost { border-color: var(--border-strong); color: var(--text-muted); background: transparent; }
-.btn-ghost:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
-.btn-solid { background: var(--primary); color: white; border-color: var(--primary); }
-.btn-solid:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(11,59,75,0.2); }
-
-/* ── Page wrapper ── */
-.page {
-  position: relative;
-  z-index: 1;
+/* ── Main layout with sidebar ── */
+.main-layout {
+  display: flex;
+  gap: 24px;
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 40px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Vertical Sidebar Navigation ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 12px;
+  height: fit-content;
+  position: sticky;
+  top: 84px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.4s ease both;
+}
+.sidebar:hover { box-shadow: var(--shadow-md); }
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+.sidebar-section:last-child { margin-bottom: 0; }
+
+.sidebar-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  padding: 0 12px;
+  margin-bottom: 12px;
+}
+
+.sidebar-menu {
+  list-style: none;
+}
+
+.sidebar-menu-item {
+  margin-bottom: 4px;
+}
+
+.sidebar-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.sidebar-menu-link i {
+  width: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.sidebar-menu-link:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.sidebar-menu-link:hover i {
+  color: var(--primary);
+}
+
+.sidebar-menu-link.active {
+  background: var(--primary);
+  color: white;
+}
+
+.sidebar-menu-link.active i {
+  color: white;
+}
+
+/* ── Content area ── */
+.content-area {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ── Page title row ── */
@@ -155,13 +222,6 @@ body::before {
   align-items: center;
   gap: 8px;
 }
-.page-title::before {
-  
-  display: block;
-  width: 20px; height: 2px;
-  background: var(--accent);
-  border-radius: 2px;
-}
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -180,10 +240,12 @@ body::before {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 28px 32px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   animation: fadeUp 0.4s ease both;
+  scroll-margin-top: 80px;
 }
 .card:hover { box-shadow: var(--shadow-md); }
+.card:last-child { margin-bottom: 0; }
 
 /* ── Profile hero ── */
 .profile-hero {
@@ -316,8 +378,159 @@ body::before {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* ── Dataset list ── */
-.datasets-card { animation-delay: 0.15s; }
+/* ─── Horizontal cards grid ─── */
+.horizontal-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.horizontal-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: var(--transition);
+  cursor: pointer;
+  animation: fadeUp 0.4s ease both;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.horizontal-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.horizontal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.horizontal-card:hover::after {
+  opacity: 1;
+}
+
+.horizontal-card-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary-soft), var(--primary-soft));
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-size: 24px;
+  transition: var(--transition);
+}
+
+.horizontal-card:hover .horizontal-card-icon {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.horizontal-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.2px;
+}
+
+.horizontal-card-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.horizontal-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.horizontal-card-count {
+  font-weight: 600;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--primary-soft);
+  padding: 4px 10px;
+  border-radius: 40px;
+}
+
+.horizontal-card-link {
+  color: var(--accent);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.horizontal-card-link i {
+  font-size: 11px;
+  transition: var(--transition);
+}
+
+.horizontal-card:hover .horizontal-card-link {
+  color: var(--primary);
+}
+
+.horizontal-card:hover .horizontal-card-link i {
+  transform: translateX(4px);
+}
+
+/* Greyed-out state when no datasets available */
+.horizontal-card.card-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Wide card — spans 2 columns */
+.horizontal-card-wide {
+  grid-column: span 2;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.horizontal-card-wide .horizontal-card-icon {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.horizontal-card-wide .horizontal-card-content {
+  flex: 1;
+}
+
+.horizontal-card-wide .horizontal-card-meta {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* ─── Dataset list ─── */
+.datasets-card {
+  animation-delay: 0.15s;
+}
 
 .dataset-list {
   display: flex;
@@ -421,7 +634,7 @@ body::before {
 }
 .action-btn i { font-size: 10px; }
 
-/* ── Empty state ── */
+/* ─── Empty state ─── */
 .empty-state {
   text-align: center;
   padding: 40px 20px;
@@ -455,7 +668,7 @@ body::before {
   transform: translateY(-2px);
 }
 
-/* ── Toast ── */
+/* ─── Toast ─── */
 #toast-container {
   position: fixed;
   top: 80px;
@@ -484,15 +697,60 @@ body::before {
   to { opacity: 0; transform: translateX(30px); }
 }
 
-/* ── Animations ── */
+/* ─── Animations ─── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Responsive ── */
+/* ─── Section anchors for scrolling ─── */
+.section-anchor {
+  scroll-margin-top: 80px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 180px;
+  }
+  .horizontal-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .horizontal-card-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+    padding: 24px 16px 60px;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: static;
+    top: 0;
+    margin-bottom: 24px;
+  }
+  
+  .horizontal-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .horizontal-card-wide {
+    grid-column: span 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .horizontal-card-wide .horizontal-card-icon {
+    margin-bottom: 0;
+  }
+}
+
 @media (max-width: 640px) {
-  .page { padding: 24px 16px 60px; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .stats-row .stat-item:nth-child(2) { border-right: none; }
   .stats-row .stat-item:nth-child(1),
@@ -518,10 +776,8 @@ body::before {
     </a>
     <nav class="nav-links">
       <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i>Home</a>
-      
       <a href="{% url 'upload_data' %}" class="nav-link"><i class="fas fa-upload"></i>Upload</a>
     </nav>
-    
   </div>
 </div>
 
@@ -533,109 +789,331 @@ body::before {
 </div>
 {% endif %}
 
-<div class="page">
+<!-- Main layout with sidebar -->
+<div class="main-layout">
 
-  <!-- Title row -->
-  <div class="page-title-row">
-    <div class="page-title">User Profile</div>
+  <!-- Vertical Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Navigation</div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="#profile" class="sidebar-menu-link active">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#stats" class="sidebar-menu-link">
+            <i class="fas fa-chart-bar"></i>
+            <span>Statistics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#datasets" class="sidebar-menu-link">
+            <i class="fas fa-database"></i>
+            <span>Datasets</span>
+          </a>
+        </li>
+      </ul>
+    </div>
     
-  </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Insights</div>
+      <ul class="sidebar-menu">
+        <!-- Cleaned Reports — always links to the list page -->
+        <li class="sidebar-menu-item">
+          <a href="{% url 'cleaned_reports_list' %}" class="sidebar-menu-link">
+            <i class="fas fa-file-alt"></i>
+            <span>Cleaned Reports</span>
+          </a>
+        </li>
 
-  <!-- Profile card -->
-  <div class="card profile-hero" style="animation-delay:0.05s">
-    <div class="avatar">{{ user.name|slice:":1"|upper }}</div>
-    <div class="profile-meta">
-      <div class="profile-name">{{ user.name }}</div>
-      <div class="profile-details">
-        <span class="profile-detail-item"><i class="fas fa-envelope"></i>{{ user.email }}</span>
-       
+        <!-- KPI — always links to dataset picker (real-time count in card) -->
+        <li class="sidebar-menu-item">
+          <a href="{% url 'dataset_picker_kpi' %}" class="sidebar-menu-link">
+            <i class="fas fa-chart-line"></i>
+            <span>KPI ({{ datasets_with_analysis_count }} active)</span>
+          </a>
+        </li>
+
+        <!-- Dashboard — always links to dataset picker -->
+        <li class="sidebar-menu-item">
+          <a href="{% url 'dataset_picker_dashboard' %}" class="sidebar-menu-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <!-- My Reports — always links to the saved reports list page -->
+        <li class="sidebar-menu-item">
+          <a href="{% url 'my_reports_list' %}" class="sidebar-menu-link">
+            <i class="fas fa-lightbulb"></i>
+            <span>My Reports</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Quick Actions</div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="{% url 'upload_data' %}" class="sidebar-menu-link">
+            <i class="fas fa-upload"></i>
+            <span>Upload Dataset</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Content Area -->
+  <div class="content-area">
+
+    <!-- Title row -->
+    <div class="page-title-row" id="profile">
+      <div class="page-title">User Profile</div>
+    </div>
+
+    <!-- Profile card -->
+    <div class="card profile-hero" style="animation-delay:0.05s">
+      <div class="avatar">{{ user.name|slice:":1"|upper }}</div>
+      <div class="profile-meta">
+        <div class="profile-name">{{ user.name }}</div>
+        <div class="profile-details">
+          <span class="profile-detail-item"><i class="fas fa-envelope"></i>{{ user.email }}</span>
+        </div>
+      </div>
+      <div class="profile-badge">
+        <i class="fas fa-check-circle"></i> Standard User
       </div>
     </div>
-    <div class="profile-badge">
-      <i class="fas fa-check-circle"></i> Standard User
-    </div>
-  </div>
 
-  <!-- Stats card -->
-  <div class="card stats-card" style="padding:0; animation-delay:0.10s;">
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="stat-num">{{ total_datasets }}</div>
-        <div class="stat-label">Total Datasets</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">{{ processed_datasets }}</div>
-        <div class="stat-label">Processed</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">{{ pending_datasets }}</div>
-        <div class="stat-label">Pending</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">{{ total_reports }}</div>
-        <div class="stat-label">Reports</div>
+    <!-- Stats card -->
+    <div class="card stats-card" style="padding:0; animation-delay:0.10s;" id="stats">
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-num">{{ total_datasets }}</div>
+          <div class="stat-label">Total Datasets</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">{{ processed_datasets }}</div>
+          <div class="stat-label">Processed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">{{ pending_datasets }}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">{{ total_reports }}</div>
+          <div class="stat-label">Reports</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Datasets card -->
-  <div class="card datasets-card" style="animation-delay:0.15s;">
-    <div class="section-head">
-      <div class="section-title">
-        <i class="fas fa-database"></i> Datasets
+    <!-- Datasets card -->
+    <div class="card datasets-card" style="animation-delay:0.15s;" id="datasets">
+      <div class="section-head">
+        <div class="section-title">
+          <i class="fas fa-database"></i> Recent Datasets
+        </div>
+        {% if recent_datasets %}
+        <span class="section-count">{{ recent_datasets|length }} of {{ total_datasets }}</span>
+        {% endif %}
       </div>
+
       {% if recent_datasets %}
-      <span class="section-count">{{ recent_datasets|length }} total</span>
+      <div class="dataset-list">
+        {% for ds in recent_datasets %}
+        <div class="dataset-row">
+          <div>
+            <div class="dataset-name">
+              <a href="{% url 'dataset_detail' ds.id %}">{{ ds.file_name }}</a>
+            </div>
+            <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
+          </div>
+
+          <div>
+            {% if ds.is_processed %}
+              <span class="badge badge-processed"><i class="fas fa-check-circle"></i> Processed</span>
+            {% else %}
+              <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
+            {% endif %}
+          </div>
+
+          <div class="row-actions">
+            <a href="{% url 'dataset_detail' ds.id %}" class="action-btn action-view">
+              <i class="fas fa-eye"></i> View
+            </a>
+            <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
+                  onsubmit="return confirm('Delete this dataset?');">
+              {% csrf_token %}
+              <button type="submit" class="action-btn action-delete">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-database"></i></div>
+        <p>No datasets yet. Upload your first dataset to get started.</p>
+        <a href="{% url 'upload_data' %}" class="upload-link">
+          <i class="fas fa-upload"></i> Upload Dataset
+        </a>
+      </div>
       {% endif %}
     </div>
 
-    {% if recent_datasets %}
-    <div class="dataset-list">
-      {% for ds in recent_datasets %}
-      <div class="dataset-row">
-        <div>
-          <div class="dataset-name">
-            <a href="{% url 'dataset_detail' ds.id %}">{{ ds.file_name }}</a>
+    <!-- ─── Horizontal cards grid with real-time counts ─── -->
+    <div class="horizontal-cards-grid">
+
+      <!-- Card 1: Cleaned Reports — shows count of processed datasets -->
+      <a href="{% url 'cleaned_reports_list' %}" class="horizontal-card" id="cleaned-reports">
+        <div class="horizontal-card-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="horizontal-card-title">Cleaned Reports</h3>
+        <p class="horizontal-card-description">
+          View and manage your cleaned and processed data reports
+        </p>
+        <div class="horizontal-card-meta">
+          <span class="horizontal-card-count">{{ processed_datasets }} datasets</span>
+          <span class="horizontal-card-link">
+            View all <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </a>
+
+      <!-- Card 2: KPI Dashboard — shows count of datasets with analysis, always links to picker -->
+      <a href="{% url 'dataset_picker_kpi' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="kpi">
+        <div class="horizontal-card-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="horizontal-card-title">KPI Dashboard</h3>
+        <p class="horizontal-card-description">
+          Track key performance indicators and metrics from your analyzed datasets
+        </p>
+        <div class="horizontal-card-meta">
+          <span class="horizontal-card-count">{{ datasets_with_analysis_count }} with KPIs</span>
+          <span class="horizontal-card-link">
+            Select dataset <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </a>
+
+      <!-- Card 3: Interactive Dashboard — shows count of datasets with analysis, always links to picker -->
+      <a href="{% url 'dataset_picker_dashboard' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="dashboard">
+        <div class="horizontal-card-icon">
+          <i class="fas fa-tachometer-alt"></i>
+        </div>
+        <h3 class="horizontal-card-title">Interactive Dashboard</h3>
+        <p class="horizontal-card-description">
+          Interactive visualizations, filters, and analytics for your datasets
+        </p>
+        <div class="horizontal-card-meta">
+          <span class="horizontal-card-count">{{ datasets_with_analysis_count }} available</span>
+          <span class="horizontal-card-link">
+            Choose dataset <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </a>
+
+      <!-- Card 4: My Reports — wide card, shows count of saved reports -->
+      <a href="{% url 'my_reports_list' %}" class="horizontal-card horizontal-card-wide" id="reports">
+        <div class="horizontal-card-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <div class="horizontal-card-content">
+          <h3 class="horizontal-card-title">My Reports & Insights</h3>
+          <p class="horizontal-card-description">
+            Access your generated reports, insights, and analytics findings
+          </p>
+          <div class="horizontal-card-meta">
+            <span class="horizontal-card-count">{{ total_reports }} reports</span>
+            <span class="horizontal-card-link">
+              View all <i class="fas fa-arrow-right"></i>
+            </span>
           </div>
-          <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
         </div>
-
-        <div>
-          {% if ds.is_processed %}
-            <span class="badge badge-processed"><i class="fas fa-check-circle"></i> Processed</span>
-          {% else %}
-            <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
-          {% endif %}
-        </div>
-
-        <div class="row-actions">
-          <a href="{% url 'dataset_detail' ds.id %}" class="action-btn action-view">
-            <i class="fas fa-eye"></i> View
-          </a>
-          <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
-                onsubmit="return confirm('Delete this dataset?');">
-            {% csrf_token %}
-            <button type="submit" class="action-btn action-delete">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </form>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-icon"><i class="fas fa-database"></i></div>
-      <p>No datasets yet. Upload your first dataset to get started.</p>
-      <a href="{% url 'upload_data' %}" class="upload-link">
-        <i class="fas fa-upload"></i> Upload Dataset
       </a>
     </div>
-    {% endif %}
-  </div>
 
-</div>
+  </div> <!-- End content-area -->
+</div> <!-- End main-layout -->
+
+<!-- JavaScript for active sidebar links and smooth scrolling -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all sections and sidebar links
+  const sections = document.querySelectorAll('.card, .horizontal-card');
+  const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
+  
+  // Function to update active class based on scroll position
+  function updateActiveLink() {
+    let current = '';
+    const scrollPosition = window.scrollY + 100; // Offset for better accuracy
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        current = section.getAttribute('id');
+      }
+    });
+    
+    sidebarLinks.forEach(link => {
+      link.classList.remove('active');
+      const href = link.getAttribute('href');
+      if (href && href.charAt(0) === '#' && href.substring(1) === current) {
+        link.classList.add('active');
+      }
+    });
+  }
+  
+  // Add smooth scrolling to sidebar links (only for anchor links)
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      
+      // Only handle anchor links, let regular URLs navigate normally
+      if (href && href.charAt(0) === '#') {
+        e.preventDefault();
+        
+        const targetElement = document.querySelector(href);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          
+          // Update active class
+          sidebarLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        }
+      }
+      // For non-anchor links (like URLs), let the browser handle normally
+    });
+  });
+  
+  // Update active link on scroll
+  window.addEventListener('scroll', updateActiveLink);
+  
+  // Initial call to set active link
+  updateActiveLink();
+});
+</script>
 
 </body>
 </html>

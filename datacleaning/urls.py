@@ -15,4 +15,7 @@ urlpatterns = [
 
     # Step 4 — download cleaned file
     path('report/<int:report_id>/download/', views.download_cleaned, name='download_cleaned'),
+
+    path('my-reports/', views.cleaned_reports_list, name='cleaned_reports_list'),
+    
 ]

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Reports — Auralis Insights</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --primary: #0B3B4B;
+  --primary-light: #1D5A6D;
+  --primary-soft: #E3F0F5;
+  --accent: #4A9B8D;
+  --background: #F0F4F8;
+  --card-bg: #FFFFFF;
+  --text-dark: #0D1F2D;
+  --text-soft: #3A4A5E;
+  --text-muted: #6B7E96;
+  --border: rgba(11,59,75,0.08);
+  --border-strong: rgba(11,59,75,0.14);
+  --shadow-sm: 0 2px 8px rgba(11,59,75,0.06);
+  --shadow-md: 0 8px 28px rgba(11,59,75,0.10);
+  --shadow-lg: 0 20px 48px rgba(11,59,75,0.13);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  --max-w: 1200px;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Sora', sans-serif; background: var(--background); color: var(--text-dark); min-height: 100vh; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(74,155,141,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(11,59,75,0.06) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.90); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: var(--max-w); margin: 0 auto;
+  height: 64px; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo { width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.brand-logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+.brand-name { font-size: 16px; font-weight: 700; color: var(--primary); }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { color: var(--text-muted); font-weight: 500; text-decoration: none; font-size: 13px; padding: 7px 14px; border-radius: 999px; transition: var(--transition); }
+.nav-link:hover { color: var(--primary); background: var(--primary-soft); }
+.nav-link i { margin-right: 5px; font-size: 11px; }
+
+/* ── Page wrapper ── */
+.page-wrapper { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
+
+/* ── Page header ── */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; animation: fadeUp 0.4s ease both; }
+.page-header-left { display: flex; flex-direction: column; gap: 6px; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.breadcrumb a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+.breadcrumb a:hover { color: var(--primary); }
+.breadcrumb i { font-size: 9px; }
+.page-title { font-size: 22px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
+.page-title i { color: var(--accent); font-size: 18px; }
+.count-badge { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(11,59,75,0.12); border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+/* ── Summary stats ── */
+.summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; animation: fadeUp 0.4s ease both 0.05s; }
+.summary-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow-sm); transition: var(--transition); }
+.summary-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.summary-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.summary-icon.blue   { background: var(--primary-soft); color: var(--primary); }
+.summary-icon.green  { background: #E6F5F0; color: #1A6B50; }
+.summary-icon.orange { background: #FFF4E6; color: #A05C00; }
+.summary-icon.purple { background: #F0EEFF; color: #5B4FCF; }
+.summary-num { font-size: 24px; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono', monospace; line-height: 1; }
+.summary-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 3px; }
+
+/* ── Reports grid ── */
+.reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; animation: fadeUp 0.4s ease both 0.10s; }
+
+.report-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  overflow: hidden; transition: var(--transition);
+  display: flex; flex-direction: column;
+}
+.report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--primary-light); }
+
+/* coloured top accent per domain */
+.report-card-accent { height: 4px; }
+.accent-finance    { background: linear-gradient(90deg, #1A6B50, #4A9B8D); }
+.accent-health     { background: linear-gradient(90deg, #C0392B, #E74C3C); }
+.accent-education  { background: linear-gradient(90deg, #1565C0, #1976D2); }
+.accent-sales      { background: linear-gradient(90deg, #E65100, #F57C00); }
+.accent-hr         { background: linear-gradient(90deg, #7B1FA2, #9C27B0); }
+.accent-generic    { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+
+.report-card-body  { padding: 20px 22px; flex: 1; }
+.report-card-top   { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+
+.report-domain-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  background: var(--primary-soft);
+}
+.report-title { font-size: 14px; font-weight: 700; color: var(--text-dark); line-height: 1.3; flex: 1; }
+.report-date  { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0; }
+
+/* domain pill */
+.domain-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-bottom: 14px; }
+.domain-finance    { background: #E8F5E9; color: #2E7D32; }
+.domain-health     { background: #FFE8E8; color: #C0392B; }
+.domain-education  { background: #E3F2FD; color: #1565C0; }
+.domain-sales      { background: #FFF3E0; color: #E65100; }
+.domain-hr         { background: #F3E5F5; color: #7B1FA2; }
+.domain-generic    { background: #ECEFF1; color: #546E7A; }
+
+/* stat pills row */
+.report-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.report-stat  { display: flex; align-items: center; gap: 5px; background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 11px; color: var(--text-muted); }
+.report-stat strong { color: var(--primary); font-family: 'JetBrains Mono', monospace; }
+
+/* narrative snippet */
+.report-narrative {
+  font-size: 12px; color: var(--text-soft); line-height: 1.6;
+  background: var(--background); border-radius: 10px;
+  padding: 10px 12px; border-left: 3px solid var(--accent);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; font-style: italic;
+}
+.no-narrative { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 8px 0; }
+
+/* card footer actions */
+.report-card-footer {
+  padding: 14px 22px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; background: rgba(240,244,248,0.5);
+}
+.action-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  text-decoration: none; transition: var(--transition);
+  border: none; cursor: pointer; font-family: 'Sora', sans-serif; white-space: nowrap;
+}
+.action-view    { background: var(--primary-soft); color: var(--primary); }
+.action-view:hover { background: var(--primary); color: white; }
+.action-interactive { background: #E0F2F0; color: #1A6B50; }
+.action-interactive:hover { background: #1A6B50; color: white; }
+.action-btn i   { font-size: 10px; }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 64px 20px; animation: fadeUp 0.4s ease both 0.10s; }
+.empty-icon { width: 64px; height: 64px; background: var(--primary-soft); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 26px; color: var(--primary); }
+.empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+.empty-state p  { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+.cta-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: white; padding: 12px 28px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 13px; transition: var(--transition); box-shadow: 0 4px 12px rgba(11,59,75,0.18); }
+.cta-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+/* ── Animation ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Responsive ── */
+@media (max-width: 768px) { .summary-row { grid-template-columns: 1fr 1fr; } .reports-grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .summary-row { grid-template-columns: 1fr; } .nav-links { display: none; } }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="{% url 'home' %}" class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </a>
+    <nav class="nav-links">
+      <a href="{% url 'home' %}"        class="nav-link"><i class="fas fa-home"></i>Home</a>
+      <a href="{% url 'upload_data' %}" class="nav-link"><i class="fas fa-upload"></i>Upload</a>
+      <a href="{% url 'profile' %}"     class="nav-link"><i class="fas fa-user"></i>Profile</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="{% url 'profile' %}">Profile</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>My Reports</span>
+      </div>
+      <h1 class="page-title">
+        <i class="fas fa-lightbulb"></i> My Reports &amp; Insights
+      </h1>
+    </div>
+    <span class="count-badge">{{ total }} report{{ total|pluralize }}</span>
+  </div>
+
+  {% if reports %}
+
+  <!-- Summary stats -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon blue"><i class="fas fa-file-pdf"></i></div>
+      <div>
+        <div class="summary-num">{{ total }}</div>
+        <div class="summary-label">Total Reports</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon green"><i class="fas fa-tachometer-alt"></i></div>
+      <div>
+        <div class="summary-num">{{ reports.0.kpi_count|default:"—" }}</div>
+        <div class="summary-label">Latest KPIs</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon orange"><i class="fas fa-lightbulb"></i></div>
+      <div>
+        <div class="summary-num">{{ reports.0.insight_count|default:"—" }}</div>
+        <div class="summary-label">Latest Insights</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon purple"><i class="fas fa-globe"></i></div>
+      <div>
+        <div class="summary-num">{{ domain_counts|length }}</div>
+        <div class="summary-label">Domains Covered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports grid -->
+  <div class="reports-grid">
+    {% for rpt in reports %}
+    <div class="report-card">
+
+      <!-- Domain-coloured top bar -->
+      <div class="report-card-accent accent-{{ rpt.domain|lower }}"></div>
+
+      <div class="report-card-body">
+
+        <div class="report-card-top">
+          <div class="report-domain-icon">
+            {% if rpt.domain == 'finance' %}💰
+            {% elif rpt.domain == 'health' %}🏥
+            {% elif rpt.domain == 'education' %}🎓
+            {% elif rpt.domain == 'sales' %}🛒
+            {% elif rpt.domain == 'hr' %}👥
+            {% else %}📊{% endif %}
+          </div>
+          <div class="report-title">{{ rpt.title }}</div>
+          <div class="report-date">{{ rpt.created_at|date:"M d, Y" }}</div>
+        </div>
+
+        <!-- Domain pill -->
+        <span class="domain-pill domain-{{ rpt.domain|lower }}">
+          {{ rpt.analysis_result.cleaning_report.get_domain_display }}
+        </span>
+
+        <!-- Stat pills -->
+        <div class="report-stats">
+          <div class="report-stat">
+            <i class="fas fa-database" style="font-size:9px"></i>
+            <strong>{{ rpt.total_rows|default:0 }}</strong> total rows
+          </div>
+          <div class="report-stat">
+            <i class="fas fa-filter" style="font-size:9px"></i>
+            <strong>{{ rpt.filtered_rows|default:0 }}</strong> filtered
+          </div>
+          <div class="report-stat">
+            <i class="fas fa-tachometer-alt" style="font-size:9px"></i>
+            <strong>{{ rpt.kpi_count }}</strong> KPIs
+          </div>
+          <div class="report-stat">
+            <i class="fas fa-lightbulb" style="font-size:9px"></i>
+            <strong>{{ rpt.insight_count }}</strong> insights
+          </div>
+        </div>
+
+        <!-- AI narrative snippet -->
+        {% if rpt.narrative %}
+          <div class="report-narrative">{{ rpt.narrative }}</div>
+        {% else %}
+          <div class="no-narrative"><i class="fas fa-info-circle"></i> No narrative captured for this report.</div>
+        {% endif %}
+
+      </div>
+
+      <!-- Footer actions -->
+      <div class="report-card-footer">
+        <a href="{% url 'dashboard' rpt.analysis_result.id %}"
+           class="action-btn action-view">
+          <i class="fas fa-chart-bar"></i> KPI Dashboard
+        </a>
+        <a href="{% url 'interactive_dashboard' rpt.analysis_result.id %}"
+           class="action-btn action-interactive">
+          <i class="fas fa-sliders-h"></i> Interactive
+        </a>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-lightbulb"></i></div>
+    <h3>No Reports Generated Yet</h3>
+    <p>Upload a dataset, run the cleaning pipeline, open the Interactive Dashboard,<br>
+       and click <strong>Generate Report</strong> to save your first report here.</p>
+    <a href="{% url 'upload_data' %}" class="cta-btn">
+      <i class="fas fa-upload"></i> Upload a Dataset
+    </a>
+  </div>
+
+  {% endif %}
+
+</div>
+</body>
+</html>

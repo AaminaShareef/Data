@@ -15,6 +15,7 @@ urlpatterns = [
     path("dataset/delete/<int:dataset_id>/", views.delete_dataset, name="delete_dataset"),
     path("profile/", views.profile_view, name="profile"),
     path("preprocess/<int:dataset_id>/", views.preprocess_dataset, name="preprocess_dataset"),
+    
    
 ]
 
