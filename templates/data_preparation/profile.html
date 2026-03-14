@@ -42,7 +42,6 @@ body {
   min-height: 100vh;
 }
 
-/* subtle background texture */
 body::before {
   content: '';
   position: fixed;
@@ -56,9 +55,7 @@ body::before {
 
 /* ── Topbar ── */
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky; top: 0; z-index: 100;
   background: rgba(255,255,255,0.90);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -66,327 +63,228 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 .topbar-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  height: 64px;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  max-width: var(--max-w); margin: 0 auto;
+  height: 64px; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-logo {
-  width: 36px; height: 36px;
-  background: var(--primary);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  width: 36px; height: 36px; background: var(--primary);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .brand-logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
 .brand-name { font-size: 16px; font-weight: 700; color: var(--primary); letter-spacing: -0.2px; }
-
-.nav-links {
-  display: flex;
-  gap: 4px;
-}
+.nav-links { display: flex; gap: 4px; }
 .nav-link {
-  color: var(--text-muted);
-  font-weight: 500;
-  text-decoration: none;
-  font-size: 13px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  transition: var(--transition);
+  color: var(--text-muted); font-weight: 500; text-decoration: none;
+  font-size: 13px; padding: 7px 14px; border-radius: 999px; transition: var(--transition);
 }
-.nav-link:hover, .nav-link.active {
-  color: var(--primary);
-  background: var(--primary-soft);
-}
+.nav-link:hover, .nav-link.active { color: var(--primary); background: var(--primary-soft); }
 .nav-link i { margin-right: 5px; font-size: 11px; }
 
-/* ── Main layout with sidebar ── */
+/* ── Layout ── */
 .main-layout {
-  display: flex;
-  gap: 24px;
-  max-width: var(--max-w);
-  margin: 0 auto;
+  display: flex; gap: 24px;
+  max-width: var(--max-w); margin: 0 auto;
   padding: 40px 24px 80px;
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
 }
 
-/* ── Vertical Sidebar Navigation ── */
+/* ── Sidebar ── */
 .sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 12px;
-  height: fit-content;
-  position: sticky;
-  top: 84px;
-  box-shadow: var(--shadow-sm);
-  animation: fadeUp 0.4s ease both;
+  width: 220px; flex-shrink: 0;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 12px;
+  height: fit-content; position: sticky; top: 84px;
+  box-shadow: var(--shadow-sm); animation: fadeUp 0.4s ease both;
 }
 .sidebar:hover { box-shadow: var(--shadow-md); }
-
-.sidebar-section {
-  margin-bottom: 24px;
-}
+.sidebar-section { margin-bottom: 24px; }
 .sidebar-section:last-child { margin-bottom: 0; }
-
 .sidebar-heading {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  padding: 0 12px;
-  margin-bottom: 12px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text-muted); padding: 0 12px; margin-bottom: 12px;
 }
-
-.sidebar-menu {
-  list-style: none;
-}
-
-.sidebar-menu-item {
-  margin-bottom: 4px;
-}
-
+.sidebar-menu { list-style: none; }
+.sidebar-menu-item { margin-bottom: 4px; }
 .sidebar-menu-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius);
-  color: var(--text-soft);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: var(--transition);
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: var(--radius);
+  color: var(--text-soft); text-decoration: none;
+  font-size: 13px; font-weight: 500; transition: var(--transition);
 }
+.sidebar-menu-link i { width: 18px; font-size: 14px; color: var(--text-muted); transition: var(--transition); }
+.sidebar-menu-link:hover { background: var(--primary-soft); color: var(--primary); }
+.sidebar-menu-link:hover i { color: var(--primary); }
+.sidebar-menu-link.active { background: var(--primary); color: white; }
+.sidebar-menu-link.active i { color: white; }
 
-.sidebar-menu-link i {
-  width: 18px;
-  font-size: 14px;
-  color: var(--text-muted);
-  transition: var(--transition);
-}
+/* ── Content ── */
+.content-area { flex: 1; min-width: 0; }
 
-.sidebar-menu-link:hover {
-  background: var(--primary-soft);
-  color: var(--primary);
-}
-
-.sidebar-menu-link:hover i {
-  color: var(--primary);
-}
-
-.sidebar-menu-link.active {
-  background: var(--primary);
-  color: white;
-}
-
-.sidebar-menu-link.active i {
-  color: white;
-}
-
-/* ── Content area ── */
-.content-area {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ── Page title row ── */
 .page-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-  animation: fadeUp 0.4s ease both;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px; animation: fadeUp 0.4s ease both;
 }
 .page-title {
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 16px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px;
 }
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.breadcrumb a { color: var(--text-muted); text-decoration: none; }
-.breadcrumb a:hover { color: var(--primary); }
-.breadcrumb i { font-size: 9px; }
 
-/* ── Card base ── */
+/* ── Card ── */
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 28px 32px;
-  margin-bottom: 24px;
-  animation: fadeUp 0.4s ease both;
-  scroll-margin-top: 80px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  padding: 28px 32px; margin-bottom: 24px;
+  animation: fadeUp 0.4s ease both; scroll-margin-top: 80px;
 }
 .card:hover { box-shadow: var(--shadow-md); }
 .card:last-child { margin-bottom: 0; }
 
 /* ── Profile hero ── */
-.profile-hero {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  animation-delay: 0.05s;
-}
+.profile-hero { display: flex; align-items: center; gap: 24px; animation-delay: 0.05s; }
 .avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
+  width: 80px; height: 80px; border-radius: 50%;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
-  color: white;
-  font-size: 30px;
-  font-weight: 700;
+  color: white; font-size: 30px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(11,59,75,0.20);
-  position: relative;
+  flex-shrink: 0; box-shadow: 0 8px 20px rgba(11,59,75,0.20); position: relative;
 }
 .avatar::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
   border: 2px solid rgba(74,155,141,0.3);
 }
 .profile-meta { flex: 1; }
-.profile-name {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-dark);
-  letter-spacing: -0.3px;
-  margin-bottom: 6px;
-}
-.profile-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.profile-detail-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.profile-detail-item i {
-  color: var(--accent);
-  font-size: 11px;
-  width: 14px;
-}
+.profile-name { font-size: 22px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; margin-bottom: 6px; }
+.profile-details { display: flex; flex-wrap: wrap; gap: 12px; }
+.profile-detail-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+.profile-detail-item i { color: var(--accent); font-size: 11px; width: 14px; }
 .profile-badge {
-  margin-left: auto;
-  background: var(--primary-soft);
-  color: var(--primary);
-  border: 1px solid rgba(11,59,75,0.12);
-  border-radius: 999px;
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  margin-left: auto; background: var(--primary-soft); color: var(--primary);
+  border: 1px solid rgba(11,59,75,0.12); border-radius: 999px;
+  padding: 6px 16px; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0;
 }
 .profile-badge i { color: var(--accent); font-size: 10px; }
 
-/* ── Stats row ── */
-.stats-card {
-  animation-delay: 0.10s;
-  padding: 0;
-  overflow: hidden;
-}
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
+/* ── Stats ── */
+.stats-card { animation-delay: 0.10s; padding: 0; overflow: hidden; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); }
 .stat-item {
-  padding: 24px 20px;
-  text-align: center;
-  border-right: 1px solid var(--border);
-  transition: var(--transition);
-  cursor: default;
+  padding: 24px 20px; text-align: center;
+  border-right: 1px solid var(--border); transition: var(--transition); cursor: default;
 }
 .stat-item:last-child { border-right: none; }
 .stat-item:hover { background: var(--primary-soft); }
-.stat-num {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary);
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
+.stat-num { font-size: 28px; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono', monospace; line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
 
-/* ── Section header inside card ── */
+/* ── Section head ── */
 .section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 12px;
 }
-.section-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.section-title { font-size: 14px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
 .section-title i { color: var(--accent); font-size: 13px; }
 .section-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: var(--primary-soft);
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  background: var(--primary-soft); padding: 3px 10px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; white-space: nowrap;
 }
 
-/* ─── Horizontal cards grid ─── */
+/* ── Filter tabs ── */
+.filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border-strong); background: transparent;
+  color: var(--text-muted); font-family: 'Sora', sans-serif; transition: var(--transition);
+}
+.filter-tab i { font-size: 10px; }
+.filter-tab:hover { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+.filter-tab.active { background: var(--primary); color: white; border-color: transparent; }
+.filter-tab .tab-count {
+  border-radius: 999px; padding: 1px 7px;
+  font-size: 10px; font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,255,255,0.25);
+}
+.filter-tab:not(.active) .tab-count { background: var(--primary-soft); color: var(--primary); }
+
+/* ── Dataset list ── */
+.datasets-card { animation-delay: 0.15s; }
+.dataset-list { display: flex; flex-direction: column; }
+.dataset-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  align-items: center; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid var(--border); transition: var(--transition);
+}
+.dataset-row:last-child { border-bottom: none; padding-bottom: 0; }
+.dataset-row:first-child { padding-top: 0; }
+
+.dataset-name { font-size: 14px; font-weight: 500; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dataset-name a { color: inherit; text-decoration: none; transition: var(--transition); }
+.dataset-name a:hover { color: var(--primary); }
+.dataset-name-plain { color: var(--text-soft); cursor: default; }
+.dataset-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap;
+}
+.badge-processed { background: #E6F5F0; color: #1A6B50; border: 1px solid rgba(26,107,80,0.15); }
+.badge-processed i { font-size: 9px; }
+.badge-pending { background: #FFF4E6; color: #A05C00; border: 1px solid rgba(160,92,0,0.15); }
+.badge-pending i { font-size: 9px; }
+
+.row-actions { display: flex; align-items: center; gap: 4px; }
+.action-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; text-decoration: none;
+  transition: var(--transition); border: none; cursor: pointer; font-family: 'Sora', sans-serif;
+}
+.action-view { background: var(--primary-soft); color: var(--primary); }
+.action-view:hover { background: var(--primary); color: white; }
+.action-delete { background: #FFF0F0; color: #C0392B; }
+.action-delete:hover { background: #C0392B; color: white; }
+.action-btn i { font-size: 10px; }
+
+/* ── Empty / no-results ── */
+.empty-state { text-align: center; padding: 40px 20px; }
+.empty-icon {
+  width: 56px; height: 56px; background: var(--primary-soft); border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 22px; color: var(--primary);
+}
+.empty-state p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+.upload-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--primary); color: white;
+  padding: 10px 24px; border-radius: 999px;
+  text-decoration: none; font-weight: 600; font-size: 13px;
+  transition: var(--transition); box-shadow: 0 4px 12px rgba(11,59,75,0.15);
+}
+.upload-link:hover { background: var(--primary-light); transform: translateY(-2px); }
+.no-filter-results {
+  display: none; text-align: center; padding: 32px 20px;
+  color: var(--text-muted); font-size: 13px;
+}
+.no-filter-results i { font-size: 22px; margin-bottom: 10px; display: block; color: var(--border-strong); }
+
+/* ===== FIXED: ALL FOUR CARDS IN A SINGLE HORIZONTAL ROW ===== */
 .horizontal-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;           /* allow wrapping on narrow screens, but by default one row */
   gap: 20px;
   margin-bottom: 24px;
 }
 
 .horizontal-card {
+  flex: 1 1 220px;           /* grow/shrink equally, base width 220px */
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -395,361 +293,73 @@ body::before {
   cursor: pointer;
   animation: fadeUp 0.4s ease both;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
   color: inherit;
   position: relative;
   overflow: hidden;
+  min-width: 200px;          /* ensures they don't become too thin */
 }
 
 .horizontal-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  opacity: 0;
-  transition: var(--transition);
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: var(--transition);
 }
-
-.horizontal-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: transparent;
-}
-
-.horizontal-card:hover::after {
-  opacity: 1;
-}
-
+.horizontal-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.horizontal-card:hover::after { opacity: 1; }
 .horizontal-card-icon {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--primary-soft), var(--primary-soft));
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  color: var(--primary);
-  font-size: 24px;
-  transition: var(--transition);
+  width: 56px; height: 56px; background: var(--primary-soft);
+  border-radius: 16px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; color: var(--primary); font-size: 24px; transition: var(--transition);
 }
-
-.horizontal-card:hover .horizontal-card-icon {
-  background: var(--primary);
-  color: white;
-  transform: scale(1.05);
-}
-
-.horizontal-card-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 8px;
-  letter-spacing: -0.2px;
-}
-
-.horizontal-card-description {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
+.horizontal-card:hover .horizontal-card-icon { background: var(--primary); color: white; transform: scale(1.05); }
+.horizontal-card-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; letter-spacing: -0.2px; }
+.horizontal-card-description { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; flex: 1; }
 .horizontal-card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  padding-top: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px;
+  margin-top: auto;
 }
-
 .horizontal-card-count {
-  font-weight: 600;
-  color: var(--primary);
-  font-family: 'JetBrains Mono', monospace;
-  background: var(--primary-soft);
-  padding: 4px 10px;
-  border-radius: 40px;
+  font-weight: 600; color: var(--primary); font-family: 'JetBrains Mono', monospace;
+  background: var(--primary-soft); padding: 4px 10px; border-radius: 40px;
 }
+.horizontal-card-link { color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.horizontal-card-link i { font-size: 11px; transition: var(--transition); }
+.horizontal-card:hover .horizontal-card-link { color: var(--primary); }
+.horizontal-card:hover .horizontal-card-link i { transform: translateX(4px); }
+.horizontal-card.card-disabled { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
 
-.horizontal-card-link {
-  color: var(--accent);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.horizontal-card-link i {
-  font-size: 11px;
-  transition: var(--transition);
-}
-
-.horizontal-card:hover .horizontal-card-link {
-  color: var(--primary);
-}
-
-.horizontal-card:hover .horizontal-card-link i {
-  transform: translateX(4px);
-}
-
-/* Greyed-out state when no datasets available */
-.horizontal-card.card-disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Wide card — spans 2 columns */
+/* remove the special wide style – we want all cards uniform */
 .horizontal-card-wide {
-  grid-column: span 2;
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
+  /* same as .horizontal-card – no special treatment */
 }
 
-.horizontal-card-wide .horizontal-card-icon {
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-.horizontal-card-wide .horizontal-card-content {
-  flex: 1;
-}
-
-.horizontal-card-wide .horizontal-card-meta {
-  border-top: none;
-  padding-top: 0;
-}
-
-/* ─── Dataset list ─── */
-.datasets-card {
-  animation-delay: 0.15s;
-}
-
-.dataset-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.dataset-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  transition: var(--transition);
-}
-.dataset-row:last-child { border-bottom: none; padding-bottom: 0; }
-.dataset-row:first-child { padding-top: 0; }
-
-.dataset-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.dataset-name a {
-  color: inherit;
-  text-decoration: none;
-  transition: var(--transition);
-}
-.dataset-name a:hover { color: var(--primary); }
-.dataset-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* badges */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 11px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-}
-.badge-processed {
-  background: #E6F5F0;
-  color: #1A6B50;
-  border: 1px solid rgba(26,107,80,0.15);
-}
-.badge-processed i { font-size: 9px; }
-.badge-pending {
-  background: #FFF4E6;
-  color: #A05C00;
-  border: 1px solid rgba(160,92,0,0.15);
-}
-.badge-pending i { font-size: 9px; }
-
-/* actions */
-.row-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: var(--transition);
-  border: none;
-  cursor: pointer;
-  font-family: 'Sora', sans-serif;
-}
-.action-view {
-  background: var(--primary-soft);
-  color: var(--primary);
-}
-.action-view:hover {
-  background: var(--primary);
-  color: white;
-}
-.action-delete {
-  background: #FFF0F0;
-  color: #C0392B;
-}
-.action-delete:hover {
-  background: #C0392B;
-  color: white;
-}
-.action-btn i { font-size: 10px; }
-
-/* ─── Empty state ─── */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-}
-.empty-icon {
-  width: 56px; height: 56px;
-  background: var(--primary-soft);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 22px;
-  color: var(--primary);
-}
-.empty-state p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
-.upload-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--primary);
-  color: white;
-  padding: 10px 24px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 13px;
-  transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(11,59,75,0.15);
-}
-.upload-link:hover {
-  background: var(--primary-light);
-  transform: translateY(-2px);
-}
-
-/* ─── Toast ─── */
-#toast-container {
-  position: fixed;
-  top: 80px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+/* ── Toast ── */
+#toast-container { position: fixed; top: 80px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .toast {
-  background: white;
-  color: var(--primary);
-  padding: 12px 20px;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: var(--shadow-md);
-  border-left: 3px solid var(--accent);
+  background: white; color: var(--primary); padding: 12px 20px;
+  border-radius: var(--radius); font-size: 13px; font-weight: 600;
+  box-shadow: var(--shadow-md); border-left: 3px solid var(--accent);
   animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
 }
-@keyframes slideIn {
-  from { transform: translateX(30px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes fadeOut {
-  to { opacity: 0; transform: translateX(30px); }
-}
+@keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(30px); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ─── Animations ─── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Section anchors for scrolling ─── */
-.section-anchor {
-  scroll-margin-top: 80px;
-}
-
-/* ─── Responsive ─── */
+/* ── Responsive ── */
 @media (max-width: 1024px) {
-  .sidebar {
-    width: 180px;
-  }
-  .horizontal-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .horizontal-card-wide {
-    grid-column: span 2;
-  }
+  .sidebar { width: 180px; }
+  .horizontal-cards-grid { flex-wrap: wrap; } /* keep row but allow wrap if needed */
 }
-
+@media (max-width: 900px) {
+  .horizontal-cards-grid { flex-direction: column; } /* stack on smaller screens */
+  .horizontal-card { width: 100%; }
+}
 @media (max-width: 768px) {
-  .main-layout {
-    flex-direction: column;
-    padding: 24px 16px 60px;
-  }
-  
-  .sidebar {
-    width: 100%;
-    position: static;
-    top: 0;
-    margin-bottom: 24px;
-  }
-  
-  .horizontal-cards-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .horizontal-card-wide {
-    grid-column: span 1;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  
-  .horizontal-card-wide .horizontal-card-icon {
-    margin-bottom: 0;
-  }
+  .main-layout { flex-direction: column; padding: 24px 16px 60px; }
+  .sidebar { width: 100%; position: static; margin-bottom: 24px; }
 }
-
 @media (max-width: 640px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .stats-row .stat-item:nth-child(2) { border-right: none; }
@@ -760,12 +370,12 @@ body::before {
   .nav-links { display: none; }
   .dataset-row { grid-template-columns: 1fr auto; }
   .badge { display: none; }
+  .section-head { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
 <div class="topbar">
   <div class="topbar-inner">
     <a href="{% url 'home' %}" class="brand">
@@ -789,95 +399,57 @@ body::before {
 </div>
 {% endif %}
 
-<!-- Main layout with sidebar -->
 <div class="main-layout">
 
-  <!-- Vertical Sidebar Navigation -->
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-heading">Navigation</div>
       <ul class="sidebar-menu">
         <li class="sidebar-menu-item">
-          <a href="#profile" class="sidebar-menu-link active">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-          </a>
+          <a href="#profile" class="sidebar-menu-link active"><i class="fas fa-user"></i><span>Profile</span></a>
         </li>
         <li class="sidebar-menu-item">
-          <a href="#stats" class="sidebar-menu-link">
-            <i class="fas fa-chart-bar"></i>
-            <span>Statistics</span>
-          </a>
+          <a href="#stats" class="sidebar-menu-link"><i class="fas fa-chart-bar"></i><span>Statistics</span></a>
         </li>
         <li class="sidebar-menu-item">
-          <a href="#datasets" class="sidebar-menu-link">
-            <i class="fas fa-database"></i>
-            <span>Datasets</span>
-          </a>
+          <a href="#datasets" class="sidebar-menu-link"><i class="fas fa-database"></i><span>Datasets</span></a>
         </li>
       </ul>
     </div>
-    
     <div class="sidebar-section">
       <div class="sidebar-heading">Insights</div>
       <ul class="sidebar-menu">
-        <!-- Cleaned Reports — always links to the list page -->
         <li class="sidebar-menu-item">
-          <a href="{% url 'cleaned_reports_list' %}" class="sidebar-menu-link">
-            <i class="fas fa-file-alt"></i>
-            <span>Cleaned Reports</span>
-          </a>
+          <a href="{% url 'cleaned_reports_list' %}" class="sidebar-menu-link"><i class="fas fa-file-alt"></i><span>Cleaned Reports</span></a>
         </li>
-
-        <!-- KPI — always links to dataset picker (real-time count in card) -->
         <li class="sidebar-menu-item">
           <a href="{% url 'dataset_picker_kpi' %}" class="sidebar-menu-link">
-            <i class="fas fa-chart-line"></i>
-            <span>KPI ({{ datasets_with_analysis_count }} active)</span>
+            <i class="fas fa-chart-line"></i><span>KPI ({{ datasets_with_analysis_count }} active)</span>
           </a>
         </li>
-
-        <!-- Dashboard — always links to dataset picker -->
         <li class="sidebar-menu-item">
-          <a href="{% url 'dataset_picker_dashboard' %}" class="sidebar-menu-link">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-          </a>
+          <a href="{% url 'dataset_picker_dashboard' %}" class="sidebar-menu-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
         </li>
-
-        <!-- My Reports — always links to the saved reports list page -->
         <li class="sidebar-menu-item">
-          <a href="{% url 'my_reports_list' %}" class="sidebar-menu-link">
-            <i class="fas fa-lightbulb"></i>
-            <span>My Reports</span>
-          </a>
+          <a href="{% url 'my_reports_list' %}" class="sidebar-menu-link"><i class="fas fa-lightbulb"></i><span>My Reports</span></a>
         </li>
       </ul>
     </div>
-    
     <div class="sidebar-section">
       <div class="sidebar-heading">Quick Actions</div>
       <ul class="sidebar-menu">
         <li class="sidebar-menu-item">
-          <a href="{% url 'upload_data' %}" class="sidebar-menu-link">
-            <i class="fas fa-upload"></i>
-            <span>Upload Dataset</span>
-          </a>
+          <a href="{% url 'upload_data' %}" class="sidebar-menu-link"><i class="fas fa-upload"></i><span>Upload Dataset</span></a>
         </li>
         <li class="sidebar-menu-item">
-          <a href="#" class="sidebar-menu-link">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-          </a>
+          <a href="#" class="sidebar-menu-link"><i class="fas fa-cog"></i><span>Settings</span></a>
         </li>
       </ul>
     </div>
   </aside>
 
-  <!-- Content Area -->
   <div class="content-area">
 
-    <!-- Title row -->
     <div class="page-title-row" id="profile">
       <div class="page-title">User Profile</div>
     </div>
@@ -891,9 +463,7 @@ body::before {
           <span class="profile-detail-item"><i class="fas fa-envelope"></i>{{ user.email }}</span>
         </div>
       </div>
-      <div class="profile-badge">
-        <i class="fas fa-check-circle"></i> Standard User
-      </div>
+      <div class="profile-badge"><i class="fas fa-check-circle"></i> Standard User</div>
     </div>
 
     <!-- Stats card -->
@@ -921,47 +491,84 @@ body::before {
     <!-- Datasets card -->
     <div class="card datasets-card" style="animation-delay:0.15s;" id="datasets">
       <div class="section-head">
-        <div class="section-title">
-          <i class="fas fa-database"></i> Recent Datasets
-        </div>
+        <div class="section-title"><i class="fas fa-database"></i> Recent Datasets</div>
+
         {% if recent_datasets %}
-        <span class="section-count">{{ recent_datasets|length }} of {{ total_datasets }}</span>
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">
+            <i class="fas fa-th-list"></i> All
+            <span class="tab-count">{{ recent_datasets|length }}</span>
+          </button>
+          <button class="filter-tab" data-filter="pending">
+            <i class="fas fa-clock"></i> Pending
+            <span class="tab-count" id="count-pending">0</span>
+          </button>
+          <button class="filter-tab" data-filter="processed">
+            <i class="fas fa-check-circle"></i> Processed
+            <span class="tab-count" id="count-processed">0</span>
+          </button>
+        </div>
+        <span class="section-count" id="visibleCount">{{ recent_datasets|length }} of {{ total_datasets }}</span>
         {% endif %}
       </div>
 
       {% if recent_datasets %}
-      <div class="dataset-list">
+      <div class="dataset-list" id="datasetList">
         {% for ds in recent_datasets %}
-        <div class="dataset-row">
-          <div>
-            <div class="dataset-name">
-              <a href="{% url 'dataset_detail' ds.id %}">{{ ds.file_name }}</a>
+
+          {% if ds.is_processed %}
+          {# PROCESSED — name is plain text (no clickable link) | actions: Delete only #}
+          <div class="dataset-row" data-status="processed">
+            <div>
+              <div class="dataset-name dataset-name-plain">{{ ds.file_name }}</div>
+              <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
             </div>
-            <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
-          </div>
-
-          <div>
-            {% if ds.is_processed %}
+            <div>
               <span class="badge badge-processed"><i class="fas fa-check-circle"></i> Processed</span>
-            {% else %}
-              <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
-            {% endif %}
+            </div>
+            <div class="row-actions">
+              <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
+                    onsubmit="return confirm('Delete this dataset?');">
+                {% csrf_token %}
+                <button type="submit" class="action-btn action-delete">
+                  <i class="fas fa-trash-alt"></i> Delete
+                </button>
+              </form>
+            </div>
           </div>
 
-          <div class="row-actions">
-            <a href="{% url 'dataset_detail' ds.id %}" class="action-btn action-view">
-              <i class="fas fa-eye"></i> View
-            </a>
-            <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
-                  onsubmit="return confirm('Delete this dataset?');">
-              {% csrf_token %}
-              <button type="submit" class="action-btn action-delete">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </form>
+          {% else %}
+          {# PENDING — badge: Pending | actions: View + Delete #}
+          <div class="dataset-row" data-status="pending">
+            <div>
+              <div class="dataset-name">
+                <a href="{% url 'dataset_detail' ds.id %}">{{ ds.file_name }}</a>
+              </div>
+              <div class="dataset-sub">Uploaded {{ ds.uploaded_at }}</div>
+            </div>
+            <div>
+              <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
+            </div>
+            <div class="row-actions">
+              <a href="{% url 'dataset_detail' ds.id %}" class="action-btn action-view">
+                <i class="fas fa-eye"></i> View
+              </a>
+              <form action="{% url 'delete_dataset' ds.id %}" method="post" style="display:inline;"
+                    onsubmit="return confirm('Delete this dataset?');">
+                {% csrf_token %}
+                <button type="submit" class="action-btn action-delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
+          {% endif %}
+
         {% endfor %}
+      </div>
+
+      <div class="no-filter-results" id="noFilterResults">
+        <i class="fas fa-filter"></i>No datasets match this filter.
       </div>
 
       {% else %}
@@ -975,142 +582,127 @@ body::before {
       {% endif %}
     </div>
 
-    <!-- ─── Horizontal cards grid with real-time counts ─── -->
+    <!-- Horizontal cards grid – ALL FOUR CARDS IN ONE ROW -->
     <div class="horizontal-cards-grid">
 
-      <!-- Card 1: Cleaned Reports — shows count of processed datasets -->
       <a href="{% url 'cleaned_reports_list' %}" class="horizontal-card" id="cleaned-reports">
-        <div class="horizontal-card-icon">
-          <i class="fas fa-file-alt"></i>
-        </div>
+        <div class="horizontal-card-icon"><i class="fas fa-file-alt"></i></div>
         <h3 class="horizontal-card-title">Cleaned Reports</h3>
-        <p class="horizontal-card-description">
-          View and manage your cleaned and processed data reports
-        </p>
+        <p class="horizontal-card-description">View and manage your cleaned and processed data reports</p>
         <div class="horizontal-card-meta">
           <span class="horizontal-card-count">{{ processed_datasets }} datasets</span>
-          <span class="horizontal-card-link">
-            View all <i class="fas fa-arrow-right"></i>
-          </span>
+          <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
         </div>
       </a>
 
-      <!-- Card 2: KPI Dashboard — shows count of datasets with analysis, always links to picker -->
       <a href="{% url 'dataset_picker_kpi' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="kpi">
-        <div class="horizontal-card-icon">
-          <i class="fas fa-chart-line"></i>
-        </div>
+        <div class="horizontal-card-icon"><i class="fas fa-chart-line"></i></div>
         <h3 class="horizontal-card-title">KPI Dashboard</h3>
-        <p class="horizontal-card-description">
-          Track key performance indicators and metrics from your analyzed datasets
-        </p>
+        <p class="horizontal-card-description">Track key performance indicators and metrics from your analyzed datasets</p>
         <div class="horizontal-card-meta">
           <span class="horizontal-card-count">{{ datasets_with_analysis_count }} with KPIs</span>
-          <span class="horizontal-card-link">
-            Select dataset <i class="fas fa-arrow-right"></i>
-          </span>
+          <span class="horizontal-card-link">Select dataset <i class="fas fa-arrow-right"></i></span>
         </div>
       </a>
 
-      <!-- Card 3: Interactive Dashboard — shows count of datasets with analysis, always links to picker -->
       <a href="{% url 'dataset_picker_dashboard' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="dashboard">
-        <div class="horizontal-card-icon">
-          <i class="fas fa-tachometer-alt"></i>
-        </div>
+        <div class="horizontal-card-icon"><i class="fas fa-tachometer-alt"></i></div>
         <h3 class="horizontal-card-title">Interactive Dashboard</h3>
-        <p class="horizontal-card-description">
-          Interactive visualizations, filters, and analytics for your datasets
-        </p>
+        <p class="horizontal-card-description">Interactive visualizations, filters, and analytics for your datasets</p>
         <div class="horizontal-card-meta">
           <span class="horizontal-card-count">{{ datasets_with_analysis_count }} available</span>
-          <span class="horizontal-card-link">
-            Choose dataset <i class="fas fa-arrow-right"></i>
-          </span>
+          <span class="horizontal-card-link">Choose dataset <i class="fas fa-arrow-right"></i></span>
         </div>
       </a>
 
-      <!-- Card 4: My Reports — wide card, shows count of saved reports -->
-      <a href="{% url 'my_reports_list' %}" class="horizontal-card horizontal-card-wide" id="reports">
-        <div class="horizontal-card-icon">
-          <i class="fas fa-lightbulb"></i>
-        </div>
-        <div class="horizontal-card-content">
-          <h3 class="horizontal-card-title">My Reports & Insights</h3>
-          <p class="horizontal-card-description">
-            Access your generated reports, insights, and analytics findings
-          </p>
-          <div class="horizontal-card-meta">
-            <span class="horizontal-card-count">{{ total_reports }} reports</span>
-            <span class="horizontal-card-link">
-              View all <i class="fas fa-arrow-right"></i>
-            </span>
-          </div>
+      <a href="{% url 'my_reports_list' %}" class="horizontal-card" id="reports">
+        <div class="horizontal-card-icon"><i class="fas fa-lightbulb"></i></div>
+        <h3 class="horizontal-card-title">My Reports & Insights</h3>
+        <p class="horizontal-card-description">Access your generated reports, insights, and analytics findings</p>
+        <div class="horizontal-card-meta">
+          <span class="horizontal-card-count">{{ total_reports }} reports</span>
+          <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
         </div>
       </a>
+
     </div>
 
-  </div> <!-- End content-area -->
-</div> <!-- End main-layout -->
+  </div><!-- end content-area -->
+</div><!-- end main-layout -->
 
-<!-- JavaScript for active sidebar links and smooth scrolling -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Get all sections and sidebar links
-  const sections = document.querySelectorAll('.card, .horizontal-card');
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* ── Filter tabs ── */
+  const tabs         = document.querySelectorAll('.filter-tab');
+  const rows         = document.querySelectorAll('.dataset-row');
+  const noResults    = document.getElementById('noFilterResults');
+  const visibleCount = document.getElementById('visibleCount');
+  const totalDatasets = {{ total_datasets }};
+
+  // Count per status
+  const counts = { pending: 0, processed: 0 };
+  rows.forEach(r => {
+    const s = r.dataset.status;
+    if (s in counts) counts[s]++;
+  });
+  const elPending   = document.getElementById('count-pending');
+  const elProcessed = document.getElementById('count-processed');
+  if (elPending)   elPending.textContent   = counts.pending;
+  if (elProcessed) elProcessed.textContent = counts.processed;
+
+  function applyFilter(filter) {
+    let visible = 0;
+    rows.forEach(row => {
+      const match = filter === 'all' || row.dataset.status === filter;
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    if (noResults)    noResults.style.display  = visible === 0 ? 'block' : 'none';
+    if (visibleCount) visibleCount.textContent = visible + ' of ' + totalDatasets;
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function () {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      applyFilter(this.dataset.filter);
+    });
+  });
+
+  /* ── Sidebar scroll-spy ── */
+  const cards        = document.querySelectorAll('.card, .horizontal-card');
   const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
-  
-  // Function to update active class based on scroll position
+
   function updateActiveLink() {
     let current = '';
-    const scrollPosition = window.scrollY + 100; // Offset for better accuracy
-    
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
-      
-      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-        current = section.getAttribute('id');
-      }
+    const sp = window.scrollY + 100;
+    cards.forEach(s => {
+      if (sp >= s.offsetTop && sp < s.offsetTop + s.clientHeight) current = s.getAttribute('id');
     });
-    
     sidebarLinks.forEach(link => {
       link.classList.remove('active');
       const href = link.getAttribute('href');
-      if (href && href.charAt(0) === '#' && href.substring(1) === current) {
-        link.classList.add('active');
-      }
+      if (href && href[0] === '#' && href.substring(1) === current) link.classList.add('active');
     });
   }
-  
-  // Add smooth scrolling to sidebar links (only for anchor links)
+
   sidebarLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
-      
-      // Only handle anchor links, let regular URLs navigate normally
-      if (href && href.charAt(0) === '#') {
+      if (href && href[0] === '#') {
         e.preventDefault();
-        
-        const targetElement = document.querySelector(href);
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-          
-          // Update active class
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           sidebarLinks.forEach(l => l.classList.remove('active'));
           this.classList.add('active');
         }
       }
-      // For non-anchor links (like URLs), let the browser handle normally
     });
   });
-  
-  // Update active link on scroll
+
   window.addEventListener('scroll', updateActiveLink);
-  
-  // Initial call to set active link
   updateActiveLink();
 });
 </script>

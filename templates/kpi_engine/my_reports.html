@@ -94,7 +94,6 @@ body::before {
 }
 .report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--primary-light); }
 
-/* coloured top accent per domain */
 .report-card-accent { height: 4px; }
 .accent-finance    { background: linear-gradient(90deg, #1A6B50, #4A9B8D); }
 .accent-health     { background: linear-gradient(90deg, #C0392B, #E74C3C); }
@@ -114,8 +113,9 @@ body::before {
 }
 .report-title { font-size: 14px; font-weight: 700; color: var(--text-dark); line-height: 1.3; flex: 1; }
 .report-date  { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0; }
+.report-updated { font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace; white-space: nowrap; margin-top: 3px; display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
+.report-updated i { font-size: 8px; }
 
-/* domain pill */
 .domain-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-bottom: 14px; }
 .domain-finance    { background: #E8F5E9; color: #2E7D32; }
 .domain-health     { background: #FFE8E8; color: #C0392B; }
@@ -124,12 +124,10 @@ body::before {
 .domain-hr         { background: #F3E5F5; color: #7B1FA2; }
 .domain-generic    { background: #ECEFF1; color: #546E7A; }
 
-/* stat pills row */
 .report-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .report-stat  { display: flex; align-items: center; gap: 5px; background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 11px; color: var(--text-muted); }
 .report-stat strong { color: var(--primary); font-family: 'JetBrains Mono', monospace; }
 
-/* narrative snippet */
 .report-narrative {
   font-size: 12px; color: var(--text-soft); line-height: 1.6;
   background: var(--background); border-radius: 10px;
@@ -139,11 +137,14 @@ body::before {
 }
 .no-narrative { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 8px 0; }
 
-/* card footer actions */
+/* ── Card footer — now has 3 buttons ── */
 .report-card-footer {
   padding: 14px 22px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px; background: rgba(240,244,248,0.5);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(240,244,248,0.5);
+  flex-wrap: wrap;
 }
+
 .action-btn {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 7px 14px; border-radius: 8px;
@@ -151,11 +152,25 @@ body::before {
   text-decoration: none; transition: var(--transition);
   border: none; cursor: pointer; font-family: 'Sora', sans-serif; white-space: nowrap;
 }
-.action-view    { background: var(--primary-soft); color: var(--primary); }
-.action-view:hover { background: var(--primary); color: white; }
+.action-view        { background: var(--primary-soft); color: var(--primary); }
+.action-view:hover  { background: var(--primary); color: white; }
 .action-interactive { background: #E0F2F0; color: #1A6B50; }
 .action-interactive:hover { background: #1A6B50; color: white; }
-.action-btn i   { font-size: 10px; }
+
+/* NEW — Data Story button */
+.action-story {
+  background: linear-gradient(135deg, #0B3B4B, #1D5A6D);
+  color: white;
+  box-shadow: 0 2px 8px rgba(11,59,75,0.20);
+  margin-left: auto;        /* push to right edge */
+}
+.action-story:hover {
+  background: linear-gradient(135deg, #4A9B8D, #0B3B4B);
+  box-shadow: 0 4px 14px rgba(11,59,75,0.28);
+  transform: translateY(-1px);
+  color: white;
+}
+.action-btn i { font-size: 10px; }
 
 /* ── Empty state ── */
 .empty-state { text-align: center; padding: 64px 20px; animation: fadeUp 0.4s ease both 0.10s; }
@@ -165,17 +180,14 @@ body::before {
 .cta-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: white; padding: 12px 28px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 13px; transition: var(--transition); box-shadow: 0 4px 12px rgba(11,59,75,0.18); }
 .cta-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
 
-/* ── Animation ── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── Responsive ── */
 @media (max-width: 768px) { .summary-row { grid-template-columns: 1fr 1fr; } .reports-grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .summary-row { grid-template-columns: 1fr; } .nav-links { display: none; } }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
 <div class="topbar">
   <div class="topbar-inner">
     <a href="{% url 'home' %}" class="brand">
@@ -186,7 +198,6 @@ body::before {
     </a>
     <nav class="nav-links">
       <a href="{% url 'home' %}"        class="nav-link"><i class="fas fa-home"></i>Home</a>
-      <a href="{% url 'upload_data' %}" class="nav-link"><i class="fas fa-upload"></i>Upload</a>
       <a href="{% url 'profile' %}"     class="nav-link"><i class="fas fa-user"></i>Profile</a>
     </nav>
   </div>
@@ -194,7 +205,6 @@ body::before {
 
 <div class="page-wrapper">
 
-  <!-- Header -->
   <div class="page-header">
     <div class="page-header-left">
       <div class="breadcrumb">
@@ -213,7 +223,6 @@ body::before {
 
   {% if reports %}
 
-  <!-- Summary stats -->
   <div class="summary-row">
     <div class="summary-card">
       <div class="summary-icon blue"><i class="fas fa-file-pdf"></i></div>
@@ -245,16 +254,13 @@ body::before {
     </div>
   </div>
 
-  <!-- Reports grid -->
   <div class="reports-grid">
     {% for rpt in reports %}
     <div class="report-card">
 
-      <!-- Domain-coloured top bar -->
       <div class="report-card-accent accent-{{ rpt.domain|lower }}"></div>
 
       <div class="report-card-body">
-
         <div class="report-card-top">
           <div class="report-domain-icon">
             {% if rpt.domain == 'finance' %}💰
@@ -265,15 +271,20 @@ body::before {
             {% else %}📊{% endif %}
           </div>
           <div class="report-title">{{ rpt.title }}</div>
-          <div class="report-date">{{ rpt.created_at|date:"M d, Y" }}</div>
+          <div style="text-align:right; flex-shrink:0;">
+            <div class="report-date">{{ rpt.created_at|date:"M d, Y" }}</div>
+            {% if rpt.updated_at and rpt.updated_at != rpt.created_at %}
+            <div class="report-updated">
+              <i class="fas fa-sync-alt"></i> Updated {{ rpt.updated_at|date:"M d, Y" }}
+            </div>
+            {% endif %}
+          </div>
         </div>
 
-        <!-- Domain pill -->
         <span class="domain-pill domain-{{ rpt.domain|lower }}">
           {{ rpt.analysis_result.cleaning_report.get_domain_display }}
         </span>
 
-        <!-- Stat pills -->
         <div class="report-stats">
           <div class="report-stat">
             <i class="fas fa-database" style="font-size:9px"></i>
@@ -293,16 +304,14 @@ body::before {
           </div>
         </div>
 
-        <!-- AI narrative snippet -->
         {% if rpt.narrative %}
           <div class="report-narrative">{{ rpt.narrative }}</div>
         {% else %}
           <div class="no-narrative"><i class="fas fa-info-circle"></i> No narrative captured for this report.</div>
         {% endif %}
-
       </div>
 
-      <!-- Footer actions -->
+      <!-- Footer: KPI Dashboard | Interactive | Data Story → -->
       <div class="report-card-footer">
         <a href="{% url 'dashboard' rpt.analysis_result.id %}"
            class="action-btn action-view">
@@ -312,6 +321,12 @@ body::before {
            class="action-btn action-interactive">
           <i class="fas fa-sliders-h"></i> Interactive
         </a>
+        <!-- NEW: Data Story button -->
+        <a href="{% url 'report_story' rpt.id %}"
+           class="action-btn action-story">
+          <i class="fas fa-book-open"></i> Data Story
+          <i class="fas fa-arrow-right" style="font-size:9px; margin-left:2px;"></i>
+        </a>
       </div>
 
     </div>
@@ -320,7 +335,6 @@ body::before {
 
   {% else %}
 
-  <!-- Empty state -->
   <div class="empty-state">
     <div class="empty-icon"><i class="fas fa-lightbulb"></i></div>
     <h3>No Reports Generated Yet</h3>

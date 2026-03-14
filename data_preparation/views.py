@@ -19,7 +19,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
 from datacleaning.models import CleaningReport
-from data_preparation.models import Dataset, Report
+from data_preparation.models import Dataset
 from Authentication.models import CustomUser
 
 
@@ -75,18 +75,42 @@ def home(request):
 
     user_id = request.session["user_id"]
 
-    total_reports = Report.objects.filter(user_id=user_id).count()
-    pending_updates = Dataset.objects.filter(
-        user_id=user_id, is_processed=False
-    ).count()
-    latest_trends = Dataset.objects.filter(
-        user_id=user_id, is_processed=True
-    ).count()
+    pending_updates = Dataset.objects.filter(user_id=user_id, is_processed=False).count()
+    latest_trends   = Dataset.objects.filter(user_id=user_id, is_processed=True).count()
+
+    # Cleaned = datasets that have at least one CleaningReport
+    cleaned_count = CleaningReport.objects.filter(
+        dataset__user_id=user_id
+    ).values('dataset_id').distinct().count()
+
+    # Reports, KPI, Dashboard — all from kpi_engine (SavedReport / AnalysisResult)
+    total_reports   = 0
+    kpi_count       = 0
+    dashboard_count = 0
+    try:
+        from kpi_engine.models import AnalysisResult, SavedReport
+
+        # SavedReport = user-saved report snapshots — the true "Reports" count
+        total_reports = SavedReport.objects.filter(
+            analysis_result__cleaning_report__dataset__user_id=user_id
+        ).count()
+
+        # Distinct datasets that have an AnalysisResult = KPI generated + dashboard ready
+        analysis_qs     = AnalysisResult.objects.filter(
+            cleaning_report__dataset__user_id=user_id
+        )
+        kpi_count       = analysis_qs.values('cleaning_report__dataset_id').distinct().count()
+        dashboard_count = kpi_count   # 1-to-1 with AnalysisResult
+    except Exception:
+        pass
 
     context = {
-        "total_reports": total_reports,
+        "total_reports":   total_reports,
         "pending_updates": pending_updates,
-        "latest_trends": latest_trends,
+        "latest_trends":   latest_trends,
+        "cleaned_count":   cleaned_count,
+        "kpi_count":       kpi_count,
+        "dashboard_count": dashboard_count,
     }
 
     return render(request, "data_preparation/home.html", context)
@@ -289,38 +313,47 @@ def profile_view(request):
     user_id = request.session["user_id"]
     user    = CustomUser.objects.get(id=user_id)
 
-    # ── existing counts ───────────────────────────────────────────
+    # ── dataset counts ────────────────────────────────────────────
     total_datasets     = Dataset.objects.filter(user=user).count()
     processed_datasets = Dataset.objects.filter(user=user, is_processed=True).count()
     pending_datasets   = Dataset.objects.filter(user=user, is_processed=False).count()
-    total_reports      = Report.objects.filter(user=user).count()
 
-    recent_datasets = Dataset.objects.filter(
-        user_id=user_id
-    ).order_by('-id')
+    recent_datasets = Dataset.objects.filter(user_id=user_id).order_by('-id')
 
     # ── cleaned reports count ─────────────────────────────────────
     cleaned_reports_count = CleaningReport.objects.filter(
         dataset__user_id=user_id
     ).count()
 
-    # ── analysis result per dataset (for KPI / Dashboard card links) ───
+    # ── annotate each dataset: has_report ─────────────────────────
+    datasets_with_report_ids = set(
+        CleaningReport.objects.filter(
+            dataset__user_id=user_id
+        ).values_list('dataset_id', flat=True)
+    )
+    for ds in recent_datasets:
+        ds.has_report = ds.id in datasets_with_report_ids
+
+    # ── kpi_engine counts (SavedReport = true reports count) ──────
+    datasets_with_analysis_count = 0
+    latest_analysis_id           = None
+    kpi_count                    = 0
+    my_reports_count             = 0   # SavedReport rows — shown in stat card
+
     try:
         from kpi_engine.models import AnalysisResult, SavedReport
 
-        # Annotate each dataset with its own analysis result id (if any)
+        # Annotate each dataset with its own analysis result (if any)
         for ds in recent_datasets:
             try:
-                ar = AnalysisResult.objects.get(
-                    cleaning_report__dataset=ds
-                )
+                ar = AnalysisResult.objects.get(cleaning_report__dataset=ds)
                 ds.analysis_result_id = ar.id
                 ds.kpi_count = len(ar.result_json.get('kpis', []))
             except AnalysisResult.DoesNotExist:
                 ds.analysis_result_id = None
                 ds.kpi_count = 0
 
-        # Global latest for the top cards
+        # Global latest analysis
         latest_analysis = AnalysisResult.objects.filter(
             cleaning_report__dataset__user_id=user_id
         ).order_by('-created_at').first()
@@ -328,29 +361,33 @@ def profile_view(request):
         latest_analysis_id = latest_analysis.id if latest_analysis else None
         kpi_count = len(latest_analysis.result_json.get('kpis', [])) if latest_analysis else 0
 
+        datasets_with_analysis_count = AnalysisResult.objects.filter(
+            cleaning_report__dataset__user_id=user_id
+        ).values('cleaning_report__dataset_id').distinct().count()
+
+        # TRUE reports count — SavedReport, not data_preparation.Report
         my_reports_count = SavedReport.objects.filter(
             analysis_result__cleaning_report__dataset__user_id=user_id
         ).count()
 
     except Exception:
-        latest_analysis_id = None
-        kpi_count          = 0
-        my_reports_count   = 0
         for ds in recent_datasets:
             ds.analysis_result_id = None
             ds.kpi_count = 0
 
     context = {
-        "user":                  user,
-        "total_datasets":        total_datasets,
-        "processed_datasets":    processed_datasets,
-        "pending_datasets":      pending_datasets,
-        "total_reports":         total_reports,
-        "recent_datasets":       recent_datasets,
-        "cleaned_reports_count": cleaned_reports_count,
-        "latest_analysis_id":    latest_analysis_id,
-        "kpi_count":             kpi_count,
-        "my_reports_count":      my_reports_count,
+        "user":                         user,
+        "total_datasets":               total_datasets,
+        "processed_datasets":           processed_datasets,
+        "pending_datasets":             pending_datasets,
+        # Use SavedReport count for the stat card labelled "Reports"
+        "total_reports":                my_reports_count,
+        "recent_datasets":              recent_datasets,
+        "cleaned_reports_count":        cleaned_reports_count,
+        "latest_analysis_id":           latest_analysis_id,
+        "kpi_count":                    kpi_count,
+        "my_reports_count":             my_reports_count,
+        "datasets_with_analysis_count": datasets_with_analysis_count,
     }
 
     return render(request, "data_preparation/profile.html", context)

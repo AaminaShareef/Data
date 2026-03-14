@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Data Story — {{ report.title }} · Auralis Insights</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ══════════════════════════════════════════════════
+   DESIGN TOKENS — refined, airy, professional
+══════════════════════════════════════════════════ */
+:root {
+  --ink:         #0D1F2D;
+  --ink-soft:    #2D3F50;
+  --ink-muted:   #5E7080;
+  --ink-faint:   #8FA3B3;
+  --teal:        #0B3B4B;
+  --teal-mid:    #1D5A6D;
+  --teal-soft:   #E3F0F5;
+  --teal-pale:   #F0F7FA;
+  --emerald:     #4A9B8D;
+  --emerald-soft:#E2F4F1;
+  --amber:       #C8854A;
+  --amber-soft:  #FDF0E6;
+  --bg:          #F7F9FC;
+  --white:       #FFFFFF;
+  --border:      rgba(11,59,75,0.07);
+  --border-mid:  rgba(11,59,75,0.13);
+  --sh-xs:  0 1px 4px rgba(11,59,75,0.06);
+  --sh-sm:  0 3px 12px rgba(11,59,75,0.07);
+  --sh-md:  0 8px 28px rgba(11,59,75,0.09);
+  --sh-lg:  0 20px 52px rgba(11,59,75,0.12);
+  --r:      12px;
+  --r-lg:   20px;
+  --r-xl:   28px;
+  --ease:   cubic-bezier(0.4,0,0.2,1);
+  --t:      0.22s var(--ease);
+  --prose:  720px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 80% 40% at 0% 0%, rgba(74,155,141,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(11,59,75,0.05) 0%, transparent 55%);
+  pointer-events:none; z-index:0;
+}
+
+/* ══════════════════════════════════════════════════
+   TOPBAR — cleaner, more spacious
+══════════════════════════════════════════════════ */
+.topbar {
+  position:sticky; top:0; z-index:200;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(20px);
+  border-bottom:1px solid var(--border);
+  box-shadow: var(--sh-xs);
+}
+.topbar-inner {
+  max-width:1300px; margin:0 auto;
+  height:64px; padding:0 32px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+}
+.brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.brand-logo {
+  width:36px; height:36px;
+  background: var(--teal); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  transition:var(--t);
+}
+.brand-logo svg { width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; }
+.brand-name {
+  font-size:16px; font-weight:700; color:var(--teal);
+  letter-spacing:-0.3px;
+}
+
+.nav-group {
+  display:flex; align-items:center; gap:12px;
+}
+.nav-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 16px; border-radius:999px;
+  font-size:13px; font-weight:500; text-decoration:none;
+  transition:var(--t); color:var(--ink-muted);
+}
+.nav-pill i { font-size:11px; }
+.nav-pill:hover { background:var(--teal-soft); color:var(--teal); transform:translateY(-1px); }
+.nav-pill-solid {
+  background:var(--teal); color:#fff;
+  box-shadow:0 2px 8px rgba(11,59,75,0.18);
+}
+.nav-pill-solid:hover { background:var(--teal-mid); color:#fff; }
+
+/* ══════════════════════════════════════════════════
+   READING PROGRESS & BACK TO TOP
+══════════════════════════════════════════════════ */
+.progress-bar {
+  position:fixed; top:64px; left:0; right:0;
+  height:3px; z-index:199;
+  background: linear-gradient(90deg, var(--emerald), var(--teal));
+  transform-origin:left; transform:scaleX(0);
+  transition:transform 0.08s linear;
+}
+.back-top {
+  position:fixed; bottom:32px; right:32px;
+  width:44px; height:44px; border-radius:50%;
+  background:var(--teal); color:#fff;
+  border:none; cursor:pointer; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--sh-md); opacity:0; transform:translateY(12px);
+  transition:var(--t); z-index:100;
+}
+.back-top.show { opacity:1; transform:translateY(0); }
+.back-top:hover { background:var(--teal-mid); transform:translateY(-2px); }
+
+/* ══════════════════════════════════════════════════
+   COVER — more elegant, better contrast
+══════════════════════════════════════════════════ */
+.cover {
+  background: linear-gradient(145deg, var(--teal), #123C4D);
+  position:relative; overflow:hidden;
+  padding:88px 32px 80px;
+}
+.cover::before {
+  content:''; position:absolute; inset:0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size:28px 28px; pointer-events:none;
+}
+.cover::after {
+  content:''; position:absolute;
+  width:700px; height:700px; border-radius:50%;
+  background:radial-gradient(circle, rgba(74,155,141,0.2) 0%, transparent 70%);
+  top:-280px; right:-200px; pointer-events:none;
+}
+.cover-inner { max-width:1000px; margin:0 auto; position:relative; z-index:2; }
+
+.cover-breadcrumb {
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; color:rgba(255,255,255,0.45);
+  margin-bottom:24px; flex-wrap:wrap;
+}
+.cover-breadcrumb a { color:rgba(255,255,255,0.45); text-decoration:none; transition:var(--t); }
+.cover-breadcrumb a:hover { color:#fff; }
+.cover-breadcrumb i { font-size:8px; }
+
+.cover-domain {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 18px; border-radius:999px;
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;
+  margin-bottom:24px;
+  backdrop-filter:blur(4px);
+}
+.cover-domain-health    { background:rgba(194,57,57,0.25); color:#F5AAAA; border:1px solid rgba(245,170,170,0.25); }
+.cover-domain-finance   { background:rgba(46,125,50,0.25); color:#A5D6A7; border:1px solid rgba(165,214,167,0.25); }
+.cover-domain-education { background:rgba(21,101,192,0.25); color:#90CAF9; border:1px solid rgba(144,202,249,0.25); }
+.cover-domain-sales     { background:rgba(230,81,0,0.25); color:#FFCC80; border:1px solid rgba(255,204,128,0.25); }
+.cover-domain-hr        { background:rgba(123,31,162,0.25); color:#CE93D8; border:1px solid rgba(206,147,216,0.25); }
+.cover-domain-generic   { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.15); }
+
+.cover-title {
+  font-family:'Fraunces', Georgia, serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight:700; line-height:1.15;
+  color:#fff; letter-spacing:-0.5px; margin-bottom:20px;
+  max-width:900px;
+}
+.cover-subtitle {
+  font-size:15px; color:rgba(255,255,255,0.55);
+  margin-bottom:32px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.cover-subtitle i { font-size:12px; color:var(--emerald); }
+.cover-subtitle span { color:rgba(255,255,255,0.3); }
+
+.cover-stats {
+  display:inline-flex; flex-wrap:wrap;
+  background:rgba(0,0,0,0.2);
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px; overflow:hidden;
+}
+.cover-stat {
+  padding:18px 32px; text-align:center;
+  border-right:1px solid rgba(255,255,255,0.1);
+  min-width:120px;
+}
+.cover-stat:last-child { border-right:none; }
+.cover-stat-num {
+  font-family:'DM Mono', monospace;
+  font-size:28px; font-weight:500; color:#fff; line-height:1; margin-bottom:5px;
+}
+.cover-stat-lbl {
+  font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.8px; color:rgba(255,255,255,0.5);
+}
+.cover-date {
+  margin-top:28px; font-size:13px; color:rgba(255,255,255,0.4);
+  display:flex; align-items:center; gap:8px;
+}
+.cover-date i { font-size:11px; }
+
+/* ══════════════════════════════════════════════════
+   PAGE BODY — two-column
+══════════════════════════════════════════════════ */
+.page-body {
+  max-width:1300px; margin:0 auto;
+  padding:64px 32px 100px;
+  display:grid;
+  grid-template-columns: 1fr 280px;
+  gap:48px; align-items:start;
+  position:relative; z-index:1;
+}
+.main-col { min-width:0; }
+.side-col { position:sticky; top:84px; }
+
+/* ══════════════════════════════════════════════════
+   SECTION CHROME — more breathing room
+══════════════════════════════════════════════════ */
+.story-section { margin-bottom:64px; }
+
+.section-eyebrow {
+  display:flex; align-items:center; gap:12px; margin-bottom:20px;
+}
+.eyebrow-line {
+  width:4px; height:28px; border-radius:4px;
+  background:linear-gradient(180deg, var(--emerald), var(--teal)); flex-shrink:0;
+}
+.eyebrow-text {
+  font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.2px; color:var(--emerald);
+}
+.eyebrow-divider {
+  flex:1; height:1px;
+  background:linear-gradient(90deg, var(--border-mid), transparent);
+}
+.section-title-text {
+  font-family:'Fraunces', Georgia, serif;
+  font-size:24px; font-weight:600;
+  color:var(--ink); letter-spacing:-0.3px; margin-bottom:6px; margin-top:-4px;
+}
+.section-desc {
+  font-size:14px; color:var(--ink-muted); line-height:1.7; margin-bottom:24px;
+  max-width:600px;
+}
+
+/* ══════════════════════════════════════════════════
+   NARRATIVE CARD — refined, with subtle elegance
+══════════════════════════════════════════════════ */
+.narrative-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-xl); overflow:hidden;
+  box-shadow:var(--sh-sm); transition:var(--t);
+}
+.narrative-card:hover { box-shadow:var(--sh-md); }
+
+.narrative-header {
+  background:linear-gradient(135deg, var(--teal) 0%, var(--teal-mid) 100%);
+  padding:22px 32px; display:flex; align-items:center; gap:16px;
+}
+.narrative-header-icon {
+  width:42px; height:42px; border-radius:12px;
+  background:rgba(255,255,255,0.12);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:18px; flex-shrink:0;
+}
+.narrative-header-text {
+  color:rgba(255,255,255,0.8); font-size:14px;
+}
+.narrative-header-label { color:#fff; font-size:18px; font-weight:700; }
+
+.narrative-body { padding:32px 36px; }
+
+.plain-preamble {
+  background:var(--emerald-soft);
+  border:1px solid rgba(74,155,141,0.2);
+  border-radius:14px; padding:16px 22px; margin-bottom:28px;
+  display:flex; align-items:flex-start; gap:12px;
+}
+.plain-preamble i { color:var(--emerald); font-size:14px; margin-top:2px; flex-shrink:0; }
+.plain-preamble p { font-size:14px; color:var(--ink-soft); line-height:1.7; }
+.plain-preamble strong { color:var(--teal); }
+
+.narrative-text {
+  font-family:'Fraunces', Georgia, serif;
+  font-size:18px; line-height:2; color:var(--ink-soft); font-weight:400;
+}
+.narrative-text::first-letter {
+  font-size:3.5em; font-weight:700;
+  float:left; line-height:0.78;
+  margin-right:10px; margin-top:8px;
+  color:var(--teal); font-family:'Fraunces', serif;
+}
+
+.narrative-empty { text-align:center; padding:48px 32px; }
+.narrative-empty i { font-size:32px; color:var(--teal-soft); margin-bottom:16px; display:block; }
+.narrative-empty p { font-size:15px; color:var(--ink-muted); line-height:1.7; }
+
+/* ══════════════════════════════════════════════════
+   SNAPSHOT GRID — more visual appeal
+══════════════════════════════════════════════════ */
+.snapshot-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:18px;
+}
+.snapshot-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:24px 18px 20px;
+  text-align:center; box-shadow:var(--sh-xs);
+  transition:var(--t); position:relative; overflow:hidden;
+}
+.snapshot-card::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:4px;
+  opacity:0; transition:var(--t);
+}
+.snapshot-card:hover { box-shadow:var(--sh-md); transform:translateY(-4px); }
+.snapshot-card:hover::after { opacity:1; }
+.sc-rows::after { background:linear-gradient(90deg,#4A9B8D,#0B3B4B); }
+.sc-filt::after { background:linear-gradient(90deg,#1565C0,#1976D2); }
+.sc-kpi::after  { background:linear-gradient(90deg,#7B1FA2,#9C27B0); }
+.sc-ins::after  { background:linear-gradient(90deg,#E65100,#F57C00); }
+
+.sc-icon {
+  width:48px; height:48px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; margin:0 auto 16px; transition:var(--t);
+}
+.sc-rows .sc-icon { background:var(--emerald-soft); color:var(--emerald); }
+.sc-filt .sc-icon { background:#E3F2FD; color:#1565C0; }
+.sc-kpi  .sc-icon { background:#F3E5F5; color:#7B1FA2; }
+.sc-ins  .sc-icon { background:#FFF3E0; color:#E65100; }
+.snapshot-card:hover .sc-icon { transform:scale(1.1); }
+
+.sc-num {
+  font-family:'DM Mono', monospace;
+  font-size:32px; font-weight:500; color:var(--teal); line-height:1; margin-bottom:6px;
+}
+.sc-label {
+  font-size:12px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.5px; color:var(--ink-muted); margin-bottom:10px;
+}
+.sc-explain {
+  font-size:11px; color:var(--ink-faint); line-height:1.6;
+  border-top:1px solid var(--border); padding-top:10px;
+}
+
+/* ══════════════════════════════════════════════════
+   KPI LIST — cleaner, more spacious
+══════════════════════════════════════════════════ */
+.kpi-list { display:flex; flex-direction:column; gap:14px; }
+
+.kpi-row {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:22px 26px;
+  display:grid; grid-template-columns:auto 1fr auto;
+  align-items:center; gap:20px;
+  box-shadow:var(--sh-xs); transition:var(--t);
+}
+.kpi-row:hover { box-shadow:var(--sh-md); border-color:rgba(11,59,75,0.18); transform:translateX(4px); }
+
+.kpi-rank {
+  font-family:'DM Mono', monospace; font-size:12px; font-weight:500;
+  color:var(--ink-faint); width:24px; text-align:center;
+}
+.kpi-body { min-width:0; }
+.kpi-name {
+  font-size:16px; font-weight:600; color:var(--ink);
+  margin-bottom:4px;
+}
+.kpi-plain { font-size:13px; color:var(--ink-muted); line-height:1.6; }
+.kpi-value-block { text-align:right; flex-shrink:0; }
+.kpi-val {
+  font-family:'DM Mono', monospace;
+  font-size:24px; font-weight:500; color:var(--teal); line-height:1;
+}
+.kpi-trend {
+  font-size:12px; font-weight:600; margin-top:4px;
+  display:flex; align-items:center; gap:4px; justify-content:flex-end;
+}
+.trend-up   { color:#1A6B50; }
+.trend-down { color:#C0392B; }
+.trend-flat { color:var(--ink-faint); }
+
+/* ══════════════════════════════════════════════════
+   INSIGHTS — with better badges and explanations
+══════════════════════════════════════════════════ */
+.insight-list { display:flex; flex-direction:column; gap:0; }
+.insight-row {
+  background:var(--white); border:1px solid var(--border); border-bottom:none;
+  padding:24px 28px; display:flex; align-items:flex-start; gap:20px; transition:var(--t);
+}
+.insight-row:first-child { border-radius:var(--r-lg) var(--r-lg) 0 0; }
+.insight-row:last-child  { border-bottom:1px solid var(--border); border-radius:0 0 var(--r-lg) var(--r-lg); }
+.insight-row:only-child  { border-radius:var(--r-lg); border-bottom:1px solid var(--border); }
+.insight-row:hover { background:var(--teal-pale); transform:translateY(-2px); box-shadow:var(--sh-sm); }
+
+.insight-index {
+  width:34px; height:34px; border-radius:10px;
+  background:var(--teal); color:#fff;
+  font-family:'DM Mono', monospace; font-size:13px; font-weight:500;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px;
+}
+.insight-body { flex:1; min-width:0; }
+
+.insight-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 12px; border-radius:999px;
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;
+  margin-bottom:8px;
+}
+.chip-trend       { background:#E0F2F0; color:#1A6B50; }
+.chip-anomaly     { background:#FFECEC; color:#C0392B; }
+.chip-correlation { background:#EDE7F6; color:#512DA8; }
+.chip-summary     { background:var(--teal-soft); color:var(--teal); }
+.chip-pattern     { background:#FFF3E0; color:#E65100; }
+.chip-default     { background:var(--teal-soft); color:var(--teal); }
+
+.insight-headline {
+  font-size:15px; font-weight:600; color:var(--ink);
+  line-height:1.5; margin-bottom:8px;
+}
+.insight-detail { font-size:13px; color:var(--ink-muted); line-height:1.7; }
+
+.insight-plain-badge {
+  display:flex; align-items:flex-start; gap:8px;
+  margin-top:12px; padding:10px 16px;
+  background:var(--amber-soft);
+  border-radius:10px;
+  font-size:13px; color:#7A4E28; line-height:1.6;
+  border-left:3px solid var(--amber);
+}
+.insight-plain-badge i { color:var(--amber); font-size:13px; margin-top:2px; flex-shrink:0; }
+
+/* ══════════════════════════════════════════════════
+   AUDIENCE GUIDE — more visual and structured
+══════════════════════════════════════════════════ */
+.audience-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+
+.audience-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-lg); overflow:hidden;
+  box-shadow:var(--sh-xs); transition:var(--t);
+}
+.audience-card:hover { box-shadow:var(--sh-md); transform:translateY(-3px); }
+
+.audience-header { padding:18px 20px; display:flex; align-items:center; gap:12px; }
+.audience-icon {
+  width:40px; height:40px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.aud-general   .audience-header { background:#F0F7FA; }
+.aud-analyst   .audience-header { background:#F0EEFF; }
+.aud-scientist .audience-header { background:#E8F5E9; }
+.aud-general   .audience-icon   { background:#D7ECF5; color:var(--teal); }
+.aud-analyst   .audience-icon   { background:#DDD6FE; color:#5B21B6; }
+.aud-scientist .audience-icon   { background:#BBF7D0; color:#166534; }
+
+.audience-role { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-muted); }
+.audience-name { font-size:15px; font-weight:700; color:var(--ink); }
+.audience-body { padding:16px 20px 20px; }
+.audience-takeaway { font-size:13px; color:var(--ink-soft); line-height:1.7; }
+.audience-takeaway strong { color:var(--teal); }
+
+/* ══════════════════════════════════════════════════
+   METADATA TABLE — elegant, easy to scan
+══════════════════════════════════════════════════ */
+.meta-table {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-xs);
+}
+.meta-row {
+  display:grid; grid-template-columns:1fr 2fr;
+  border-bottom:1px solid var(--border); transition:var(--t);
+}
+.meta-row:last-child { border-bottom:none; }
+.meta-row:hover { background:var(--teal-pale); }
+.meta-key {
+  padding:15px 22px;
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px;
+  color:var(--ink-muted); border-right:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+  background:rgba(11,59,75,0.02);
+}
+.meta-key i { color:var(--emerald); font-size:11px; width:14px; }
+.meta-val {
+  padding:15px 22px;
+  font-size:14px; font-weight:500; color:var(--ink);
+  font-family:'DM Mono', monospace;
+}
+
+/* ══════════════════════════════════════════════════
+   SIDEBAR — cleaner, more professional
+══════════════════════════════════════════════════ */
+.sidebar-widget {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-lg); overflow:hidden;
+  box-shadow:var(--sh-xs); margin-bottom:20px;
+}
+.sidebar-widget-header {
+  padding:14px 18px;
+  background:var(--teal-pale); border-bottom:1px solid var(--border);
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.7px;
+  color:var(--teal); display:flex; align-items:center; gap:8px;
+}
+.sidebar-widget-header i { font-size:11px; }
+.sidebar-widget-body { padding:16px 18px; }
+
+.toc-list { list-style:none; display:flex; flex-direction:column; gap:4px; }
+.toc-item a {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px; border-radius:8px;
+  text-decoration:none; font-size:13px; font-weight:500;
+  color:var(--ink-muted); transition:var(--t);
+}
+.toc-item a:hover { background:var(--teal-soft); color:var(--teal); }
+.toc-item a.active { background:var(--teal); color:#fff; }
+.toc-item a i { font-size:11px; width:18px; }
+
+.sidebar-stat {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--border);
+}
+.sidebar-stat:last-child { border-bottom:none; padding-bottom:0; }
+.ss-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ss-lbl { font-size:13px; color:var(--ink-muted); flex:1; }
+.ss-val { font-family:'DM Mono', monospace; font-size:14px; font-weight:500; color:var(--teal); }
+
+.sidebar-actions { display:flex; flex-direction:column; gap:8px; padding:16px 18px; }
+.sidebar-action-btn {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 16px; border-radius:10px;
+  font-size:13px; font-weight:600; text-decoration:none;
+  transition:var(--t); border:none; cursor:pointer; font-family:'DM Sans', sans-serif;
+}
+.sab-primary   { background:var(--teal); color:#fff; box-shadow:0 2px 8px rgba(11,59,75,0.18); }
+.sab-primary:hover { background:var(--teal-mid); transform:translateY(-1px); color:#fff; }
+.sab-secondary { background:var(--teal-soft); color:var(--teal); }
+.sab-secondary:hover { background:var(--teal); color:#fff; }
+.sab-ghost { background:transparent; color:var(--ink-muted); border:1px solid var(--border-mid); }
+.sab-ghost:hover { background:var(--bg); color:var(--teal); border-color:var(--teal); }
+.sidebar-action-btn i { font-size:12px; }
+
+/* ══════════════════════════════════════════════════
+   FOOTER BANNER — more polished
+══════════════════════════════════════════════════ */
+.footer-banner {
+  background:linear-gradient(135deg, var(--teal) 0%, #0F4A5E 50%, var(--teal-mid) 100%);
+  border-radius:var(--r-xl);
+  padding:40px 44px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:28px; flex-wrap:wrap;
+  position:relative; overflow:hidden; box-shadow:var(--sh-lg);
+  margin-top:32px;
+}
+.footer-banner::before {
+  content:''; position:absolute; inset:0;
+  background-image:radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size:24px 24px; pointer-events:none;
+}
+.footer-banner-text { position:relative; z-index:1; }
+.footer-banner-title {
+  font-family:'Fraunces', Georgia, serif;
+  font-size:22px; font-weight:700; color:#fff;
+  margin-bottom:6px; letter-spacing:-0.3px;
+}
+.footer-banner-sub { font-size:14px; color:rgba(255,255,255,0.6); }
+.footer-banner-btns { display:flex; gap:12px; flex-wrap:wrap; position:relative; z-index:1; }
+.fbb {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 24px; border-radius:10px;
+  font-size:14px; font-weight:600; text-decoration:none;
+  transition:var(--t); white-space:nowrap;
+}
+.fbb-white { background:#fff; color:var(--teal); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+.fbb-white:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.2); }
+.fbb-outline { background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.fbb-outline:hover { background:rgba(255,255,255,0.2); }
+.fbb i { font-size:12px; }
+
+/* ══════════════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.anim   { animation:fadeUp 0.5s var(--ease) both; }
+.anim-1 { animation-delay:0.04s; }
+.anim-2 { animation-delay:0.10s; }
+.anim-3 { animation-delay:0.16s; }
+.anim-4 { animation-delay:0.22s; }
+.anim-5 { animation-delay:0.28s; }
+.anim-6 { animation-delay:0.34s; }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media (max-width:1024px) {
+  .page-body { grid-template-columns:1fr; }
+  .side-col  { display:none; }
+  .snapshot-grid { grid-template-columns:repeat(2,1fr); }
+  .audience-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:768px) {
+  .cover { padding:60px 24px 56px; }
+  .cover-stats { width:100%; }
+  .cover-stat  { flex:1; min-width:100px; padding:14px; }
+  .page-body { padding:40px 20px 80px; }
+  .footer-banner { padding:28px 24px; }
+  .narrative-body { padding:24px 20px; }
+  .kpi-row { grid-template-columns:auto 1fr; }
+  .kpi-value-block { display:none; }
+  .audience-grid { grid-template-columns:1fr; }
+}
+@media (max-width:600px) {
+  .snapshot-grid { grid-template-columns:1fr; }
+  .meta-row { grid-template-columns:1fr; }
+  .meta-key { border-right:none; border-bottom:1px solid var(--border); }
+  .nav-pill span { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="{% url 'home' %}" class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-name">Auralis Insights</span>
+    </a>
+    <div class="nav-group">
+      <a href="{% url 'home' %}" class="nav-pill"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="{% url 'profile' %}" class="nav-pill"><i class="fas fa-user"></i><span>Profile</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+
+    <div class="cover-breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="{% url 'my_reports_list' %}">My Reports</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Data Story</span>
+    </div>
+
+    <div>
+      <span class="cover-domain cover-domain-{{ report.domain|lower|default:'generic' }}">
+        {% if report.domain == 'health' %}<i class="fas fa-heartbeat"></i> Health & Medical
+        {% elif report.domain == 'finance' %}<i class="fas fa-coins"></i> Finance
+        {% elif report.domain == 'education' %}<i class="fas fa-graduation-cap"></i> Education
+        {% elif report.domain == 'sales' %}<i class="fas fa-shopping-cart"></i> Sales
+        {% elif report.domain == 'hr' %}<i class="fas fa-users"></i> Human Resources
+        {% else %}<i class="fas fa-chart-bar"></i> General Analytics{% endif %}
+      </span>
+    </div>
+
+    <h1 class="cover-title">{{ report.title }}</h1>
+
+    <div class="cover-subtitle">
+      <i class="fas fa-file-csv"></i>
+      {{ report.analysis_result.cleaning_report.dataset.file_name|default:"Dataset" }}
+      <span>·</span>
+      <i class="fas fa-calendar-alt"></i>
+      {{ report.created_at|date:"F d, Y" }}
+    </div>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <div class="cover-stat-num">{{ report.total_rows|default:0 }}</div>
+        <div class="cover-stat-lbl">Total Rows</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">{{ report.filtered_rows|default:0 }}</div>
+        <div class="cover-stat-lbl">Analysed</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">{{ report.kpi_count|default:0 }}</div>
+        <div class="cover-stat-lbl">KPIs</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">{{ report.insight_count|default:0 }}</div>
+        <div class="cover-stat-lbl">Insights</div>
+      </div>
+    </div>
+
+    <div class="cover-date">
+      <i class="fas fa-clock"></i> Report generated on {{ report.created_at|date:"d M Y, H:i" }}
+    </div>
+
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- MAIN COLUMN -->
+  <div class="main-col">
+
+    <!-- 1. THE STORY -->
+    <section class="story-section anim anim-1" id="sec-story">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-feather-alt"></i> The Story</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">What the data is telling us</h2>
+      <p class="section-desc">A plain‑English narrative synthesising the key findings from your dataset — written for everyone.</p>
+
+      <div class="narrative-card">
+        <div class="narrative-header">
+          <div class="narrative-header-icon"><i class="fas fa-book-open"></i></div>
+          <div>
+            <div class="narrative-header-label">AI‑Generated Narrative</div>
+            <div class="narrative-header-text">Synthesised from your filtered dataset</div>
+          </div>
+        </div>
+        <div class="narrative-body">
+          {% if report.narrative %}
+          <div class="plain-preamble">
+            <i class="fas fa-info-circle"></i>
+            <p>
+              <strong>Reading tip:</strong> This narrative is written for everyone — whether you're a business owner, a student, or a data scientist. The numbers and technical details follow in the sections below.
+            </p>
+          </div>
+          <p class="narrative-text">{{ report.narrative }}</p>
+          {% else %}
+          <div class="narrative-empty">
+            <i class="fas fa-feather-alt"></i>
+            <p>No narrative was saved for this report.<br>
+            Open the <strong>Interactive Dashboard</strong>, apply your filters, and click <strong>Generate Report</strong> to capture a narrative here.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SNAPSHOT -->
+    <section class="story-section anim anim-2" id="sec-snapshot">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-layer-group"></i> Dataset Snapshot</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">By the numbers</h2>
+      <p class="section-desc">A quick overview of what was analysed — with plain‑English explanations beneath each number.</p>
+
+      <div class="snapshot-grid">
+        <div class="snapshot-card sc-rows">
+          <div class="sc-icon"><i class="fas fa-database"></i></div>
+          <div class="sc-num">{{ report.total_rows|default:0 }}</div>
+          <div class="sc-label">Total Rows</div>
+          <div class="sc-explain">The complete number of records in the uploaded file before any filtering.</div>
+        </div>
+        <div class="snapshot-card sc-filt">
+          <div class="sc-icon"><i class="fas fa-filter"></i></div>
+          <div class="sc-num">{{ report.filtered_rows|default:0 }}</div>
+          <div class="sc-label">Rows Analysed</div>
+          <div class="sc-explain">The subset of records used after filters were applied to generate this report.</div>
+        </div>
+        <div class="snapshot-card sc-kpi">
+          <div class="sc-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <div class="sc-num">{{ report.kpi_count|default:0 }}</div>
+          <div class="sc-label">KPIs Generated</div>
+          <div class="sc-explain">Key Performance Indicators — specific metrics that measure how well something is performing.</div>
+        </div>
+        <div class="snapshot-card sc-ins">
+          <div class="sc-icon"><i class="fas fa-lightbulb"></i></div>
+          <div class="sc-num">{{ report.insight_count|default:0 }}</div>
+          <div class="sc-label">Insights Found</div>
+          <div class="sc-explain">Automatically detected patterns, anomalies, and trends worth paying attention to.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. KPIs -->
+    {% if kpis %}
+    <section class="story-section anim anim-3" id="sec-kpis">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-tachometer-alt"></i> Key Metrics</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">Performance indicators</h2>
+      <p class="section-desc">
+        KPIs are the headline numbers from your data. Each one comes with a plain‑English explanation
+        so anyone can understand what it measures.
+      </p>
+
+      <div class="kpi-list">
+        {% for kpi in kpis %}
+        <div class="kpi-row">
+          <span class="kpi-rank">{{ forloop.counter }}</span>
+          <div class="kpi-body">
+            <div class="kpi-name">{{ kpi.label|default:kpi.name|default:"Metric" }}</div>
+            {% if kpi.description %}
+              <div class="kpi-plain">{{ kpi.description }}</div>
+            {% else %}
+              <div class="kpi-plain">Computed metric derived from your filtered dataset.</div>
+            {% endif %}
+          </div>
+          <div class="kpi-value-block">
+            <div class="kpi-val">{{ kpi.value }}</div>
+            {% if kpi.trend == 'up' %}
+              <div class="kpi-trend trend-up"><i class="fas fa-arrow-up"></i> Rising</div>
+            {% elif kpi.trend == 'down' %}
+              <div class="kpi-trend trend-down"><i class="fas fa-arrow-down"></i> Falling</div>
+            {% else %}
+              <div class="kpi-trend trend-flat"><i class="fas fa-minus"></i> Stable</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 4. INSIGHTS -->
+    {% if insights %}
+    <section class="story-section anim anim-4" id="sec-insights">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-lightbulb"></i> Insights</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">What the data reveals</h2>
+      <p class="section-desc">
+        Each insight is an automatically detected finding — labelled by type and paired with a
+        <strong>plain‑English explanation</strong>.
+      </p>
+
+      <div class="insight-list">
+        {% for insight in insights %}
+        <div class="insight-row">
+          <div class="insight-index">{{ forloop.counter }}</div>
+          <div class="insight-body">
+
+            {% if insight.type %}
+            <span class="insight-chip
+              {% if insight.type == 'trend' %}chip-trend
+              {% elif insight.type == 'anomaly' %}chip-anomaly
+              {% elif insight.type == 'correlation' %}chip-correlation
+              {% elif insight.type == 'pattern' %}chip-pattern
+              {% elif insight.type == 'summary' %}chip-summary
+              {% else %}chip-default{% endif %}">
+              {% if insight.type == 'trend' %}<i class="fas fa-arrow-trend-up"></i>
+              {% elif insight.type == 'anomaly' %}<i class="fas fa-exclamation-triangle"></i>
+              {% elif insight.type == 'correlation' %}<i class="fas fa-link"></i>
+              {% elif insight.type == 'pattern' %}<i class="fas fa-sitemap"></i>
+              {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+              {{ insight.type|title }}
+            </span>
+            {% endif %}
+
+            <div class="insight-headline">
+              {{ insight.text|default:insight.description|default:insight }}
+            </div>
+
+            <div class="insight-plain-badge">
+              <i class="fas fa-user-graduate"></i>
+              <span>
+                <strong>What this means:</strong>
+                {% if insight.type == 'trend' %}
+                  A consistent directional movement — values are steadily rising or falling.
+                {% elif insight.type == 'anomaly' %}
+                  An unusual data point stands outside the normal range — worth investigating.
+                {% elif insight.type == 'correlation' %}
+                  Two measurements tend to move together — when one goes up, the other follows.
+                {% elif insight.type == 'pattern' %}
+                  A repeating structure — regular cycles or recurring behaviours.
+                {% else %}
+                  An important characteristic worth noting for decision‑making.
+                {% endif %}
+              </span>
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 5. WHO THIS IS FOR -->
+    <section class="story-section anim anim-5" id="sec-audience">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-users"></i> Reading Guide</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">How to use this report</h2>
+      <p class="section-desc">Pick the perspective that fits you.</p>
+
+      <div class="audience-grid">
+        <div class="audience-card aud-general">
+          <div class="audience-header">
+            <div class="audience-icon"><i class="fas fa-user"></i></div>
+            <div>
+              <div class="audience-role">For</div>
+              <div class="audience-name">Non‑Technical Readers</div>
+            </div>
+          </div>
+          <div class="audience-body">
+            <p class="audience-takeaway">
+              Start with <strong>The Story</strong> — written in plain English. The amber boxes explain technical terms.
+            </p>
+          </div>
+        </div>
+
+        <div class="audience-card aud-analyst">
+          <div class="audience-header">
+            <div class="audience-icon"><i class="fas fa-chart-bar"></i></div>
+            <div>
+              <div class="audience-role">For</div>
+              <div class="audience-name">Students & Analysts</div>
+            </div>
+          </div>
+          <div class="audience-body">
+            <p class="audience-takeaway">
+              The <strong>KPIs</strong> and <strong>Insights</strong> contain structured findings. Explore deeper via dashboards.
+            </p>
+          </div>
+        </div>
+
+        <div class="audience-card aud-scientist">
+          <div class="audience-header">
+            <div class="audience-icon"><i class="fas fa-flask"></i></div>
+            <div>
+              <div class="audience-role">For</div>
+              <div class="audience-name">Data Scientists</div>
+            </div>
+          </div>
+          <div class="audience-body">
+            <p class="audience-takeaway">
+              Insight types are programmatically tagged. Use the Interactive Dashboard to re‑run AI insights on any subset.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. METADATA -->
+    <section class="story-section anim anim-6" id="sec-meta">
+      <div class="section-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text"><i class="fas fa-info-circle"></i> Report Details</span>
+        <div class="eyebrow-divider"></div>
+      </div>
+      <h2 class="section-title-text">Technical provenance</h2>
+      <p class="section-desc">Full details about this report — for data scientists and analysts.</p>
+
+      <div class="meta-table">
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-hashtag"></i> Report ID</div>
+          <div class="meta-val">#{{ report.id }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-calendar"></i> Generated</div>
+          <div class="meta-val">{{ report.created_at|date:"d M Y, H:i" }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-tag"></i> Domain</div>
+          <div class="meta-val">{{ report.domain|title|default:"General" }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-file-csv"></i> Source File</div>
+          <div class="meta-val">{{ report.analysis_result.cleaning_report.dataset.file_name|default:"—" }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-database"></i> Total Rows</div>
+          <div class="meta-val">{{ report.total_rows|default:0 }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-filter"></i> Filtered Rows</div>
+          <div class="meta-val">{{ report.filtered_rows|default:0 }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-tachometer-alt"></i> KPIs</div>
+          <div class="meta-val">{{ report.kpi_count|default:0 }}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-key"><i class="fas fa-lightbulb"></i> Insights</div>
+          <div class="meta-val">{{ report.insight_count|default:0 }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER BANNER -->
+    <div class="footer-banner anim">
+      <div class="footer-banner-text">
+        <div class="footer-banner-title">Keep exploring your data</div>
+        <div class="footer-banner-sub">Go deeper with dashboards or return to all reports.</div>
+      </div>
+      <div class="footer-banner-btns">
+        <a href="{% url 'dashboard' report.analysis_result.id %}" class="fbb fbb-white">
+          <i class="fas fa-chart-bar"></i> KPI Dashboard
+        </a>
+        <a href="{% url 'interactive_dashboard' report.analysis_result.id %}" class="fbb fbb-white">
+          <i class="fas fa-sliders-h"></i> Interactive
+        </a>
+        <a href="{% url 'my_reports_list' %}" class="fbb fbb-outline">
+          <i class="fas fa-arrow-left"></i> All Reports
+        </a>
+      </div>
+    </div>
+
+  </div><!-- end main-col -->
+
+  <!-- SIDEBAR -->
+  <aside class="side-col">
+
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-header"><i class="fas fa-list"></i> Contents</div>
+      <div class="sidebar-widget-body" style="padding:10px 12px;">
+        <ul class="toc-list" id="tocList">
+          <li class="toc-item"><a href="#sec-story"    id="toc-sec-story"><i class="fas fa-feather-alt"></i> The Story</a></li>
+          <li class="toc-item"><a href="#sec-snapshot" id="toc-sec-snapshot"><i class="fas fa-layer-group"></i> Snapshot</a></li>
+          {% if kpis %}
+          <li class="toc-item"><a href="#sec-kpis"     id="toc-sec-kpis"><i class="fas fa-tachometer-alt"></i> Key Metrics</a></li>
+          {% endif %}
+          {% if insights %}
+          <li class="toc-item"><a href="#sec-insights" id="toc-sec-insights"><i class="fas fa-lightbulb"></i> Insights</a></li>
+          {% endif %}
+          <li class="toc-item"><a href="#sec-audience" id="toc-sec-audience"><i class="fas fa-users"></i> Reading Guide</a></li>
+          <li class="toc-item"><a href="#sec-meta"     id="toc-sec-meta"><i class="fas fa-info-circle"></i> Details</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-header"><i class="fas fa-chart-pie"></i> Quick Stats</div>
+      <div class="sidebar-widget-body">
+        <div class="sidebar-stat">
+          <div class="ss-dot" style="background:#4A9B8D;"></div>
+          <span class="ss-lbl">Total Rows</span>
+          <span class="ss-val">{{ report.total_rows|default:0 }}</span>
+        </div>
+        <div class="sidebar-stat">
+          <div class="ss-dot" style="background:#1565C0;"></div>
+          <span class="ss-lbl">Analysed</span>
+          <span class="ss-val">{{ report.filtered_rows|default:0 }}</span>
+        </div>
+        <div class="sidebar-stat">
+          <div class="ss-dot" style="background:#7B1FA2;"></div>
+          <span class="ss-lbl">KPIs</span>
+          <span class="ss-val">{{ report.kpi_count|default:0 }}</span>
+        </div>
+        <div class="sidebar-stat">
+          <div class="ss-dot" style="background:#E65100;"></div>
+          <span class="ss-lbl">Insights</span>
+          <span class="ss-val">{{ report.insight_count|default:0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-header"><i class="fas fa-rocket"></i> Quick Actions</div>
+      <div class="sidebar-actions">
+        <a href="{% url 'interactive_dashboard' report.analysis_result.id %}" class="sidebar-action-btn sab-primary">
+          <i class="fas fa-sliders-h"></i> Interactive Dashboard
+        </a>
+        <a href="{% url 'dashboard' report.analysis_result.id %}" class="sidebar-action-btn sab-secondary">
+          <i class="fas fa-chart-bar"></i> KPI Dashboard
+        </a>
+        <a href="{% url 'my_reports_list' %}" class="sidebar-action-btn sab-ghost">
+          <i class="fas fa-arrow-left"></i> All Reports
+        </a>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- end page-body -->
+
+<script>
+const bar = document.getElementById('progressBar');
+const btn = document.getElementById('backTop');
+const sections = ['sec-story','sec-snapshot','sec-kpis','sec-insights','sec-audience','sec-meta'];
+
+window.addEventListener('scroll', () => {
+  const total    = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.transform = `scaleX(${total > 0 ? window.scrollY / total : 0})`;
+  btn.classList.toggle('show', window.scrollY > 400);
+  highlightTOC();
+});
+
+function highlightTOC() {
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 120) current = id;
+  });
+  document.querySelectorAll('#tocList a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+
+document.querySelectorAll('#tocList a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+</script>
+</body>
+</html>

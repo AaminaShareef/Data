@@ -662,9 +662,14 @@ def _is_num_val(v):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# VIEW 6 — Save report snapshot
+# VIEW 6 — Save report snapshot  (REPLACE the existing save_report_snapshot)
 # URL: /analysis/result/<result_id>/save-report/
+#
+# KEY CHANGE: update_or_create(lookup=analysis_result) instead of create()
+# This means generating a report for the same dataset always overwrites the
+# previous one — no duplicates accumulate in My Reports.
 # ─────────────────────────────────────────────────────────────────────────────
+
 @require_POST
 def save_report_snapshot(request, result_id):
     from .models import SavedReport
@@ -688,20 +693,28 @@ def save_report_snapshot(request, result_id):
     dataset_name = result.cleaning_report.dataset.file_name
     domain       = r.get('domain_display', r.get('domain', 'Generic'))
 
-    SavedReport.objects.create(
-        analysis_result = result,
-        title           = f"{dataset_name} — {domain} Report",
-        domain          = result.domain,
-        total_rows      = r.get('dataset_summary', {}).get('total_records', 0),
-        filtered_rows   = body.get('filtered_rows', 0),
-        kpi_count       = len(r.get('kpis', [])),
-        insight_count   = len(r.get('insights', [])),
-        narrative       = body.get('narrative', '')[:1000],
+    # ── update_or_create: one SavedReport per AnalysisResult (= per dataset) ──
+    # If a report already exists for this analysis_result, all fields are
+    # overwritten with the latest values.  A brand-new record is created only
+    # on the first save.
+    report, created = SavedReport.objects.update_or_create(
+        analysis_result=result,          # lookup key — unique per dataset
+        defaults={
+            'title':         f"{dataset_name} — {domain} Report",
+            'domain':        result.domain,
+            'total_rows':    r.get('dataset_summary', {}).get('total_records', 0),
+            'filtered_rows': body.get('filtered_rows', 0),
+            'kpi_count':     len(r.get('kpis', [])),
+            'insight_count': len(r.get('insights', [])),
+            'narrative':     body.get('narrative', '')[:1000],
+        }
     )
 
-    return JsonResponse({'status': 'saved'})
-
-
+    return JsonResponse({
+        'status':  'saved' if created else 'updated',
+        'created': created,        # True = new, False = overwritten
+        'report_id': report.id,
+    })
 # ─────────────────────────────────────────────────────────────────────────────
 # VIEW 7 — My Reports list
 # URL: /analysis/my-reports/
@@ -804,3 +817,39 @@ def dataset_picker_dashboard(request):
         'page_icon':   'fas fa-tachometer-alt',
         'card_action': 'Open Dashboard',
     })
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIEW 10 — Report Story (Data Story page)
+# URL: /analysis/report/<report_id>/story/
+# Add this to kpi_engine/views.py alongside the other views.
+# Also add to kpi_engine/models.py import: SavedReport
+# ─────────────────────────────────────────────────────────────────────────────
+
+def report_story(request, report_id):
+    """
+    Full-page 'Data Story' view for a single SavedReport.
+    Shows: narrative, dataset summary, KPIs, insights, and report metadata.
+    """
+    from .models import SavedReport
+
+    user_id = get_user_id(request)
+    if not user_id:
+        return redirect('login')
+
+    report = get_object_or_404(
+        SavedReport,
+        id=report_id,
+        analysis_result__cleaning_report__dataset__user_id=user_id,
+    )
+
+    # Pull KPIs and insights from the linked AnalysisResult JSON
+    result_json = report.analysis_result.result_json
+    kpis        = result_json.get('kpis', [])
+    insights    = result_json.get('insights', [])
+
+    context = {
+        'report':   report,
+        'kpis':     kpis,
+        'insights': insights,
+    }
+    return render(request, 'kpi_engine/report_story.html', context)

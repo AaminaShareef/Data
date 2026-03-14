@@ -11,4 +11,5 @@ urlpatterns = [
     path('my-reports/',                         views.my_reports_list,          name='my_reports_list'),
     path('pick/kpi/',                           views.dataset_picker_kpi,       name='dataset_picker_kpi'),
     path('pick/dashboard/',                     views.dataset_picker_dashboard, name='dataset_picker_dashboard'),
+    path('report/<int:report_id>/story/',       views.report_story,             name='report_story'),
 ]
