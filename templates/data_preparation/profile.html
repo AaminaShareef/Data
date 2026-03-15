@@ -583,50 +583,49 @@ body::before {
     </div>
 
     <!-- Horizontal cards grid – ALL FOUR CARDS IN ONE ROW -->
-    <div class="horizontal-cards-grid">
+<div class="horizontal-cards-grid">
 
-      <a href="{% url 'cleaned_reports_list' %}" class="horizontal-card" id="cleaned-reports">
-        <div class="horizontal-card-icon"><i class="fas fa-file-alt"></i></div>
-        <h3 class="horizontal-card-title">Cleaned Reports</h3>
-        <p class="horizontal-card-description">View and manage your cleaned and processed data reports</p>
-        <div class="horizontal-card-meta">
-          <span class="horizontal-card-count">{{ processed_datasets }} datasets</span>
-          <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="{% url 'dataset_picker_kpi' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="kpi">
-        <div class="horizontal-card-icon"><i class="fas fa-chart-line"></i></div>
-        <h3 class="horizontal-card-title">KPI Dashboard</h3>
-        <p class="horizontal-card-description">Track key performance indicators and metrics from your analyzed datasets</p>
-        <div class="horizontal-card-meta">
-          <span class="horizontal-card-count">{{ datasets_with_analysis_count }} with KPIs</span>
-          <span class="horizontal-card-link">Select dataset <i class="fas fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="{% url 'dataset_picker_dashboard' %}" class="horizontal-card {% if datasets_with_analysis_count == 0 %}card-disabled{% endif %}" id="dashboard">
-        <div class="horizontal-card-icon"><i class="fas fa-tachometer-alt"></i></div>
-        <h3 class="horizontal-card-title">Interactive Dashboard</h3>
-        <p class="horizontal-card-description">Interactive visualizations, filters, and analytics for your datasets</p>
-        <div class="horizontal-card-meta">
-          <span class="horizontal-card-count">{{ datasets_with_analysis_count }} available</span>
-          <span class="horizontal-card-link">Choose dataset <i class="fas fa-arrow-right"></i></span>
-        </div>
-      </a>
-
-      <a href="{% url 'my_reports_list' %}" class="horizontal-card" id="reports">
-        <div class="horizontal-card-icon"><i class="fas fa-lightbulb"></i></div>
-        <h3 class="horizontal-card-title">My Reports & Insights</h3>
-        <p class="horizontal-card-description">Access your generated reports, insights, and analytics findings</p>
-        <div class="horizontal-card-meta">
-          <span class="horizontal-card-count">{{ total_reports }} reports</span>
-          <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
-        </div>
-      </a>
-
+  <a href="{% url 'cleaned_reports_list' %}" class="horizontal-card" id="cleaned-reports">
+    <div class="horizontal-card-icon"><i class="fas fa-file-alt"></i></div>
+    <h3 class="horizontal-card-title">Cleaned Reports</h3>
+    <p class="horizontal-card-description">View and manage your cleaned and processed data reports</p>
+    <div class="horizontal-card-meta">
+      <span class="horizontal-card-count">{{ processed_datasets }} datasets</span>
+      <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
     </div>
+  </a>
 
+  <a href="{% url 'dataset_picker_kpi' %}" class="horizontal-card" id="kpi">
+    <div class="horizontal-card-icon"><i class="fas fa-chart-line"></i></div>
+    <h3 class="horizontal-card-title">KPI Dashboard</h3>
+    <p class="horizontal-card-description">Track key performance indicators and metrics from your analyzed datasets</p>
+    <div class="horizontal-card-meta">
+      <span class="horizontal-card-count">{{ datasets_with_analysis_count }} with KPIs</span>
+      <span class="horizontal-card-link">Select dataset <i class="fas fa-arrow-right"></i></span>
+    </div>
+  </a>
+
+  <a href="{% url 'dataset_picker_dashboard' %}" class="horizontal-card" id="dashboard">
+    <div class="horizontal-card-icon"><i class="fas fa-tachometer-alt"></i></div>
+    <h3 class="horizontal-card-title">Interactive Dashboard</h3>
+    <p class="horizontal-card-description">Interactive visualizations, filters, and analytics for your datasets</p>
+    <div class="horizontal-card-meta">
+      <span class="horizontal-card-count">{{ datasets_with_analysis_count }} available</span>
+      <span class="horizontal-card-link">Choose dataset <i class="fas fa-arrow-right"></i></span>
+    </div>
+  </a>
+
+  <a href="{% url 'my_reports_list' %}" class="horizontal-card" id="reports">
+    <div class="horizontal-card-icon"><i class="fas fa-lightbulb"></i></div>
+    <h3 class="horizontal-card-title">My Reports & Insights</h3>
+    <p class="horizontal-card-description">Access your generated reports, insights, and analytics findings</p>
+    <div class="horizontal-card-meta">
+      <span class="horizontal-card-count">{{ total_reports }} reports</span>
+      <span class="horizontal-card-link">View all <i class="fas fa-arrow-right"></i></span>
+    </div>
+  </a>
+
+</div>
   </div><!-- end content-area -->
 </div><!-- end main-layout -->
 

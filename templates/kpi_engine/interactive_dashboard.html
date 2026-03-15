@@ -1479,13 +1479,16 @@ input[type=range]::-webkit-slider-thumb {
     </div>
 
     <div class="topbar-right">
-      <button class="tbtn teal" onclick="openReportModal()">
-        <i class="fas fa-file-pdf" style="font-size:11px"></i> Generate Report
-      </button>
-      <a href="{% url 'profile' %}" class="tbtn primary">
-        <i class="fas fa-user" style="font-size:11px"></i> Profile
-      </a>
-    </div>
+  <button class="tbtn teal" onclick="openReportModal()">
+    <i class="fas fa-file-pdf" style="font-size:11px"></i> Generate Report
+  </button>
+  <a href="{% url 'my_reports_list' %}" class="tbtn" style="background: var(--primary-soft); color: var(--primary); border-color: transparent;">
+    <i class="fas fa-book-open" style="font-size:11px"></i> My Reports
+  </a>
+  <a href="{% url 'profile' %}" class="tbtn primary">
+    <i class="fas fa-user" style="font-size:11px"></i> Profile
+  </a>
+</div>
 
   </div>
 </div>

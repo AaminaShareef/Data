@@ -662,14 +662,12 @@ def _is_num_val(v):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# VIEW 6 — Save report snapshot  (REPLACE the existing save_report_snapshot)
+# VIEW 6 — Save report snapshot
 # URL: /analysis/result/<result_id>/save-report/
 #
-# KEY CHANGE: update_or_create(lookup=analysis_result) instead of create()
-# This means generating a report for the same dataset always overwrites the
-# previous one — no duplicates accumulate in My Reports.
+# update_or_create(lookup=analysis_result) — one SavedReport per dataset,
+# no duplicates.
 # ─────────────────────────────────────────────────────────────────────────────
-
 @require_POST
 def save_report_snapshot(request, result_id):
     from .models import SavedReport
@@ -693,12 +691,8 @@ def save_report_snapshot(request, result_id):
     dataset_name = result.cleaning_report.dataset.file_name
     domain       = r.get('domain_display', r.get('domain', 'Generic'))
 
-    # ── update_or_create: one SavedReport per AnalysisResult (= per dataset) ──
-    # If a report already exists for this analysis_result, all fields are
-    # overwritten with the latest values.  A brand-new record is created only
-    # on the first save.
     report, created = SavedReport.objects.update_or_create(
-        analysis_result=result,          # lookup key — unique per dataset
+        analysis_result=result,
         defaults={
             'title':         f"{dataset_name} — {domain} Report",
             'domain':        result.domain,
@@ -711,13 +705,20 @@ def save_report_snapshot(request, result_id):
     )
 
     return JsonResponse({
-        'status':  'saved' if created else 'updated',
-        'created': created,        # True = new, False = overwritten
+        'status':    'saved' if created else 'updated',
+        'created':   created,
         'report_id': report.id,
     })
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # VIEW 7 — My Reports list
 # URL: /analysis/my-reports/
+#
+# KEY FIX: Now also fetches ALL datasets for the user (including pending ones
+# with no AnalysisResult) and passes them as `datasets` to the template.
+# The template uses this to show dataset cards instead of the upload button
+# whenever at least one dataset exists — regardless of its processing status.
 # ─────────────────────────────────────────────────────────────────────────────
 def my_reports_list(request):
     from .models import SavedReport
@@ -726,6 +727,7 @@ def my_reports_list(request):
     if not user_id:
         return redirect('login')
 
+    # ── Saved reports ──────────────────────────────────────────────────────
     reports = SavedReport.objects.filter(
         analysis_result__cleaning_report__dataset__user_id=user_id
     ).select_related(
@@ -734,10 +736,32 @@ def my_reports_list(request):
         'analysis_result__cleaning_report__dataset',
     ).order_by('-created_at')
 
+    # ── All datasets for this user (pending AND processed) ─────────────────
+    # Annotate each Dataset object with the extra attributes the template needs
+    # so we can pass a single, consistent list without a separate serialiser.
+    all_datasets = Dataset.objects.filter(user_id=user_id).order_by('-id')
+
+    datasets = []
+    for ds in all_datasets:
+        try:
+            ar = AnalysisResult.objects.get(cleaning_report__dataset=ds)
+            ds.has_analysis       = True
+            ds.analysis_result_id = ar.id
+            ds.kpi_count          = len(ar.result_json.get('kpis', []))
+            ds.is_processed       = True   # has a cleaning report → processed
+        except AnalysisResult.DoesNotExist:
+            ds.has_analysis       = False
+            ds.analysis_result_id = None
+            ds.kpi_count          = 0
+            # is_processed = cleaned but analysis not yet run
+            ds.is_processed = CleaningReport.objects.filter(dataset=ds).exists()
+        datasets.append(ds)
+
     context = {
         'reports':       reports,
         'total':         reports.count(),
         'domain_counts': _domain_counts(reports),
+        'datasets':      datasets,   # ← always present; empty list when no datasets at all
     }
     return render(request, 'kpi_engine/my_reports.html', context)
 
@@ -818,13 +842,11 @@ def dataset_picker_dashboard(request):
         'card_action': 'Open Dashboard',
     })
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # VIEW 10 — Report Story (Data Story page)
 # URL: /analysis/report/<report_id>/story/
-# Add this to kpi_engine/views.py alongside the other views.
-# Also add to kpi_engine/models.py import: SavedReport
 # ─────────────────────────────────────────────────────────────────────────────
-
 def report_story(request, report_id):
     """
     Full-page 'Data Story' view for a single SavedReport.
@@ -842,7 +864,6 @@ def report_story(request, report_id):
         analysis_result__cleaning_report__dataset__user_id=user_id,
     )
 
-    # Pull KPIs and insights from the linked AnalysisResult JSON
     result_json = report.analysis_result.result_json
     kpis        = result_json.get('kpis', [])
     insights    = result_json.get('insights', [])

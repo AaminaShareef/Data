@@ -2,192 +2,1254 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Reports — Auralis Insights</title>
+<title>My Reports &amp; Insights — Auralis Insights</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
+/* ── Exact same design tokens as dataset_picker.html ── */
 :root {
+  --primary-deep: #082B36;
   --primary: #0B3B4B;
   --primary-light: #1D5A6D;
+  --primary-lighter: #2C7A8F;
   --primary-soft: #E3F0F5;
+  --primary-soft-rgb: 227, 240, 245;
+  
+  --accent-deep: #2E7D72;
   --accent: #4A9B8D;
-  --background: #F0F4F8;
+  --accent-light: #7BBDB3;
+  --accent-soft: #E0F2F0;
+  
+  --background: #F7FAFD;
   --card-bg: #FFFFFF;
-  --text-dark: #0D1F2D;
-  --text-soft: #3A4A5E;
-  --text-muted: #6B7E96;
-  --border: rgba(11,59,75,0.08);
-  --border-strong: rgba(11,59,75,0.14);
-  --shadow-sm: 0 2px 8px rgba(11,59,75,0.06);
-  --shadow-md: 0 8px 28px rgba(11,59,75,0.10);
-  --shadow-lg: 0 20px 48px rgba(11,59,75,0.13);
-  --radius: 14px;
-  --radius-lg: 20px;
-  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  --max-w: 1200px;
-}
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Sora', sans-serif; background: var(--background); color: var(--text-dark); min-height: 100vh; }
-body::before {
-  content: ''; position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(74,155,141,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(11,59,75,0.06) 0%, transparent 60%);
-  pointer-events: none; z-index: 0;
+  --card-bg-alt: #F8FAFE;
+  
+  --text-heading: #0A1A24;
+  --text-body: #234254;
+  --text-soft: #405B6B;
+  --text-muted: #5F748A;
+  --text-light: #8B9EB0;
+  
+  --border-light: rgba(11,59,75,0.08);
+  --border: rgba(11,59,75,0.12);
+  --border-medium: rgba(11,59,75,0.18);
+  --border-focus: rgba(74,155,141,0.5);
+  
+  --shadow-xs: 0 2px 8px rgba(11,59,75,0.04);
+  --shadow-sm: 0 4px 16px rgba(11,59,75,0.06);
+  --shadow-md: 0 8px 28px rgba(11,59,75,0.08);
+  --shadow-lg: 0 16px 40px rgba(11,59,75,0.12);
+  --shadow-xl: 0 24px 56px rgba(11,59,75,0.15);
+  
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  
+  --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  --max-width: 1400px;
 }
 
-/* ── Topbar ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--text-body);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 0% 0%, rgba(74,155,141,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 60% at 100% 100%, rgba(11,59,75,0.04) 0%, transparent 80%),
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 30px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Topbar — exact picker ── */
 .topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.90); backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xs);
 }
+
 .topbar-inner {
-  max-width: var(--max-w); margin: 0 auto;
-  height: 64px; padding: 0 32px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: 72px;
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.brand-logo { width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-.brand-logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
-.brand-name { font-size: 16px; font-weight: 700; color: var(--primary); }
-.nav-links { display: flex; gap: 4px; }
-.nav-link { color: var(--text-muted); font-weight: 500; text-decoration: none; font-size: 13px; padding: 7px 14px; border-radius: 999px; transition: var(--transition); }
-.nav-link:hover { color: var(--primary); background: var(--primary-soft); }
-.nav-link i { margin-right: 5px; font-size: 11px; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.brand:hover { opacity: 0.9; }
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(145deg, var(--primary), var(--accent));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px rgba(11,59,75,0.2);
+}
+
+.brand-logo svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.2;
+}
+
+.brand-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-deep);
+  letter-spacing: -0.3px;
+}
+
+.brand-badge {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 60px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-soft);
+  background: var(--primary-soft);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.nav-link i {
+  font-size: 13px;
+  color: var(--accent);
+  transition: var(--transition);
+}
+
+.nav-link:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-link:hover i {
+  color: #fff;
+}
 
 /* ── Page wrapper ── */
-.page-wrapper { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
+.page-wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 48px 36px 80px;
+  position: relative;
+  z-index: 1;
+}
 
-/* ── Page header ── */
-.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; animation: fadeUp 0.4s ease both; }
-.page-header-left { display: flex; flex-direction: column; gap: 6px; }
-.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
-.breadcrumb a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
-.breadcrumb a:hover { color: var(--primary); }
-.breadcrumb i { font-size: 9px; }
-.page-title { font-size: 22px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
-.page-title i { color: var(--accent); font-size: 18px; }
-.count-badge { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(11,59,75,0.12); border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+/* ── Page header — enhanced picker style ── */
+.page-header {
+  margin-bottom: 48px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.page-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.page-header-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+  box-shadow: 0 12px 28px rgba(11,59,75,0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+.page-header-text {
+  flex: 1;
+}
+
+.page-header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.page-header-description {
+  font-size: 16px;
+  color: var(--text-soft);
+  max-width: 650px;
+  line-height: 1.7;
+}
+
+.page-header-meta {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--primary-soft);
+  padding: 5px 14px;
+  border-radius: 60px;
+  border: 1px solid var(--border-light);
+}
+
+.meta-item i {
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.meta-item strong {
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(11,59,75,0.12);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
 
 /* ── Summary stats ── */
-.summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; animation: fadeUp 0.4s ease both 0.05s; }
-.summary-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow-sm); transition: var(--transition); }
-.summary-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.summary-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.6s ease 0.05s both;
+}
+
+.summary-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.summary-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.summary-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
 .summary-icon.blue   { background: var(--primary-soft); color: var(--primary); }
 .summary-icon.green  { background: #E6F5F0; color: #1A6B50; }
 .summary-icon.orange { background: #FFF4E6; color: #A05C00; }
 .summary-icon.purple { background: #F0EEFF; color: #5B4FCF; }
-.summary-num { font-size: 24px; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono', monospace; line-height: 1; }
-.summary-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 3px; }
+
+.summary-num {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.summary-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-top: 4px;
+}
+
+/* ── Search Bar ── */
+.search-section {
+  margin-bottom: 40px;
+  animation: fadeUp 0.6s ease 0.08s both;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.search-box-wrapper {
+  flex: 1;
+  min-width: 300px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 60px;
+  padding: 8px 20px;
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition);
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(74,155,141,0.12);
+}
+
+.search-box i {
+  color: var(--text-muted);
+  font-size: 15px;
+  transition: var(--transition);
+}
+
+.search-box:focus-within i {
+  color: var(--accent);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--text-heading);
+  width: 100%;
+  padding: 8px 0;
+}
+
+.search-box input::placeholder {
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+.search-stats {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--card-bg);
+  padding: 8px 20px;
+  border-radius: 60px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.search-stats strong {
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
 
 /* ── Reports grid ── */
-.reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; animation: fadeUp 0.4s ease both 0.10s; }
-
-.report-card {
-  background: var(--card-bg); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
-  overflow: hidden; transition: var(--transition);
-  display: flex; flex-direction: column;
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 28px;
+  animation: fadeUp 0.6s ease 0.10s both;
 }
-.report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--primary-light); }
 
-.report-card-accent { height: 4px; }
-.accent-finance    { background: linear-gradient(90deg, #1A6B50, #4A9B8D); }
-.accent-health     { background: linear-gradient(90deg, #C0392B, #E74C3C); }
-.accent-education  { background: linear-gradient(90deg, #1565C0, #1976D2); }
-.accent-sales      { background: linear-gradient(90deg, #E65100, #F57C00); }
-.accent-hr         { background: linear-gradient(90deg, #7B1FA2, #9C27B0); }
-.accent-generic    { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+/* ── Report card — upgraded to match picker quality ── */
+.report-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
 
-.report-card-body  { padding: 20px 22px; flex: 1; }
-.report-card-top   { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.report-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 1;
+}
+
+.report-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px) scale(1.02);
+  border-color: transparent;
+}
+
+.report-card:hover::before {
+  opacity: 1;
+}
+
+.report-card-accent {
+  height: 4px;
+}
+
+.report-card-accent.accent-finance   { background: linear-gradient(90deg, #1A6B50, #4A9B8D); }
+.report-card-accent.accent-health    { background: linear-gradient(90deg, #C0392B, #E74C3C); }
+.report-card-accent.accent-education { background: linear-gradient(90deg, #1565C0, #1976D2); }
+.report-card-accent.accent-sales     { background: linear-gradient(90deg, #E65100, #F57C00); }
+.report-card-accent.accent-hr        { background: linear-gradient(90deg, #7B1FA2, #9C27B0); }
+.report-card-accent.accent-generic   { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+
+.report-card-body {
+  padding: 24px 24px 20px;
+  flex: 1;
+}
+
+.report-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
 
 .report-domain-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
   background: var(--primary-soft);
+  transition: var(--transition);
 }
-.report-title { font-size: 14px; font-weight: 700; color: var(--text-dark); line-height: 1.3; flex: 1; }
-.report-date  { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0; }
-.report-updated { font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace; white-space: nowrap; margin-top: 3px; display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
-.report-updated i { font-size: 8px; }
 
-.domain-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-bottom: 14px; }
-.domain-finance    { background: #E8F5E9; color: #2E7D32; }
-.domain-health     { background: #FFE8E8; color: #C0392B; }
-.domain-education  { background: #E3F2FD; color: #1565C0; }
-.domain-sales      { background: #FFF3E0; color: #E65100; }
-.domain-hr         { background: #F3E5F5; color: #7B1FA2; }
-.domain-generic    { background: #ECEFF1; color: #546E7A; }
+.report-card:hover .report-domain-icon {
+  transform: scale(1.05) rotate(3deg);
+  background: var(--primary);
+  color: white;
+}
 
-.report-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.report-stat  { display: flex; align-items: center; gap: 5px; background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 11px; color: var(--text-muted); }
-.report-stat strong { color: var(--primary); font-family: 'JetBrains Mono', monospace; }
+.report-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-heading);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.report-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.report-updated {
+  font-size: 10px;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.domain-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+}
+
+.domain-finance   { background: #E8F5E9; color: #2E7D32; border-color: rgba(46,125,50,0.15); }
+.domain-health    { background: #FFE8E8; color: #C0392B; border-color: rgba(192,57,43,0.15); }
+.domain-education { background: #E3F2FD; color: #1565C0; border-color: rgba(21,101,192,0.15); }
+.domain-sales     { background: #FFF3E0; color: #E65100; border-color: rgba(230,81,0,0.15); }
+.domain-hr        { background: #F3E5F5; color: #7B1FA2; border-color: rgba(123,31,162,0.15); }
+.domain-generic   { background: #ECEFF1; color: #546E7A; border-color: rgba(84,110,122,0.15); }
+
+.report-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.report-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--card-bg-alt);
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.report-stat strong {
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
 
 .report-narrative {
-  font-size: 12px; color: var(--text-soft); line-height: 1.6;
-  background: var(--background); border-radius: 10px;
-  padding: 10px 12px; border-left: 3px solid var(--accent);
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-  overflow: hidden; font-style: italic;
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.65;
+  background: var(--card-bg-alt);
+  border-radius: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-style: italic;
 }
-.no-narrative { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 8px 0; }
 
-/* ── Card footer — now has 3 buttons ── */
+.no-narrative {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* ── Report card footer ── */
 .report-card-footer {
-  padding: 14px 22px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(240,244,248,0.5);
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(247,250,253,0.8);
   flex-wrap: wrap;
 }
 
 .action-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 7px 14px; border-radius: 8px;
-  font-size: 12px; font-weight: 600;
-  text-decoration: none; transition: var(--transition);
-  border: none; cursor: pointer; font-family: 'Sora', sans-serif; white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
 }
-.action-view        { background: var(--primary-soft); color: var(--primary); }
-.action-view:hover  { background: var(--primary); color: white; }
-.action-interactive { background: #E0F2F0; color: #1A6B50; }
-.action-interactive:hover { background: #1A6B50; color: white; }
 
-/* NEW — Data Story button */
+.action-view {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.action-view:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.action-interactive {
+  background: #E0F2F0;
+  color: #1A6B50;
+}
+
+.action-interactive:hover {
+  background: #1A6B50;
+  color: white;
+  transform: translateY(-2px);
+}
+
 .action-story {
   background: linear-gradient(135deg, #0B3B4B, #1D5A6D);
   color: white;
-  box-shadow: 0 2px 8px rgba(11,59,75,0.20);
-  margin-left: auto;        /* push to right edge */
+  box-shadow: 0 4px 12px rgba(11,59,75,0.2);
+  margin-left: auto;
 }
+
 .action-story:hover {
   background: linear-gradient(135deg, #4A9B8D, #0B3B4B);
-  box-shadow: 0 4px 14px rgba(11,59,75,0.28);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   color: white;
 }
-.action-btn i { font-size: 10px; }
 
-/* ── Empty state ── */
-.empty-state { text-align: center; padding: 64px 20px; animation: fadeUp 0.4s ease both 0.10s; }
-.empty-icon { width: 64px; height: 64px; background: var(--primary-soft); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 26px; color: var(--primary); }
-.empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
-.empty-state p  { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
-.cta-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: white; padding: 12px 28px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 13px; transition: var(--transition); box-shadow: 0 4px 12px rgba(11,59,75,0.18); }
-.cta-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+.action-story .arrow {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
 
-@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.action-story:hover .arrow {
+  transform: translateX(4px);
+}
 
-@media (max-width: 768px) { .summary-row { grid-template-columns: 1fr 1fr; } .reports-grid { grid-template-columns: 1fr; } }
-@media (max-width: 480px) { .summary-row { grid-template-columns: 1fr; } .nav-links { display: none; } }
+/* Download buttons */
+.action-download-trigger {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(11,59,75,0.12);
+}
+
+.action-download-trigger:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  border-color: transparent;
+}
+
+.action-download {
+  background: #E6F5F0;
+  color: #1A6B50;
+  border: 1px solid rgba(26,107,80,0.15);
+  display: none;
+}
+
+.action-download.downloaded {
+  display: inline-flex;
+}
+
+.action-download:hover {
+  background: #1A6B50;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.action-download-trigger.downloaded {
+  display: none;
+}
+
+.action-btn i {
+  font-size: 11px;
+  transition: transform 0.2s;
+}
+
+.action-btn:hover i {
+  transform: scale(1.1);
+}
+
+/* ── Dataset cards — exact ds-card from picker ── */
+.datasets-section {
+  margin-top: 24px;
+}
+
+.datasets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  animation: fadeUp 0.6s ease 0.10s both;
+}
+
+.ds-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px 24px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+}
+
+.ds-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.ds-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.ds-card:hover::after {
+  opacity: 1;
+}
+
+.ds-card:nth-child(1){animation-delay:0.04s} .ds-card:nth-child(2){animation-delay:0.08s}
+.ds-card:nth-child(3){animation-delay:0.12s} .ds-card:nth-child(4){animation-delay:0.16s}
+.ds-card:nth-child(5){animation-delay:0.20s} .ds-card:nth-child(6){animation-delay:0.24s}
+
+.ds-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ds-file-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.ds-card:hover .ds-file-icon {
+  transform: scale(1.05) rotate(3deg);
+  background: var(--primary);
+  color: white;
+}
+
+.ds-file-icon.excel { background: #E6F5EE; color: #1A6B50; }
+.ds-file-icon.csv   { background: #EEF3FF; color: #3B5BDB; }
+.ds-card:hover .ds-file-icon.excel { background: #1A6B50; color: white; }
+.ds-card:hover .ds-file-icon.csv { background: #3B5BDB; color: white; }
+
+.ds-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  backdrop-filter: blur(4px);
+}
+
+.badge-ready       { background: #E6F5F0; color: #1A6B50; border-color: rgba(26,107,80,0.2); }
+.badge-no-analysis { background: #FFF4E6; color: #A05C00; border-color: rgba(160,92,0,0.2); }
+.badge-pending     { background: #FFEDED; color: #C0392B; border-color: rgba(192,57,43,0.2); }
+
+.ds-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-meta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ds-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--card-bg-alt);
+  padding: 4px 12px;
+  border-radius: 40px;
+  border: 1px solid var(--border-light);
+}
+
+.ds-meta-item i {
+  font-size: 10px;
+  color: var(--accent);
+}
+
+.ds-meta-item strong {
+  color: var(--text-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+/* Stats preview for datasets with analysis */
+.ds-stats-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 16px;
+}
+
+.stat-preview-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-preview-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.stat-preview-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ds-card-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border-light);
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-kpi-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--primary-soft);
+  padding: 4px 12px;
+  border-radius: 40px;
+}
+
+.ds-kpi-count span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition-slow);
+  font-family: 'Inter', sans-serif;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(11,59,75,0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary-lighter));
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(11,59,75,0.25);
+}
+
+.btn-primary i {
+  font-size: 11px;
+  transition: transform 0.2s;
+}
+
+.btn-primary:hover i {
+  transform: translateX(4px);
+}
+
+.btn-muted {
+  background: var(--primary-soft);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.run-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-soft);
+  padding: 4px 12px;
+  border-radius: 40px;
+}
+
+.run-hint i {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.run-hint a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--accent);
+  transition: var(--transition);
+}
+
+.run-hint a:hover {
+  color: var(--accent);
+  border-bottom-style: solid;
+}
+
+/* ── Empty state & no results ── */
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  animation: fadeUp 0.6s ease both;
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.empty-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin: 0 auto 28px;
+  box-shadow: 0 12px 28px rgba(11,59,75,0.15);
+}
+
+.empty-state h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  padding: 16px 42px;
+  border-radius: 60px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 12px 28px rgba(11,59,75,0.25);
+  transition: var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-upload::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-upload:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 36px rgba(11,59,75,0.35);
+}
+
+.btn-upload:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.btn-upload i {
+  font-size: 14px;
+  transition: transform 0.3s;
+}
+
+.btn-upload:hover i {
+  transform: translateY(-2px);
+}
+
+/* No results message */
+.no-results-message {
+  text-align: center;
+  padding: 60px 40px;
+  animation: fadeUp 0.8s ease both;
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.no-results-message .empty-icon {
+  width: 72px;
+  height: 72px;
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.no-results-message h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.no-results-message p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.no-results-message .btn-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 60px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.no-results-message .btn-reset:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  background: var(--primary);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 60px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast i {
+  font-size: 16px;
+  color: var(--accent-light);
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger cards */
+.report-card:nth-child(1) { animation-delay: 0.05s; }
+.report-card:nth-child(2) { animation-delay: 0.10s; }
+.report-card:nth-child(3) { animation-delay: 0.15s; }
+.report-card:nth-child(4) { animation-delay: 0.20s; }
+.report-card:nth-child(5) { animation-delay: 0.25s; }
+.report-card:nth-child(6) { animation-delay: 0.30s; }
+
+.ds-card:nth-child(1) { animation-delay: 0.05s; }
+.ds-card:nth-child(2) { animation-delay: 0.10s; }
+.ds-card:nth-child(3) { animation-delay: 0.15s; }
+.ds-card:nth-child(4) { animation-delay: 0.20s; }
+.ds-card:nth-child(5) { animation-delay: 0.25s; }
+.ds-card:nth-child(6) { animation-delay: 0.30s; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .page-wrap { padding: 40px 24px 60px; }
+  .reports-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .datasets-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .summary-row { grid-template-columns: 1fr 1fr; }
+  .page-header h1 { font-size: 28px; }
+  .page-header-icon { width: 60px; height: 60px; font-size: 26px; }
+}
+
+@media (max-width: 768px) {
+  .reports-grid { grid-template-columns: 1fr; }
+  .datasets-grid { grid-template-columns: 1fr; }
+  .search-container { flex-direction: column; align-items: stretch; }
+  .search-box-wrapper { min-width: 100%; }
+  .search-stats { text-align: center; }
+  .report-card { padding: 0; }
+}
+
+@media (max-width: 640px) {
+  .page-wrap { padding: 28px 16px 40px; }
+  .page-header-content { gap: 20px; }
+  .page-header h1 { font-size: 24px; }
+  .page-header-icon { width: 52px; height: 52px; font-size: 22px; }
+  .nav-links { display: none; }
+}
+
+@media (max-width: 480px) {
+  .summary-row { grid-template-columns: 1fr; }
+  .report-card-footer { flex-direction: column; align-items: stretch; }
+  .action-story { margin-left: 0; }
+}
 </style>
 </head>
 <body>
 
+<!-- ── Topbar ── -->
 <div class="topbar">
   <div class="topbar-inner">
     <a href="{% url 'home' %}" class="brand">
@@ -195,37 +1257,50 @@ body::before {
         <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
       <span class="brand-name">Auralis Insights</span>
+      <span class="brand-badge">REPORTS</span>
     </a>
     <nav class="nav-links">
-      <a href="{% url 'home' %}"        class="nav-link"><i class="fas fa-home"></i>Home</a>
-      <a href="{% url 'profile' %}"     class="nav-link"><i class="fas fa-user"></i>Profile</a>
+      <a href="{% url 'home' %}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+      <a href="{% url 'profile' %}" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
     </nav>
   </div>
 </div>
 
-<div class="page-wrapper">
+<div class="page-wrap">
 
+  <!-- ── Page header — enhanced with picker style ── -->
   <div class="page-header">
-    <div class="page-header-left">
-      <div class="breadcrumb">
-        <a href="{% url 'home' %}">Home</a>
-        <i class="fas fa-chevron-right"></i>
-        <a href="{% url 'profile' %}">Profile</a>
-        <i class="fas fa-chevron-right"></i>
-        <span>My Reports</span>
+    <div class="page-header-content">
+      <div class="page-header-icon"><i class="fas fa-lightbulb"></i></div>
+      <div class="page-header-text">
+        <h1>My Reports & Insights</h1>
+        <p class="page-header-description">
+          All your saved reports in one place. Download, explore dashboards, or read your data story.
+        </p>
+        <div class="page-header-meta">
+          <span class="meta-item">
+            <i class="fas fa-file-alt"></i> Total reports: <strong>{{ total }}</strong>
+          </span>
+          <span class="meta-item">
+            <i class="fas fa-database"></i> Available datasets: <strong>{{ datasets|length|default:0 }}</strong>
+          </span>
+          {% if datasets_ready_count %}
+          <span class="meta-item">
+            <i class="fas fa-check-circle"></i> Ready for analysis: <strong>{{ datasets_ready_count }}</strong>
+          </span>
+          {% endif %}
+        </div>
       </div>
-      <h1 class="page-title">
-        <i class="fas fa-lightbulb"></i> My Reports &amp; Insights
-      </h1>
+      <span class="count-badge">{{ total }} report{{ total|pluralize }}</span>
     </div>
-    <span class="count-badge">{{ total }} report{{ total|pluralize }}</span>
   </div>
 
   {% if reports %}
 
+  <!-- ── Summary stats ── -->
   <div class="summary-row">
     <div class="summary-card">
-      <div class="summary-icon blue"><i class="fas fa-file-pdf"></i></div>
+      <div class="summary-icon blue"><i class="fas fa-file-alt"></i></div>
       <div>
         <div class="summary-num">{{ total }}</div>
         <div class="summary-label">Total Reports</div>
@@ -254,9 +1329,27 @@ body::before {
     </div>
   </div>
 
-  <div class="reports-grid">
+  <!-- ── Search Bar for reports ── -->
+  <div class="search-section">
+    <div class="search-container">
+      <div class="search-box-wrapper">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="reportSearch" placeholder="Search reports by title... (⌘K)" autocomplete="off">
+        </div>
+      </div>
+      <div class="search-stats">
+        <i class="fas fa-chart-simple"></i> <span id="visibleCount">{{ reports|length }}</span> of <strong>{{ reports|length }}</strong> reports
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Reports grid ── -->
+  <div class="reports-grid" id="reportsGrid">
     {% for rpt in reports %}
-    <div class="report-card">
+    <div class="report-card" 
+         data-name="{{ rpt.title|lower }}"
+         data-domain="{{ rpt.domain|lower }}">
 
       <div class="report-card-accent accent-{{ rpt.domain|lower }}"></div>
 
@@ -271,12 +1364,10 @@ body::before {
             {% else %}📊{% endif %}
           </div>
           <div class="report-title">{{ rpt.title }}</div>
-          <div style="text-align:right; flex-shrink:0;">
+          <div style="text-align:right;flex-shrink:0;">
             <div class="report-date">{{ rpt.created_at|date:"M d, Y" }}</div>
             {% if rpt.updated_at and rpt.updated_at != rpt.created_at %}
-            <div class="report-updated">
-              <i class="fas fa-sync-alt"></i> Updated {{ rpt.updated_at|date:"M d, Y" }}
-            </div>
+            <div class="report-updated"><i class="fas fa-sync-alt"></i> {{ rpt.updated_at|date:"M d, Y" }}</div>
             {% endif %}
           </div>
         </div>
@@ -286,46 +1377,42 @@ body::before {
         </span>
 
         <div class="report-stats">
-          <div class="report-stat">
-            <i class="fas fa-database" style="font-size:9px"></i>
-            <strong>{{ rpt.total_rows|default:0 }}</strong> total rows
-          </div>
-          <div class="report-stat">
-            <i class="fas fa-filter" style="font-size:9px"></i>
-            <strong>{{ rpt.filtered_rows|default:0 }}</strong> filtered
-          </div>
-          <div class="report-stat">
-            <i class="fas fa-tachometer-alt" style="font-size:9px"></i>
-            <strong>{{ rpt.kpi_count }}</strong> KPIs
-          </div>
-          <div class="report-stat">
-            <i class="fas fa-lightbulb" style="font-size:9px"></i>
-            <strong>{{ rpt.insight_count }}</strong> insights
-          </div>
+          <div class="report-stat"><i class="fas fa-database"></i><strong>{{ rpt.total_rows|default:0 }}</strong> rows</div>
+          <div class="report-stat"><i class="fas fa-filter"></i><strong>{{ rpt.filtered_rows|default:0 }}</strong> filtered</div>
+          <div class="report-stat"><i class="fas fa-tachometer-alt"></i><strong>{{ rpt.kpi_count }}</strong> KPIs</div>
+          <div class="report-stat"><i class="fas fa-lightbulb"></i><strong>{{ rpt.insight_count }}</strong> insights</div>
         </div>
 
         {% if rpt.narrative %}
           <div class="report-narrative">{{ rpt.narrative }}</div>
         {% else %}
-          <div class="no-narrative"><i class="fas fa-info-circle"></i> No narrative captured for this report.</div>
+          <div class="no-narrative"><i class="fas fa-info-circle"></i> No narrative captured</div>
         {% endif %}
       </div>
 
-      <!-- Footer: KPI Dashboard | Interactive | Data Story → -->
       <div class="report-card-footer">
-        <a href="{% url 'dashboard' rpt.analysis_result.id %}"
-           class="action-btn action-view">
-          <i class="fas fa-chart-bar"></i> KPI Dashboard
+        <a href="{% url 'dashboard' rpt.analysis_result.id %}" class="action-btn action-view">
+          <i class="fas fa-chart-bar"></i> KPIs
         </a>
-        <a href="{% url 'interactive_dashboard' rpt.analysis_result.id %}"
-           class="action-btn action-interactive">
+        <a href="{% url 'interactive_dashboard' rpt.analysis_result.id %}" class="action-btn action-interactive">
           <i class="fas fa-sliders-h"></i> Interactive
         </a>
-        <!-- NEW: Data Story button -->
-        <a href="{% url 'report_story' rpt.id %}"
-           class="action-btn action-story">
-          <i class="fas fa-book-open"></i> Data Story
-          <i class="fas fa-arrow-right" style="font-size:9px; margin-left:2px;"></i>
+        <!-- Download trigger -->
+        <button class="action-btn action-download-trigger"
+                id="trigger-{{ rpt.analysis_result.id }}"
+                onclick="downloadReport('{{ rpt.analysis_result.id }}','{{ rpt.title|escapejs }}')"
+                title="Download PDF Report">
+          <i class="fas fa-download"></i> Download
+        </button>
+        <!-- Revealed after download -->
+        <button class="action-btn action-download"
+                id="dl-{{ rpt.analysis_result.id }}"
+                onclick="downloadReport('{{ rpt.analysis_result.id }}','{{ rpt.title|escapejs }}')"
+                title="Download again">
+          <i class="fas fa-check"></i> Downloaded
+        </button>
+        <a href="{% url 'report_story' rpt.id %}" class="action-btn action-story">
+          <i class="fas fa-book-open"></i> Story <i class="fas fa-arrow-right arrow"></i>
         </a>
       </div>
 
@@ -333,20 +1420,385 @@ body::before {
     {% endfor %}
   </div>
 
+  <!-- No results message for report search -->
+  <div class="no-results-message" id="reportNoResults" style="display: none;">
+    <div class="empty-icon" style="width: 72px; height: 72px; font-size: 30px;">
+      <i class="fas fa-search"></i>
+    </div>
+    <h3>No matching reports</h3>
+    <p>Try adjusting your search criteria.</p>
+    <button class="btn-reset" onclick="resetReportSearch()">
+      <i class="fas fa-undo"></i> Clear Search
+    </button>
+  </div>
+
   {% else %}
 
+  {# ── No reports yet — show datasets as cards ── #}
+  {% if datasets %}
+
+  <!-- Header for dataset view -->
+  <div style="margin-bottom: 32px;">
+    <div class="page-header-content" style="margin-bottom: 16px;">
+      <div class="page-header-icon" style="width: 60px; height: 60px; font-size: 24px;">
+        <i class="fas fa-database"></i>
+      </div>
+      <div class="page-header-text">
+        <h1 style="font-size: 28px; margin-bottom: 4px;">No Reports Generated Yet</h1>
+        <p style="font-size: 15px; color: var(--text-muted);">
+          {% if datasets|length == 1 %}
+            {% with ds=datasets.0 %}
+              {% if ds.has_analysis %}
+                Your dataset is ready! Open the <strong>Interactive Dashboard</strong> and click <strong>Generate Report</strong> to create your first report.
+              {% elif ds.is_processed %}
+                Your dataset has been cleaned but needs analysis. Open it below to run analysis first.
+              {% else %}
+                Your dataset needs to be cleaned. Open it below to get started.
+              {% endif %}
+            {% endwith %}
+          {% else %}
+            You have <strong>{{ datasets|length }} datasets</strong> available. Open any dataset below to start generating reports.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search for datasets -->
+  <div class="search-section">
+    <div class="search-container">
+      <div class="search-box-wrapper">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="dsSearch" placeholder="Search datasets by file name... (⌘K)" autocomplete="off">
+        </div>
+      </div>
+      <div class="search-stats">
+        <i class="fas fa-chart-simple"></i> <span id="dsVisibleCount">{{ datasets|length }}</span> of <strong>{{ datasets|length }}</strong> datasets
+      </div>
+    </div>
+  </div>
+
+  <!-- Dataset cards — exactly like dataset picker -->
+  <div class="datasets-grid" id="datasetsGrid">
+    {% for ds in datasets %}
+    <div class="ds-card" data-name="{{ ds.file_name|lower }}">
+
+      <div class="ds-card-top">
+        <div class="ds-file-icon 
+          {% if ds.file_name|slice:'-5:' == '.xlsx' or ds.file_name|slice:'-4:' == '.xls' %}excel
+          {% elif ds.file_name|slice:'-4:' == '.csv' %}csv{% endif %}">
+          {% if ds.file_name|slice:"-5:" == ".xlsx" or ds.file_name|slice:"-4:" == ".xls" %}
+            <i class="fas fa-file-excel"></i>
+          {% else %}
+            <i class="fas fa-file-csv"></i>
+          {% endif %}
+        </div>
+        {% if ds.has_analysis %}
+          <span class="ds-status-badge badge-ready"><i class="fas fa-check-circle"></i> Ready for Reports</span>
+        {% elif ds.is_processed %}
+          <span class="ds-status-badge badge-no-analysis"><i class="fas fa-exclamation-circle"></i> Analysis Pending</span>
+        {% else %}
+          <span class="ds-status-badge badge-pending"><i class="fas fa-clock"></i> Cleaning Needed</span>
+        {% endif %}
+      </div>
+
+      <div class="ds-name" title="{{ ds.file_name }}">{{ ds.file_name }}</div>
+      
+      <div class="ds-meta-grid">
+        <span class="ds-meta-item">
+          <i class="far fa-calendar-alt"></i> Uploaded: <strong>{{ ds.uploaded_at|date:"d M Y" }}</strong>
+        </span>
+        <span class="ds-meta-item">
+          <i class="far fa-clock"></i> {{ ds.uploaded_at|timesince }} ago
+        </span>
+      </div>
+
+      <!-- Stats preview for datasets with analysis -->
+      {% if ds.has_analysis %}
+      <div class="ds-stats-preview">
+        <div class="stat-preview-item">
+          <div class="stat-preview-value">{{ ds.kpi_count|default:"—" }}</div>
+          <div class="stat-preview-label">KPIs</div>
+        </div>
+        <div class="stat-preview-item">
+          <div class="stat-preview-value">{{ ds.row_count|default:"—"|floatformat:0 }}</div>
+          <div class="stat-preview-label">Rows</div>
+        </div>
+        <div class="stat-preview-item">
+          <div class="stat-preview-value">{{ ds.column_count|default:"—" }}</div>
+          <div class="stat-preview-label">Columns</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="ds-card-footer">
+        {% if ds.has_analysis %}
+          <div class="ds-kpi-count">
+            <i class="fas fa-chart-line" style="font-size: 11px; margin-right: 4px;"></i>
+            {{ ds.kpi_count }} KPI{{ ds.kpi_count|pluralize }}
+          </div>
+          <a href="{% url 'interactive_dashboard' ds.analysis_result_id %}" class="btn-action btn-primary">
+            Open Dashboard <i class="fas fa-arrow-right"></i>
+          </a>
+        {% elif ds.is_processed %}
+          <div class="run-hint">
+            <i class="fas fa-info-circle"></i>
+            <a href="{% url 'dataset_detail' ds.id %}">Run analysis first</a>
+          </div>
+          <span class="btn-action btn-muted">
+            <i class="fas fa-lock"></i> Not Available
+          </span>
+        {% else %}
+          <div class="run-hint">
+            <i class="fas fa-info-circle"></i>
+            <a href="{% url 'dataset_detail' ds.id %}">Clean dataset first</a>
+          </div>
+          <span class="btn-action btn-muted">
+            <i class="fas fa-lock"></i> Not Available
+          </span>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- No results message for dataset search -->
+  <div class="no-results-message" id="dsNoResults" style="display: none;">
+    <div class="empty-icon" style="width: 72px; height: 72px; font-size: 30px;">
+      <i class="fas fa-filter"></i>
+    </div>
+    <h3>No matching datasets</h3>
+    <p>Try adjusting your search criteria.</p>
+    <button class="btn-reset" onclick="resetDatasetSearch()">
+      <i class="fas fa-undo"></i> Clear Search
+    </button>
+  </div>
+
+  {% else %}
+
+  <!-- Truly empty — no datasets at all -->
   <div class="empty-state">
-    <div class="empty-icon"><i class="fas fa-lightbulb"></i></div>
-    <h3>No Reports Generated Yet</h3>
-    <p>Upload a dataset, run the cleaning pipeline, open the Interactive Dashboard,<br>
-       and click <strong>Generate Report</strong> to save your first report here.</p>
-    <a href="{% url 'upload_data' %}" class="cta-btn">
-      <i class="fas fa-upload"></i> Upload a Dataset
+    <div class="empty-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+    <h3>No Reports Yet</h3>
+    <p>Upload a dataset to get started. Once uploaded, you can clean, analyze, and generate reports.</p>
+    <a href="{% url 'upload_data' %}" class="btn-upload">
+      <i class="fas fa-upload"></i> Upload Your First Dataset
     </a>
   </div>
 
   {% endif %}
+  {% endif %}
 
+</div><!-- /page-wrap -->
+
+<!-- Toast -->
+<div class="toast" id="downloadToast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMsg">Downloading report…</span>
 </div>
+
+<script>
+(function() {
+  /* ===== REPORT SEARCH ===== */
+  const reportSearch = document.getElementById('reportSearch');
+  const reportCards = document.querySelectorAll('#reportsGrid .report-card');
+  const visibleCountSpan = document.getElementById('visibleCount');
+  
+  if (reportCards.length) {
+    let searchQuery = '';
+    const reportsGrid = document.getElementById('reportsGrid');
+    const reportNoResults = document.getElementById('reportNoResults');
+    
+    function updateReportVisibility() {
+      let visibleCount = 0;
+      
+      reportCards.forEach(card => {
+        const name = card.dataset.name || '';
+        const matchesSearch = name.includes(searchQuery);
+        card.style.display = matchesSearch ? 'flex' : 'none';
+        if (matchesSearch) visibleCount++;
+      });
+      
+      if (visibleCountSpan) {
+        visibleCountSpan.textContent = visibleCount;
+      }
+      
+      if (visibleCount === 0 && reportCards.length > 0) {
+        reportsGrid.style.display = 'none';
+        reportNoResults.style.display = 'block';
+      } else {
+        reportsGrid.style.display = 'grid';
+        reportNoResults.style.display = 'none';
+      }
+    }
+    
+    let searchTimeout;
+    if (reportSearch) {
+      reportSearch.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchQuery = this.value.toLowerCase().trim();
+          updateReportVisibility();
+        }, 150);
+      });
+    }
+    
+    window.resetReportSearch = function() {
+      if (reportSearch) {
+        reportSearch.value = '';
+        searchQuery = '';
+        updateReportVisibility();
+      }
+    };
+    
+    // Keyboard shortcut
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (document.activeElement !== reportSearch && document.activeElement !== dsSearch) {
+          if (reportSearch) reportSearch.focus();
+          else if (dsSearch) dsSearch.focus();
+        }
+      }
+    });
+    
+    // Escape key to clear
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (reportSearch === document.activeElement) {
+          reportSearch.value = '';
+          searchQuery = '';
+          updateReportVisibility();
+        }
+      }
+    });
+    
+    // Initial update
+    updateReportVisibility();
+  }
+  
+  /* ===== DATASET SEARCH ===== */
+  const dsSearch = document.getElementById('dsSearch');
+  const dsCards = document.querySelectorAll('#datasetsGrid .ds-card');
+  const dsVisibleCount = document.getElementById('dsVisibleCount');
+  const dsNoResults = document.getElementById('dsNoResults');
+  const datasetsGrid = document.getElementById('datasetsGrid');
+  
+  if (dsCards.length && dsSearch) {
+    let dsSearchQuery = '';
+    
+    function updateDatasetVisibility() {
+      let visibleCount = 0;
+      
+      dsCards.forEach(card => {
+        const name = card.dataset.name || '';
+        const matchesSearch = name.includes(dsSearchQuery);
+        card.style.display = matchesSearch ? 'flex' : 'none';
+        if (matchesSearch) visibleCount++;
+      });
+      
+      if (dsVisibleCount) {
+        dsVisibleCount.textContent = visibleCount;
+      }
+      
+      if (visibleCount === 0) {
+        datasetsGrid.style.display = 'none';
+        dsNoResults.style.display = 'block';
+      } else {
+        datasetsGrid.style.display = 'grid';
+        dsNoResults.style.display = 'none';
+      }
+    }
+    
+    let dsSearchTimeout;
+    dsSearch.addEventListener('input', function(e) {
+      clearTimeout(dsSearchTimeout);
+      dsSearchTimeout = setTimeout(() => {
+        dsSearchQuery = this.value.toLowerCase().trim();
+        updateDatasetVisibility();
+      }, 150);
+    });
+    
+    window.resetDatasetSearch = function() {
+      dsSearch.value = '';
+      dsSearchQuery = '';
+      updateDatasetVisibility();
+    };
+    
+    // Escape key for dataset search
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (dsSearch === document.activeElement) {
+          dsSearch.value = '';
+          dsSearchQuery = '';
+          updateDatasetVisibility();
+        }
+      }
+    });
+  }
+  
+  /* ===== DOWNLOAD FUNCTIONALITY ===== */
+  window.showToast = function(msg, isError) {
+    const toast = document.getElementById('downloadToast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.style.background = isError ? '#C0392B' : 'var(--primary)';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  };
+
+  window.downloadReport = async function(resultId, reportTitle) {
+    showToast('Preparing your PDF report…', false);
+    try {
+      const resp = await fetch(`/analysis/result/${resultId}/report/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'X-CSRFToken': getCookie('csrftoken') 
+        },
+        body: JSON.stringify({ 
+          filtered_data: [], 
+          active_filters: {}, 
+          narrative: '', 
+          columns_meta: {} 
+        })
+      });
+      
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        showToast(err.error || 'Failed to generate report.', true);
+        return;
+      }
+      
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; 
+      a.download = `auralis_report_${resultId}.pdf`;
+      document.body.appendChild(a); 
+      a.click(); 
+      a.remove();
+      URL.revokeObjectURL(url);
+      
+      // Swap trigger → downloaded button
+      const trigger = document.getElementById(`trigger-${resultId}`);
+      const dlBtn = document.getElementById(`dl-${resultId}`);
+      if (trigger) trigger.classList.add('downloaded');
+      if (dlBtn) dlBtn.classList.add('downloaded');
+      
+      showToast('Report downloaded successfully!', false);
+    } catch (e) {
+      showToast('Network error. Please try again.', true);
+    }
+  };
+
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : '';
+  }
+})();
+</script>
+
 </body>
 </html>
